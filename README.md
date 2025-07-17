@@ -2,7 +2,7 @@
 
 ClimbEdge is a platform designed to facilitate the management of climbing routes, including their creation, modification, and deletion. It also supports the management of users and their roles within the system.
 
-##  Architecture
+## Architecture
 
 **ClimbEdge** is built using clean architecture, which allows for scalability and flexibility in development. The system is divided into several key layers:
 
@@ -31,12 +31,31 @@ This layer contains shared utilities and components that are used across differe
 ### Version Format
 
 Format of versions
-```
-v[mayor: version].[minor: funcionalidad].[path: correccion]-[pre-release: puede ser dev alpha beta rc ,etc].[incremental seg�n el tipo de pre-release]+[build: auto inremental general].[yyyymmdd]
 
-�jm: v0.0.1-dev.0001+0001.20250711
-``
+```sh
+v[mayor: version].[minor: funcionalidad].[path: corrección]-[pre-release: puede ser dev alpha beta rc ,etc].[incremental seg�n el tipo de pre-release]+[build: auto incremental general].[yyyymmdd]
+
+�jm: v0.0.1-dev.0001+0001.20250711
+```
 
 ### Versions
 
 ...
+
+## Migrations
+
+Migrations scripts:
+
+```bash
+# Crear migración (ejecutar desde la raíz del proyecto)
+dotnet ef migrations add [NombreMigracion] --project ClimbEdge.Infrastructure --startup-project ClimbEdge.API -o Persistence/Migrations
+
+# Aplicar migración
+dotnet ef database update --project ClimbEdge.Infrastructure --startup-project ClimbEdge.API
+
+# Otros comandos útiles
+dotnet ef migrations list --project ClimbEdge.Infrastructure --startup-project ClimbEdge.API
+dotnet ef migrations remove --project ClimbEdge.Infrastructure --startup-project ClimbEdge.API
+dotnet ef database drop --project ClimbEdge.Infrastructure --startup-project ClimbEdge.API
+dotnet tool update --global dotnet-ef --version 8.0.18
+```

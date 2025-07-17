@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -7,7 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
+    <PackageReference Include="MediatR" Version="13.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ClimbEdge.Infrastructure\ClimbEdge.Infrastructure.csproj" />
+    <ProjectReference Include="..\ClimbEdge.Application\ClimbEdge.Application.csproj" />
+    <ProjectReference Include="..\ClimbEdge.Domain\ClimbEdge.Domain.csproj" />
   </ItemGroup>
 
 </Project>

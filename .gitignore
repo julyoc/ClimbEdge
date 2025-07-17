@@ -361,3 +361,11 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Cad files
+*.dwl
+*.dwl2
+*.bak
+*.sv$
+
+# 3d models files

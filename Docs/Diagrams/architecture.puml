@@ -1,0 +1,52 @@
+@startuml ClimbEdge.Docs.Diagrams.architecture
+
+!include <C4/C4_Container>
+
+!define RECTANGLE class
+
+title Clean Architecture - ClimbEdge
+
+LAYOUT_WITH_LEGEND()
+
+Person(user, "User", "Application User")
+
+Container_Boundary(presentation, "Presentation Layer") {
+    Container(api, "Web API", "ASP.NET Core", "REST API endpoints")
+    Container(controllers, "Controllers", "MVC Controllers", "Handle HTTP requests")
+}
+
+Container_Boundary(application, "Application Layer") {
+    Container(usecases, "Use Cases", "Application Services", "Business use cases")
+    Container(interfaces, "Interfaces", "Abstractions", "Repository & Service contracts")
+    Container(dtos, "DTOs", "Data Transfer Objects", "Data contracts")
+}
+
+Container_Boundary(domain, "Domain Layer") {
+    Container(entities, "Entities", "Domain Models", "Core business entities")
+    Container(valueobjects, "Value Objects", "Domain Values", "Immutable domain values")
+    Container(domainservices, "Domain Services", "Business Logic", "Domain-specific operations")
+}
+
+Container_Boundary(infrastructure, "Infrastructure Layer") {
+    Container(repositories, "Repositories", "Data Access", "Data persistence implementation")
+    Container(cache, "Cache Service", "KeyDB Client", "Caching implementation")
+    Container(database, "Database", "Postgres", "Data storage")
+    Container(keydb, "KeyDB", "In-Memory Cache", "Redis-compatible cache")
+    Container(external, "External Services", "Third-party APIs", "External integrations")
+}
+
+Rel(user, api, "Uses", "HTTPS")
+Rel(api, controllers, "Routes to")
+Rel(controllers, usecases, "Calls")
+Rel(usecases, interfaces, "Uses")
+Rel(usecases, entities, "Operates on")
+Rel(interfaces, repositories, "Implemented by")
+Rel(interfaces, cache, "Implemented by")
+Rel(repositories, database, "Reads/Writes")
+Rel(repositories, cache, "Checks cache first")
+Rel(cache, keydb, "Connects to")
+Rel(usecases, external, "Integrates with")
+Rel(domainservices, entities, "Operates on")
+Rel(entities, valueobjects, "Contains")
+
+@enduml

@@ -1,6 +1,6 @@
 @ClimbEdge.API_HostAddress = http://localhost:5160
 
-GET {{ClimbEdge.API_HostAddress}}/weatherforecast/
+GET {{ClimbEdge.API_HostAddress}}/api
 Accept: application/json
 
 ###
