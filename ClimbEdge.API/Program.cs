@@ -70,13 +70,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors("AllowFrontend"); // Use the CORS policy defined above
+
 // Add Authentication & Authorization middleware
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.UseCors("AllowFrontend"); // Use the CORS policy defined above
 
 await app.RunAsync();
 

@@ -144,7 +144,8 @@ namespace ClimbEdge.API.Controllers
                 {
                     Token = token,
                     RefreshToken = refreshToken,
-                    User = new UserInfoDTO
+                    User = Mapper.Map<AppUser, UserInfoDTO>(user)
+                    /*User = new UserInfoDTO
                     {
                         Uid = user.Uid,
                         Email = user.Email,
@@ -152,8 +153,11 @@ namespace ClimbEdge.API.Controllers
                         FirstName = userProfile?.FirstName,
                         LastName = userProfile?.LastName,
                         EmailConfirmed = user.EmailConfirmed,
-                        IsLocked = user.IsLocked
-                    }
+                        IsLocked = user.IsLocked,
+                        Slug = user.Slug,
+                        CreatedAt = user.CreatedAt,
+                        UpdatedAt = user.UpdatedAt
+                    }*/
                 });
             }
             catch (Exception ex)
@@ -172,12 +176,13 @@ namespace ClimbEdge.API.Controllers
         [Authorize]
         public async Task<ActionResult> ChangePassword([FromBody] ChangePasswordRequestDTO request)
         {
+            AppUser? user = null;
             try
             {
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
 
-                var user = await _mediator.Send(new FindUserByPrincipalClaimQuery(User));
+                user = await _mediator.Send(new FindUserByPrincipalClaimQuery(User));
                 if (user == null)
                     return Unauthorized();
 
@@ -196,7 +201,7 @@ namespace ClimbEdge.API.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al cambiar contraseña para el usuario: {UserId}", User.Identity?.Name);
+                _logger.LogError(ex, "Error al cambiar contraseña para el usuario: {Email}", user?.Email ?? "Unknown");
                 return StatusCode(500, new { Message = "Error interno del servidor" });
             }
         }
@@ -384,6 +389,7 @@ namespace ClimbEdge.API.Controllers
                     FirstName = userProfile?.FirstName,
                     LastName = userProfile?.LastName,
                     EmailConfirmed = user.EmailConfirmed,
+                    IsLocked = user.IsLocked,
                     Roles = roles.ToList()
                 });
             }

@@ -1,0 +1,93 @@
+@ClimbEdge.API_HostAddress = http://localhost:5160
+
+### Variables globales (se establecen automáticamente después de login exitoso)
+@authToken = {{login.response.body.token}}
+@refreshToken = {{login.response.body.refreshToken}}
+
+### Test de endpoints sin autenticación - estos deben funcionar
+
+### 1. Registrar usuario - NO requiere autenticación
+POST {{ClimbEdge.API_HostAddress}}/api/account/register
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "Password123!",
+  "confirmPassword": "Password123!",
+  "firstName": "Test",
+  "lastName": "User"
+}
+
+### 2. Iniciar sesión - NO requiere autenticación
+# @name login
+POST {{ClimbEdge.API_HostAddress}}/api/account/login
+Content-Type: application/json
+
+{
+  "email": "admin@climbedge.local",
+  "password": "Admin123!"
+}
+
+### 3. Solicitar restablecimiento de contraseña - NO requiere autenticación
+POST {{ClimbEdge.API_HostAddress}}/api/account/forgot-password
+Content-Type: application/json
+
+{
+  "email": "test@example.com"
+}
+
+### 4. Restablecer contraseña con token - NO requiere autenticación
+POST {{ClimbEdge.API_HostAddress}}/api/account/reset-password
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "token": "reset-token-here",
+  "newPassword": "NewPassword123!",
+  "confirmPassword": "NewPassword123!"
+}
+
+### 5. Renovar token JWT - NO requiere autenticación
+POST {{ClimbEdge.API_HostAddress}}/api/account/refresh-token
+Content-Type: application/json
+
+{
+  "token": "{{authToken}}",
+  "refreshToken": "{{refreshToken}}"
+}
+
+### Test de endpoints que SÍ requieren autenticación - estos deben fallar sin token
+
+### 6. Obtener información del usuario actual - REQUIERE autenticación
+GET {{ClimbEdge.API_HostAddress}}/api/account/me
+Authorization: Bearer {{authToken}}
+
+### 7. Cambiar contraseña - REQUIERE autenticación
+POST {{ClimbEdge.API_HostAddress}}/api/account/change-password
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "currentPassword": "Admin123!",
+  "newPassword": "NewPassword123!",
+  "confirmPassword": "NewPassword123!"
+}
+
+### 8. Cerrar sesión - REQUIERE autenticación
+POST {{ClimbEdge.API_HostAddress}}/api/account/logout
+Authorization: Bearer {{authToken}}
+
+### Tests de autenticación - estos deben fallar con 401 Unauthorized
+
+### 9. Probar endpoint protegido SIN token (debe fallar)
+GET {{ClimbEdge.API_HostAddress}}/api/account/me
+
+### 10. Probar endpoint protegido con token inválido (debe fallar)
+GET {{ClimbEdge.API_HostAddress}}/api/account/me
+Authorization: Bearer invalid-token-here
+
+### 11. Probar endpoint protegido con formato incorrecto (debe fallar)
+GET {{ClimbEdge.API_HostAddress}}/api/account/me
+Authorization: InvalidFormat token-here
+
+

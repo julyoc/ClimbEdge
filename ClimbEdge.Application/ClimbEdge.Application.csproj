@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ClimbEdge.Common\ClimbEdge.Common.csproj" />
     <ProjectReference Include="..\ClimbEdge.Domain\ClimbEdge.Domain.csproj" />
   </ItemGroup>
 
