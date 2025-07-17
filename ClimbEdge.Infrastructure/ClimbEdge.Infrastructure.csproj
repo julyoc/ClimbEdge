@@ -18,6 +18,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.18" />
     <PackageReference Include="Scrutor" Version="6.1.0" />
     <PackageReference Include="StackExchange.Redis" Version="2.8.41" />
+    <PackageReference Include="Yarp.ReverseProxy" Version="2.3.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,7 +28,6 @@
 
   <ItemGroup>
     <Folder Include="ExternalServices\" />
-    <Folder Include="DependencyInjection\" />
     <Folder Include="Persistence\Migrations\" />
   </ItemGroup>
 

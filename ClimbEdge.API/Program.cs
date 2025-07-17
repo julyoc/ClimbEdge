@@ -13,6 +13,7 @@ builder.Services.AddControllers();
 
 // Add Infrastructure services (Database, Identity, etc.)
 builder.Services.AddInfrastructure(builder.Configuration, builder.Environment.IsDevelopment());
+builder.Services.AddFrontReverseProxy(builder.Environment.IsDevelopment());
 builder.Services.AddApplication(builder.Configuration, builder.Environment.IsDevelopment());
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -37,7 +38,7 @@ builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwa
 builder.Services.AddCors(o =>
 {
     o.AddPolicy("AllowFrontend",
-        builder => builder.WithOrigins("https://localhost:7188;http://localhost:5160")
+        builder => builder.WithOrigins("http://localhost:5173")
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials());
@@ -77,6 +78,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapReverseProxy();
 
 await app.RunAsync();
 
