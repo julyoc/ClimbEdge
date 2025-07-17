@@ -1,3 +1,41 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
 
+@theme {
+    /* Tema Claro */
+    --color-primary: #3A5F8A;
+    /* Botones, enlaces destacados */
+    --color-secondary: #9DB3C8;
+    /* Bordes, fondos secundarios */
+    --color-accent: #FFB545;
+    /* Iconos activos, CTA, highlights */
+    --color-background: #F4F6F8;
+    /* Fondo general */
+    --color-text: #1F1F1F;
+    /* Texto principal */
+
+    /* Tema Oscuro */
+    --color-primary-dark: #3A5F8A;
+    /* Botones, enlaces destacados */
+    --color-secondary-dark: #2D3E50;
+    /* Fondos secundarios */
+    --color-accent-dark: #FFB545;
+    /* Iconos activos, CTA, highlights */
+    --color-background-dark: #1A1A1A;
+    /* Fondo general */
+    --color-text-dark: #F4F6F8;
+    /* Texto principal */
+}
+
+/* Prevent flash of unstyled content */
+html {
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+/* Ensure smooth transitions for theme changes */
+* {
+    transition-property: background-color, border-color, color, fill, stroke;
+    transition-duration: 200ms;
+    transition-timing-function: ease-in-out;
+}
