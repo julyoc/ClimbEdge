@@ -21,8 +21,8 @@ namespace ClimbEdge.API.Controllers
 {
     [ApiVersion("0.1")]
     [ApiController]
-    [Route("api/v{version:apiVersion}/[controller]")]
     [Route("api/[controller]")]
+    [Authorize]
     public class AccountController : ControllerBase
     {
         private readonly UserManager<AppUser> _userManager;

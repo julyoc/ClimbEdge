@@ -4,9 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ClimbEdge.API.Controllers
 {
-    [ApiVersion("0.1")]
+    //[ApiVersion("0.1")]
     [ApiController]
-    [Route("api/v{version:apiVersion}")]
     [Route("api/")]
     public class InitialController : ControllerBase
     {

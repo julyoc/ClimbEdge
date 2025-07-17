@@ -45,5 +45,6 @@ namespace ClimbEdge.Domain.Interfaces
         void Lock();
         void Unlock();
         void ClearDomainEvents();
+        void InitializeSlug();
     }
 }

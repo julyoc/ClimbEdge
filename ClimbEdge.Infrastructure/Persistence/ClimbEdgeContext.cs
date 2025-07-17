@@ -65,6 +65,7 @@ namespace ClimbEdge.Infrastructure.Persistence
                     case EntityState.Added:
                         entry.Entity.CreatedAt = DateTime.UtcNow;
                         entry.Entity.UpdatedAt = null;
+                        entry.Entity.InitializeSlug();
                         break;
 
                     case EntityState.Modified:
@@ -82,6 +83,7 @@ namespace ClimbEdge.Infrastructure.Persistence
                     case EntityState.Added:
                         entry.Entity.CreatedAt = DateTime.UtcNow;
                         entry.Entity.UpdatedAt = null;
+                        entry.Entity.InitializeSlug();
                         break;
 
                     case EntityState.Modified:

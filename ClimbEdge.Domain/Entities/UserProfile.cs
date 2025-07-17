@@ -98,11 +98,7 @@ namespace ClimbEdge.Domain.Entities
         /// </summary>
         public string Initials => $"{FirstName?.FirstOrDefault()}{LastName?.FirstOrDefault()}".ToUpper();
 
-        public UserProfile() : base()
-        {
-            Slug = $"{Country}/{Initials}/{CreatedAt.Ticks}";
-            AddDomainEvent(new EntityDomainEvent<UserProfile>(Slug, EntityDomainEventType.Created));
-        }
+        public UserProfile() : base() { }
 
         public override void UpdateTimestamps()
         {
@@ -128,6 +124,12 @@ namespace ClimbEdge.Domain.Entities
         {
             base.Unlock();
             AddDomainEvent(new EntityDomainEvent<UserProfile>(Slug, EntityDomainEventType.Locked, new Dictionary<string, Object>() { { "Locked", false } }));
+        }
+
+        public override void InitializeSlug()
+        {
+            Slug = $"{Country}/{Initials}/{CreatedAt.Ticks}";
+            AddDomainEvent(new EntityDomainEvent<UserProfile>(Slug, EntityDomainEventType.Created));
         }
     }
 }

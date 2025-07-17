@@ -22,7 +22,11 @@ builder.Services.AddApiVersioning(options =>
 {
     options.ReportApiVersions = true;
     options.AssumeDefaultVersionWhenUnspecified = true;
-    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.DefaultApiVersion = new ApiVersion(0, 1);
+    options.ApiVersionReader = ApiVersionReader.Combine(
+        new QueryStringApiVersionReader("api-version"),
+        new HeaderApiVersionReader("api-version")
+    );
 }).AddApiExplorer(options =>
 {
     options.GroupNameFormat = "'v'VVV";
@@ -32,7 +36,7 @@ builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwa
 
 builder.Services.AddCors(o =>
 {
-    o.AddPolicy("AllowFrontend", 
+    o.AddPolicy("AllowFrontend",
         builder => builder.WithOrigins("https://localhost:7188;http://localhost:5160")
                           .AllowAnyHeader()
                           .AllowAnyMethod()
@@ -91,10 +95,10 @@ internal class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
         {
             options.SwaggerDoc(description.GroupName, CreateInfoForApiVersion(description));
         }
-        
+
         // Add support for showing API version header parameter in Swagger UI
         options.OperationFilter<SwaggerDefaultValues>();
-        
+
         // Add JWT Authentication support
         options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
         {

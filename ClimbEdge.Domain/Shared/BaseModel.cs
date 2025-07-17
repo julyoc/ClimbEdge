@@ -180,5 +180,6 @@ namespace ClimbEdge.Domain.Shared
         }
 
         public void ClearDomainEvents() => _domainEvents.Clear();
+        public abstract void InitializeSlug();
     }
 }

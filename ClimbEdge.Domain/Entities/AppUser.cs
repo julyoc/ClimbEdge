@@ -14,12 +14,9 @@ namespace ClimbEdge.Domain.Entities
 {
     public class AppUser : IdentityUser<long>, IBaseEntity
     {
-        public AppUser() : base()
-        {
-            Slug = $"{UserName}/{CreatedAt.Ticks}";
-        }
+        public AppUser() : base() { }
         public IList<UserProfile>? UserProfiles { get; set; } = new List<UserProfile>();
-        public Guid Uid { get; set; }
+        public Guid Uid { get; set; } = Guid.NewGuid();
         private string _slug = string.Empty;
         public string Slug
         {
@@ -105,6 +102,12 @@ namespace ClimbEdge.Domain.Entities
                 throw new InvalidOperationException("Slug cannot be null or empty.");
             }
             return true;
+        }
+
+        public void InitializeSlug()
+        {
+            Slug = $"{UserName}/{CreatedAt.Ticks}";
+            AddDomainEvent(new EntityDomainEvent<AppUser>(Slug, EntityDomainEventType.Created));
         }
     }
 }

@@ -1,6 +1,6 @@
 @ClimbEdge.API_HostAddress = http://localhost:5160
 
-GET {{ClimbEdge.API_HostAddress}}/api
+GET {{ClimbEdge.API_HostAddress}}/api?api-version=0.1
 Accept: application/json
 
 ###
