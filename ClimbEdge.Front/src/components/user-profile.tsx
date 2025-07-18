@@ -92,6 +92,13 @@ export default component$(() => {
                     </a>
 
                     <a
+                        href="/settings"
+                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                        Configuración
+                    </a>
+
+                    <a
                         href="/change-password"
                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >

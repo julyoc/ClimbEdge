@@ -1,4 +1,4 @@
-import { component$, useSignal, $, useOnDocument } from '@builder.io/qwik';
+import { component$, useSignal, $ } from '@builder.io/qwik';
 import { useNavigate } from '@builder.io/qwik-city';
 import { authService, type LoginRequestDTO } from '~/services/auth.service';
 import { useAuth } from '~/contexts/auth.context';

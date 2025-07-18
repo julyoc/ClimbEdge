@@ -37,8 +37,8 @@ export default component$(() => {
       } else {
         error.value = response.error || 'Error al enviar el email';
       }
-    } catch (err) {
-      error.value = 'Error de conexión';
+    } catch (err: any) {
+      error.value = 'Error de conexión' + (err.message || '');
     } finally {
       isLoading.value = false;
     }

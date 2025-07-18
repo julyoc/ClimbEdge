@@ -8,6 +8,7 @@ import { qwikCity } from "@builder.io/qwik-city/vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import pkg from "./package.json";
 import tailwindcss from "@tailwindcss/vite";
+import { VitePWA } from 'vite-plugin-pwa';
 type PkgDep = Record<string, string>;
 const { dependencies = {}, devDependencies = {} } = pkg as any as {
   dependencies: PkgDep;
@@ -21,7 +22,51 @@ errorOnDuplicatesPkgDeps(devDependencies, dependencies);
 
 export default defineConfig(({ command, mode }): UserConfig => {
   return {
-    plugins: [qwikCity(), qwikVite(), tsconfigPaths(), tailwindcss()],
+    plugins: [
+      qwikCity(), 
+      qwikVite(), 
+      tsconfigPaths(), 
+      tailwindcss(),
+      VitePWA({
+        registerType: 'autoUpdate',
+        workbox: {
+          globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff,woff2}'],
+          cleanupOutdatedCaches: true,
+          skipWaiting: true,
+        },
+        includeAssets: ['favicon.svg', 'robots.txt'],
+        manifest: {
+          name: 'ClimbEdge - Climbing App',
+          short_name: 'ClimbEdge',
+          description: 'Your ultimate climbing companion app',
+          theme_color: '#10b981',
+          background_color: '#ffffff',
+          display: 'standalone',
+          orientation: 'portrait',
+          scope: '/',
+          start_url: '/',
+          categories: ['sports', 'fitness', 'lifestyle'],
+          icons: [
+            {
+              src: 'icon-192.svg',
+              sizes: '192x192',
+              type: 'image/svg+xml'
+            },
+            {
+              src: 'icon-512.svg',
+              sizes: '512x512',
+              type: 'image/svg+xml'
+            },
+            {
+              src: 'icon-512.svg',
+              sizes: '512x512',
+              type: 'image/svg+xml',
+              purpose: 'any maskable'
+            }
+          ]
+        }
+      })
+    ],
     // This tells Vite which dependencies to pre-build in dev mode.
     optimizeDeps: {
       // Put problematic deps that break bundling here, mostly those with binaries.

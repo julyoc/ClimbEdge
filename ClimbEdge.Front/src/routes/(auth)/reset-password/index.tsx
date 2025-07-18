@@ -1,5 +1,5 @@
-import { component$, useSignal, $, useLocation } from '@builder.io/qwik';
-import { useNavigate } from '@builder.io/qwik-city';
+import { component$, useSignal, $ } from '@builder.io/qwik';
+import { useNavigate, useLocation } from '@builder.io/qwik-city';
 import { authService, type ResetPasswordRequestDTO } from '~/services/auth.service';
 
 export default component$(() => {
@@ -66,8 +66,8 @@ export default component$(() => {
       } else {
         error.value = response.error || 'Error al restablecer la contraseña';
       }
-    } catch (err) {
-      error.value = 'Error de conexión';
+    } catch (err: any) {
+      error.value = 'Error de conexión' + (err.message || '');
     } finally {
       isLoading.value = false;
     }

@@ -1,9 +1,7 @@
 import { 
   createContextId, 
   useContext, 
-  useStore, 
   useSignal, 
-  useContextProvider,
   $,
   type Signal
 } from '@builder.io/qwik';

@@ -19,7 +19,7 @@ export default component$(() => {
   const success = useSignal<string>('');
 
   const validateForm = $(() => {
-    const { email, password, confirmPassword, firstName, lastName } = formData.value;
+    const { email, password, confirmPassword } = formData.value;
 
     if (!email || !password || !confirmPassword) {
       return 'Todos los campos obligatorios deben ser completados';
@@ -69,8 +69,8 @@ export default component$(() => {
       } else {
         error.value = response.error || 'Error en el registro';
       }
-    } catch (err) {
-      error.value = 'Error de conexión';
+    } catch (err: any) {
+      error.value = 'Error de conexión' + (err.message || '');
     } finally {
       setLoading(false);
     }

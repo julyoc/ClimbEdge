@@ -1,4 +1,4 @@
-import { createContextId, useContext, useContextProvider, useSignal } from '@builder.io/qwik';
+import { createContextId, useContext, useSignal } from '@builder.io/qwik';
 
 export interface MenuStore {
   isCollapsed: { value: boolean };

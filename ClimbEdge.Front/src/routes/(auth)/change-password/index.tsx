@@ -64,8 +64,8 @@ export default component$(() => {
             } else {
                 error.value = response.error || 'Error al cambiar la contraseña';
             }
-        } catch (err) {
-            error.value = 'Error de conexión';
+        } catch (err: any) {
+            error.value = 'Error de conexión' + (err.message || '');
         } finally {
             isLoading.value = false;
         }
