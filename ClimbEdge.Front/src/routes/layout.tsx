@@ -5,6 +5,7 @@ import MenuComponent from '~/components/menu-component';
 import { MenuContext, useMenuStore } from '~/stores/menu';
 import { AuthContext, useAuthStore, useAuth } from '~/contexts/auth.context';
 import { useAuthCheck } from '~/hooks/use-auth-check';
+import DebugAuth from '~/components/debug-auth';
 
 export default component$(() => {
     const menuStore = useMenuStore();
@@ -33,6 +34,8 @@ export default component$(() => {
             </main>
 
             <FooterComponent />
+            {/* Debug Auth Component */}
+            { isAuthenticated.value && <DebugAuth />}
         </div>
     );
 });
