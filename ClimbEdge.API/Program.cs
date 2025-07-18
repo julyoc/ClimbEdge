@@ -38,7 +38,7 @@ builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwa
 builder.Services.AddCors(o =>
 {
     o.AddPolicy("AllowFrontend",
-        builder => builder.WithOrigins("http://localhost:5173")
+        builder => builder.WithOrigins("http://localhost:5173", "http://localhost:5160", "https://localhost:7188")
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials());

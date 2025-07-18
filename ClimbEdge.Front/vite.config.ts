@@ -49,6 +49,15 @@ export default defineConfig(({ command, mode }): UserConfig => {
         // Don't cache the server response in dev mode
         "Cache-Control": "public, max-age=0",
       },
+      proxy: {
+        // Proxy API requests to the backend server
+        "/api": {
+          target: "https://localhost:7188/", // Change this to your backend server URL
+          changeOrigin: true,
+          secure: false, // Set to true if using HTTPS
+          rewrite: (path) => path.replace(/^\/api/, ""),
+        },
+      }
     },
     preview: {
       headers: {
