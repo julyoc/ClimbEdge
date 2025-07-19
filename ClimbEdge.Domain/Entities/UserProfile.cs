@@ -15,7 +15,7 @@ namespace ClimbEdge.Domain.Entities
         /// <summary>
         /// Identificador del usuario asociado
         /// </summary>
-        public long UserId { get; set; }
+        public long AppUserId { get; set; }
         public AppUser? AppUser { get; set; }
         /// <summary>
         /// Nombre completo del usuario
@@ -28,7 +28,7 @@ namespace ClimbEdge.Domain.Entities
         /// <summary>
         /// Fecha de nacimiento
         /// </summary>
-        public DateTime? DateOfBirth { get; set; }
+        public DateOnly? DateOfBirth { get; set; }
         /// <summary>
         /// Biografía o descripción del usuario
         /// </summary>

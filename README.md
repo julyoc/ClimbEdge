@@ -38,6 +38,8 @@ v[mayor: version].[minor: funcionalidad].[path: corrección]-[pre-release: puede
 �jm: v0.0.1-dev.0001+0001.20250711
 ```
 
+[https://semver.org/](https://semver.org/)
+
 ### Versions
 
 ...

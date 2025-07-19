@@ -15,7 +15,6 @@ namespace ClimbEdge.Domain.Entities
     public class AppUser : IdentityUser<long>, IBaseEntity
     {
         public AppUser() : base() { }
-        public IList<UserProfile>? UserProfiles { get; set; } = new List<UserProfile>();
         public Guid Uid { get; set; } = Guid.NewGuid();
         private string _slug = string.Empty;
         public string Slug

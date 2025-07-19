@@ -33,7 +33,6 @@ namespace ClimbEdge.Infrastructure.Repositories
             await InvalidateCache();
             await _cacheService.SetAsync($"{nameof(TEntity)}_{entity.Uid}", entity);
         }
-
         public async Task<int> CountAsync()
         {
             int? count = await _cacheService.GetAsync<int?>($"{nameof(TEntity)}_Count");
@@ -42,7 +41,6 @@ namespace ClimbEdge.Infrastructure.Repositories
             await _cacheService.SetAsync($"{nameof(TEntity)}_Count", count);
             return (int)count;
         }
-
         public async Task<int> CountAsync(Func<TEntity, bool> criteria)
         {
             int? count = await _cacheService.GetAsync<int?>($"{nameof(TEntity)}_Count_Criteria");
@@ -51,7 +49,6 @@ namespace ClimbEdge.Infrastructure.Repositories
             await _cacheService.SetAsync($"{nameof(TEntity)}_Count_Criteria", count);
             return (int)count;
         }
-
         public async Task DeleteAsync(Guid id)
         {
             var entity = await _climbEdgeContext.Set<TEntity>().FirstOrDefaultAsync(e => e.Uid == id);
@@ -65,9 +62,7 @@ namespace ClimbEdge.Infrastructure.Repositories
             await InvalidateCache();
             await _cacheService.SetAsync($"{nameof(TEntity)}_{entity.Uid}", entity);
         }
-
         public async Task DeleteAsync(string id) => await DeleteAsync(Guid.Parse(id));
-
         public async Task<bool> ExistsAsync(Guid id)
         {
             var cachedEntity = await _cacheService.GetAsync<bool?>($"{nameof(TEntity)}_{id}_Exists");
@@ -76,11 +71,8 @@ namespace ClimbEdge.Infrastructure.Repositories
             await _cacheService.SetAsync($"{nameof(TEntity)}_{id}_Exists", entity != null);
             return entity != null;
         }
-
         public async Task<bool> ExistsAsync(string id) => await ExistsAsync(Guid.Parse(id));
-
         public async Task<IEnumerable<TEntity>> GetAsync() => await _climbEdgeContext.Set<TEntity>().ToArrayAsync();
-
         public async Task<IEnumerable<TEntity>> GetAsync(int page, int pageSize = Constants.DefaultPageSize)
         {
             if (page < 1 || pageSize < 1 || pageSize > Constants.MaxPageSize)
@@ -96,7 +88,6 @@ namespace ClimbEdge.Infrastructure.Repositories
             await _cacheService.SetAsync($"{nameof(TEntity)}_Page_{page}_Size_{pageSize}", entities);
             return entities;
         }
-
         public async Task<IEnumerable<TEntity>> GetAsync(Func<TEntity, bool> criteria)
         {
             var cachedEntities = await _cacheService.GetAsync<IEnumerable<TEntity>>($"{nameof(TEntity)}_Criteria_{criteria.GetHashCode()}");
@@ -109,7 +100,6 @@ namespace ClimbEdge.Infrastructure.Repositories
             await _cacheService.SetAsync($"{nameof(TEntity)}_Criteria_{criteria.GetHashCode()}", data);
             return data;
         }
-
         public async Task<IEnumerable<TEntity>> GetAsync(Func<TEntity, bool> criteria, int page, int pageSize = Constants.DefaultPageSize)
         {
             if (page < 1 || pageSize < 1 || pageSize > Constants.MaxPageSize)
@@ -129,8 +119,7 @@ namespace ClimbEdge.Infrastructure.Repositories
             await _cacheService.SetAsync($"{nameof(TEntity)}_Criteria_{criteria.GetHashCode()}_Page_{page}_Size_{pageSize}", data);
             return data;
         }
-
-        public async Task<TEntity> GetByIdAsync(Guid id)
+        public async Task<TEntity> GetAsync(Guid id)
         {
             var cachedEntity = await _cacheService.GetAsync<TEntity>($"{nameof(TEntity)}_{id}");
             if (cachedEntity != null) return cachedEntity;
@@ -142,10 +131,8 @@ namespace ClimbEdge.Infrastructure.Repositories
             await _cacheService.SetAsync($"{nameof(TEntity)}_{id}", entity);
             return entity;
         }
-
-        public Task<TEntity> GetByIdAsync(string id) => GetByIdAsync(Guid.Parse(id));
-
-        public async Task<IEnumerable<TEntity>> GetByIdsAsync(IEnumerable<Guid> ids)
+        public Task<TEntity> GetAsync(string id) => GetAsync(Guid.Parse(id));
+        public async Task<IEnumerable<TEntity>> GetAsync(IEnumerable<Guid> ids)
         {
             var cachedEntities = await _cacheService.GetAsync<IEnumerable<TEntity>>($"{nameof(TEntity)}_Ids_{string.Join("_", ids)}");
             if (cachedEntities != null) return cachedEntities;
@@ -159,14 +146,12 @@ namespace ClimbEdge.Infrastructure.Repositories
             await _cacheService.SetAsync($"{nameof(TEntity)}_Ids_{string.Join("_", ids)}", entities);
             return entities;
         }
-
-        public async Task<IEnumerable<TEntity>> GetByIdsAsync(IEnumerable<string> ids)
+        public async Task<IEnumerable<TEntity>> GetAsync(IEnumerable<string> ids)
         {
             var guids = ids.Select(id => Guid.Parse(id));
-            var entities = await GetByIdsAsync(guids);
+            var entities = await GetAsync(guids);
             return entities;
         }
-
         public async Task LockAsync(Guid id, bool isLocked)
         {
             var entity = await _climbEdgeContext.Set<TEntity>().FirstOrDefaultAsync(e => e.Uid == id);
@@ -187,9 +172,7 @@ namespace ClimbEdge.Infrastructure.Repositories
             await _climbEdgeContext.SaveChangesAsync();
             await _cacheService.SetAsync($"{nameof(TEntity)}_{entity.Uid}", entity);
         }
-
         public Task LockAsync(string id, bool isLocked) => LockAsync(Guid.Parse(id), isLocked);
-
         public async Task<int> PagesNumberAsync(int pageSize = Constants.DefaultPageSize)
         {
             if (pageSize > Constants.MaxPageSize)
@@ -199,7 +182,6 @@ namespace ClimbEdge.Infrastructure.Repositories
             var count = await CountAsync();
             return count / pageSize + (count % pageSize > 0 ? 1 : 0);
         }
-
         public async Task<int> PagesNumberAsync(Func<TEntity, bool> criteria, int pageSize = Constants.DefaultPageSize)
         {
             if (pageSize > Constants.MaxPageSize)
@@ -209,7 +191,6 @@ namespace ClimbEdge.Infrastructure.Repositories
             var count = await CountAsync(criteria);
             return count / pageSize + (count % pageSize > 0 ? 1 : 0);
         }
-
         public async Task RestoreAsync(Guid id)
         {
             var entity = await _climbEdgeContext.Set<TEntity>().FirstOrDefaultAsync(e => e.Uid == id);
@@ -223,14 +204,11 @@ namespace ClimbEdge.Infrastructure.Repositories
             await _climbEdgeContext.SaveChangesAsync();
             await _cacheService.SetAsync($"{nameof(TEntity)}_{entity.Uid}", entity);
         }
-
         public Task RestoreAsync(string id) => RestoreAsync(Guid.Parse(id));
-
         public async Task SaveChangesAsync()
         {
             await _climbEdgeContext.SaveChangesAsync();
         }
-
         public async Task UpdateAsync(TEntity entity)
         {
             if (entity == null)

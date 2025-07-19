@@ -13,6 +13,5 @@ namespace ClimbEdge.Domain.Repositories
     public interface IUserProfileRepository : IRepository<UserProfile>
     {
         Task<UserProfile> GetUserProfileAsync(long userId);
-        Task<UserProfile> GetUserProfileAsync(string userId);
     }
 }

@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ClimbEdge.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ClimbEdgeContext))]
-    [Migration("20250717020108_initmigration")]
+    [Migration("20250719152658_initmigration")]
     partial class initmigration
     {
         /// <inheritdoc />
@@ -141,9 +141,6 @@ namespace ClimbEdge.Infrastructure.Persistence.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
-                    b.Property<long?>("UserProfileId")
-                        .HasColumnType("bigint");
-
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
@@ -156,8 +153,6 @@ namespace ClimbEdge.Infrastructure.Persistence.Migrations
                     b.HasIndex("Slug")
                         .IsUnique();
 
-                    b.HasIndex("UserProfileId");
-
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
@@ -169,7 +164,8 @@ namespace ClimbEdge.Infrastructure.Persistence.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<long?>("AppUserId")
+                    b.Property<long>("AppUserId")
+                        .HasMaxLength(450)
                         .HasColumnType("bigint");
 
                     b.Property<string>("Bio")
@@ -184,8 +180,8 @@ namespace ClimbEdge.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime?>("DateOfBirth")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly?>("DateOfBirth")
+                        .HasColumnType("date");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
@@ -256,17 +252,14 @@ namespace ClimbEdge.Infrastructure.Persistence.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<long>("UserId")
-                        .HasMaxLength(450)
-                        .HasColumnType("bigint");
-
                     b.Property<string>("Website")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppUserId");
+                    b.HasIndex("AppUserId")
+                        .IsUnique();
 
                     b.HasIndex("Country");
 
@@ -278,9 +271,6 @@ namespace ClimbEdge.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.HasIndex("Uid")
-                        .IsUnique();
-
-                    b.HasIndex("UserId")
                         .IsUnique();
 
                     b.ToTable("UserProfile");
@@ -389,24 +379,11 @@ namespace ClimbEdge.Infrastructure.Persistence.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("ClimbEdge.Domain.Entities.AppUser", b =>
-                {
-                    b.HasOne("ClimbEdge.Domain.Entities.UserProfile", "UserProfile")
-                        .WithMany()
-                        .HasForeignKey("UserProfileId");
-
-                    b.Navigation("UserProfile");
-                });
-
             modelBuilder.Entity("ClimbEdge.Domain.Entities.UserProfile", b =>
                 {
-                    b.HasOne("ClimbEdge.Domain.Entities.AppUser", null)
-                        .WithMany("UserProfiles")
-                        .HasForeignKey("AppUserId");
-
                     b.HasOne("ClimbEdge.Domain.Entities.AppUser", "AppUser")
-                        .WithOne()
-                        .HasForeignKey("ClimbEdge.Domain.Entities.UserProfile", "UserId")
+                        .WithOne("UserProfile")
+                        .HasForeignKey("ClimbEdge.Domain.Entities.UserProfile", "AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -498,7 +475,7 @@ namespace ClimbEdge.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("ClimbEdge.Domain.Entities.AppUser", b =>
                 {
-                    b.Navigation("UserProfiles");
+                    b.Navigation("UserProfile");
                 });
 #pragma warning restore 612, 618
         }

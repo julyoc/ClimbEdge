@@ -11,10 +11,10 @@ namespace ClimbEdge.Domain.Interfaces
 {
     public interface IRepository<TEntity> where TEntity : BaseModel
     {
-        Task<TEntity> GetByIdAsync(Guid id);
-        Task<TEntity> GetByIdAsync(string id);
-        Task<IEnumerable<TEntity>> GetByIdsAsync(IEnumerable<Guid> ids);
-        Task<IEnumerable<TEntity>> GetByIdsAsync(IEnumerable<string> ids);
+        Task<TEntity> GetAsync(Guid id);
+        Task<TEntity> GetAsync(string id);
+        Task<IEnumerable<TEntity>> GetAsync(IEnumerable<Guid> ids);
+        Task<IEnumerable<TEntity>> GetAsync(IEnumerable<string> ids);
         Task<IEnumerable<TEntity>> GetAsync();
         Task<IEnumerable<TEntity>> GetAsync(int page, int pageSize = Constants.MaxPageSize);
         Task<IEnumerable<TEntity>> GetAsync(Func<TEntity, bool> criteria);

@@ -57,7 +57,7 @@ namespace ClimbEdge.Application.Commands.AppUserCommand
             // Create user profile
             var userProfile = new UserProfile
             {
-                UserId = entity.Id,
+                AppUserId = entity.Id,
                 FirstName = request.entity.FirstName,
                 LastName = request.entity.LastName,
             };
