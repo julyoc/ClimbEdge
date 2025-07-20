@@ -1,0 +1,36 @@
+@startwbs Packages Diagram
+
+* Entities
+**_> Configurations
+**_> UserProfile
+**_> AppUser
+**_> AppRole
+** Boards
+***_> BoardVisibility <<enum>>
+***_> BoardMemberRole <<enum>>
+***_> Board
+***_> BoardMember
+***_> BoardConfig
+***_> BoardItemType
+***_> BoardItemTextureMaterial
+***_> BoardItemTexture
+***_> BoardItem
+*** Problems
+****_> BoardProblem
+****_> BoardProblemItem
+*** Users
+****_> UserBoardProgress
+****_> UserBoardProblemProgress
+****_> UserBoardSession
+** DifficultyScales
+***_> DifficultyScaleType
+***_> DifficultyScaleName
+***_> DifficultyScale
+***_> DifficultyGroup
+** Mountains
+** Climbing
+** Training
+** Payment
+** Help
+
+@endwbs

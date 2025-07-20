@@ -1,113 +1,95 @@
 @startuml ClimbEdge.Docs.Diagrams.EntityRelation
 
-package "Entities" {
-
-    entity "BaseEntity" as BaseEntity {
-        +Id: long
-        +Uid: Guid
-        +Slug: string
-        +Metadata: jsonb
-        +RowVersion: byte[]
-        +CreatedAt: DateTime
-        +UpdatedAt: DateTime?
-        +DeletedAt: DateTime?
-        +RestoredAt: DateTime?
-        +LockedAt: DateTime?
-    }
-
-    entity "Configuration" as Configuration {
-        ..inherits BaseEntity..
-
-        +Key: string
-        +Value: string
-        +Description: string?
-        +IsSensitive: bool
-        +UserId: long
-    }
-
-    entity "UserProfile" as UserProfile {
-        ..inherits BaseEntity..
-
-        +UserId: long
-        +FirstName: string?
-        +LastName: string?
-        +DateOfBirth: DateOnly?
-        +Bio: string?
-        +ProfilePictureUrl: string?
-        +Website: string?
-        +Location: string?
-        +Country: string
-        +TimeZone: string
-        +PreferredLanguage: string
-        +IsPublic: bool
-        +EmailNotifications: bool
-        +PushNotifications: bool
-        +ClimbingExperienceLevel: string?
-        +PreferredClimbingStyle: string?
-        +EmergencyContact: string?
-        +EmergencyContactName: string?
-    }
-
-    entity "AppUser" as AppUser {
-        ..inherits BaseEntity..
-
-        +Username: string?
-        +NormalizedUserName: string?
-        +Email: string?
-        +NormalizedEmail: string?
-        +EmailConfirmed: bool
-        +PasswordHash: string?
-        +SecurityStamp: string?
-        +ConcurrencyStamp: string?
-        +PhoneNumber: string?
-        +PhoneNumberConfirmed: bool
-        +TwoFactorEnabled: bool
-        +LockoutEnd: DateTime?
-        +LockoutEnabled: bool
-        +AccessFailedCount: int
-    }
-
-    entity "AppRole" as AppRole {
-        +Id: long
-        +Name: string?
-        +NormalizedName: string?
-        +ConcurrencyStamp: string?
-    }
+entity "BaseEntity" as BaseEntity {
+    +Id: long
+    +Uid: Guid
+    +Slug: string <<unique>>
+    +Metadata: jsonb
+    +RowVersion: byte[]
+    +CreatedAt: DateTime
+    +UpdatedAt: DateTime?
+    +DeletedAt: DateTime?
+    +RestoredAt: DateTime?
+    +LockedAt: DateTime?
 }
-
-package "Entities.Boards" {
+entity "Configuration" as Configuration {
+    ..inherits BaseEntity..
+    +Key: string <<unique>>
+    +Value: string
+    +Description: string?
+    +IsSensitive: bool
+    +UserId: long
+}
+entity "UserProfile" as UserProfile {
+    ..inherits BaseEntity..
+    +UserId: long
+    +FirstName: string?
+    +LastName: string?
+    +DateOfBirth: DateOnly?
+    +Bio: string?
+    +ProfilePictureUrl: string?
+    +Website: string?
+    +Location: string?
+    +Country: string
+    +TimeZone: string
+    +PreferredLanguage: string
+    +IsPublic: bool
+    +EmailNotifications: bool
+    +PushNotifications: bool
+    +ClimbingExperienceLevel: string?
+    +PreferredClimbingStyle: string?
+    +EmergencyContact: string?
+    +EmergencyContactName: string?
+}
+entity "AppUser" as AppUser {
+    ..inherits BaseEntity..
+    +Username: string?
+    +NormalizedUserName: string?
+    +Email: string?
+    +NormalizedEmail: string?
+    +EmailConfirmed: bool
+    +PasswordHash: string?
+    +SecurityStamp: string?
+    +ConcurrencyStamp: string?
+    +PhoneNumber: string?
+    +PhoneNumberConfirmed: bool
+    +TwoFactorEnabled: bool
+    +LockoutEnd: DateTime?
+    +LockoutEnabled: bool
+    +AccessFailedCount: int
+}
+entity "AppRole" as AppRole {
+    +Id: long
+    +Name: string?
+    +NormalizedName: string?
+    +ConcurrencyStamp: string?
+}
+package "Boards" {
     enum "BoardVisibility" as BoardVisibility {
         +Public
         +Private
         +Protected
     }
-
     enum "BoardMemberRole" as BoardMemberRole {
         +Owner
         +Admin
         +Member
     }
-
     entity "Board" as Board {
         ..inherits BaseEntity..
-
         +Name: string
         +Description: string?
         +Visibility: string
     }
-
     entity "BoardMember" as BoardMember {
         ..inherits BaseEntity..
-
         +BoardId: long
         +UserId: long
         +IsPropertyOwner: bool
         +Role: BoardMemberRole
     }
-
     entity "BoardConfig" as BoardConfig {
         ..inherits BaseEntity..
-
         +BoardId: long
         +Content: string
         +Visibility: BoardVisibility
@@ -120,102 +102,125 @@ package "Entities.Boards" {
     }
     entity "BoardItemType" as BoardItemType {
         ..inherits BaseEntity..
-
         +Name: string
         +Description: string?
         +Difficulty: int
         +Icon: string?
     }
-
     entity "BoardItemTextureMaterial" as BoardItemTextureMaterial {
         ..inherits BaseEntity..
-
         +Name: string
         +Description: string?
         +ImageUrl: string
         +ThumbnailUrl: string?
         +Difficulty: int
     }
-
     entity "BoardItemTexture" as BoardItemTexture {
         ..inherits BaseEntity..
-
         +Name: string
         +Description: string?
         +ImageUrl: string
         +ThumbnailUrl: string?
         +Difficulty: int
     }
-
     entity "BoardItem" as BoardItem {
         ..inherits BaseEntity..
-
-        +BoardId: long
-        +PositionX: int
-        +PositionY: int
+        +BoardId: long <<unique>>
+        +PositionX: int <<unique>>
+        +PositionY: int <<unique>>
         +Difficulty: int
         +BoardItemTypeId: long
         +BoardItemTextureId: long?
         +BoardItemTextureMaterialId: long?
     }
 }
-
-package "Entities.DifficultyScales" {
-    entity "DifficultyScaleType" as DifficultyScaleType {
-        ..inherits BaseEntity..
-
-        +Name: string
-        +Description: string?
-        +Icon: string?
-    }
-    entity "DifficultyScaleName" as DifficultyScaleName {
-        ..inherits BaseEntity..
-        
-        +Name: string
-        +Description: string?
-        +DifficultyScaleTypeId: long
-    }
-
-    entity "DifficultyScale" as DifficultyScale {
-        ..inherits BaseEntity..
-
-        +DifficultyScaleNameId: long
-        +DifficultyGroupId: long
-        +Value: string
-        +IRCRA: int
-    }
-
-    entity "DifficultyGroup" as DifficultyGroup {
-        ..inherits BaseEntity..
-
-        +Level: int
-        +Name: string
-        +Description: string?
-    }
-}
-
-package "Entities.Boards.Problems" {
+package "Boards.Problems" {
     entity "BoardProblem" as BoardProblem {
         ..inherits BaseEntity..
-
         +BoardId: long
-        +Name: string
+        +Name: string <<unique>>
         +Description: string?
-        +Difficulty: int
+        +DifficultyScaleId: long
         +IsPublic: bool
         +CreatedByUserId: long
     }
-
     entity "BoardProblemItem" as BoardProblemItem {
         ..inherits BaseEntity..
-
         +Color: string
         +ColorCode: int
         +BoardProblemId: long
         +BoardItemId: long
     }
 }
+package "Boards.Users" {
+    entity "UserBoardProgress" as UserBoardProgress {
+        ..inherits BaseEntity..
+        +BoardId: long
+        +UserId: long
+        +CompletedBlocks: int
+        +Attempts: int
+    }
+    entity "UserBoardProblemProgress" as UserBoardProblemProgress {
+        ..inherits BaseEntity..
+        +BoardProblemId: long
+        +IsCompleted: bool
+        +TryAt: DateTime?
+        +UserBoardSessionId: long?
+    }
+    entity "UserBoardSession" as UserBoardSession {
+        ..inherits BaseEntity..
+        +UserId: long
+        +BoardId: long
+        +Date: Date
+        +Duration: int
+        +Notes: string?
+    }
+}
+package "DifficultyScales" {
+    entity "DifficultyScaleType" as DifficultyScaleType {
+        ..inherits BaseEntity..
+        +Name: string <<unique>>
+        +Description: string?
+        +Icon: string?
+    }
+    entity "DifficultyScaleName" as DifficultyScaleName {
+        ..inherits BaseEntity..
+        +Name: string <<unique>>
+        +Description: string?
+        +DifficultyScaleTypeId: long
+    }
+    entity "DifficultyScale" as DifficultyScale {
+        ..inherits BaseEntity..
+        +DifficultyScaleNameId: long
+        +DifficultyGroupId: long
+        +Value: string
+        +IRCRA: int
+    }
+    entity "DifficultyGroup" as DifficultyGroup {
+        ..inherits BaseEntity..
+        +Level: int
+        +Name: string
+        +Description: string?
+    }
+}
+package "Mountains" {
 
+}
+package "Mountains.Itinerary" {
+
+}
+package "Climbing" {
+
+}
+package "Training" {
+
+}
+package "Payment" {
+
+}
+package "Help" {
+    
+}
 UserProfile "1" -- "1" AppUser : has <
 AppRole "0..*" -- "0..*" AppUser : belongs to
 Board "1" -- "0..*" BoardMember : has <
@@ -233,5 +238,13 @@ BoardProblemItem "0..*" -- "1" BoardProblem : belongs to <
 BoardProblemItem "0..*" -- "1" BoardItem : is of item <
 AppUser "0..1" -- "0..*" BoardProblem : created by <
 AppUser "0..1" -- "0..*" Configuration : created by <
+BoardProblem "0..*" -- "0..1" DifficultyScale : has <
+UserBoardProgress "0..*" -- "1" Board : tracks progress on <
+UserBoardProgress "0..*" -- "1" AppUser : belongs to <
+UserBoardProblemProgress "0..*" -- "1" BoardProblem : tracks progress on <
+UserBoardProblemProgress "0..*" -- "0..1" UserBoardSession : belongs to <
+UserBoardSession "0..*" -- "1" AppUser : belongs to <
+UserBoardSession "0..*" -- "1" Board : belongs to <
+
 @enduml
 ' This file is auto-generated by PlantUML.
