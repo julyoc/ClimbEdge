@@ -146,21 +146,33 @@ package "Boards.Problems" {
     }
     entity "BoardProblemItem" as BoardProblemItem {
         ..inherits BaseEntity..
+        +Sequence: int?
         +BoardProblemId: long
         +BoardItemId: long
         +BoardProblemItemTypeId: long
     }
     entity "BoardProblemItemType" as BoardProblemItemType {
         ..inherits BaseEntity..
-        +Color: string
+        +ColorRed: short
+        +ColorGreen: short
+        +ColorBlue: short
+        +ColorName: string?
         +ColorCode: int
-        +isFoot: bool
-        +isHand: bool
-        +isStart: bool
-        +isEnd: bool
-        +isZone: bool
+        +IsFoot: bool
+        ' Foot: Presa que se usa como pie.
+        +IsHand: bool
+        ' Hand: Presa que se usa como mano.
+        +IsStart: bool
+        ' Start: Presa(s) que se usa como inicio del problema.
+        +IsEnd: bool
+        ' End: Presa(s) que se usa como final del problema.
+        +IsZone: bool
+        ' Zone: Presa que se puede designar como zona de descanso, pero no es obligatoria.
+        +IsMandatory: bool
+        'Mandatory: Presa que debe usarse, aunque el orden no importa.
+        +IsTouchOnly: bool
+        'TouchOnly: Solo se toca, no se debe mantener
     }
-}
 }
 package "Boards.Users" {
     entity "UserBoardProgress" as UserBoardProgress {
@@ -246,6 +258,7 @@ DifficultyScale "0..*" -- "1" DifficultyGroup : belongs to <
 BoardProblem "0..*" -- "1" Board : belongs to <
 BoardProblemItem "0..*" -- "1" BoardProblem : belongs to <
 BoardProblemItem "0..*" -- "1" BoardItem : is of item <
+BoardProblemItem "0**1" -- "0..*" BoardProblemItemType : has type <
 AppUser "0..1" -- "0..*" BoardProblem : created by <
 AppUser "0..1" -- "0..*" Configuration : created by <
 BoardProblem "0..*" -- "0..1" DifficultyScale : has <
