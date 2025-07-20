@@ -146,11 +146,21 @@ package "Boards.Problems" {
     }
     entity "BoardProblemItem" as BoardProblemItem {
         ..inherits BaseEntity..
-        +Color: string
-        +ColorCode: int
         +BoardProblemId: long
         +BoardItemId: long
+        +BoardProblemItemTypeId: long
     }
+    entity "BoardProblemItemType" as BoardProblemItemType {
+        ..inherits BaseEntity..
+        +Color: string
+        +ColorCode: int
+        +isFoot: bool
+        +isHand: bool
+        +isStart: bool
+        +isEnd: bool
+        +isZone: bool
+    }
+}
 }
 package "Boards.Users" {
     entity "UserBoardProgress" as UserBoardProgress {
