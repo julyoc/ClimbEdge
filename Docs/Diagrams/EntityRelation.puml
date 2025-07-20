@@ -186,6 +186,7 @@ package "Boards.Users" {
         ..inherits BaseEntity..
         +BoardProblemId: long
         +IsCompleted: bool
+        +Duration: int?
         +TryAt: DateTime?
         +UserBoardSessionId: long?
     }
