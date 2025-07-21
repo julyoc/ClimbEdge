@@ -67,21 +67,38 @@ entity "AppRole" as AppRole {
 package "Boards" {
     enum "BoardVisibility" as BoardVisibility {
         +Public
+        'Public: El tablero es visible para todos los usuarios.
         +Private
+        'Private: El tablero es visible solo para los miembros del tablero.
         +Protected
+        'Protected: El tablero es visible para los miembros del tablero y aquellos con el enlace directo.
+        +Hidden
+        'Hidden: El tablero no es visible en la lista de tableros, pero accesible mediante enlace directo.
+        +Archived
+        'Archived: El tablero está archivado y no es visible, pero se puede restaurar.
     }
     enum "BoardMemberRole" as BoardMemberRole {
-        +Owner
+        +Owner 
+        'Owner: Propietario del tablero, tiene todos los permisos.
         +Admin
+        'Admin: Administrador del tablero, puede gestionar miembros y configuraciones.
         +Member
+        'Member: Miembro del tablero, puede ver y participar en el tablero.
+        +Viewer
+        'Viewer: Solo puede ver el tablero, sin permisos de edición.
     }
     entity "Board" as Board {
+        'Tablero de escalada, que puede contener problemas, configuraciones y miembros.
+        'Representa un espacio de trabajo para organizar y gestionar problemas de escalada.
+        'Por ejemplo un moon board, un muro de escalada o una zona de escalada.
         ..inherits BaseEntity..
         +Name: string
         +Description: string?
-        +Visibility: string
+        +Visibility: BoardVisibility
     }
     entity "BoardMember" as BoardMember {
+        'Miembro del tablero, que puede tener diferentes roles y permisos.
+        'Representa a un usuario que forma parte de un tablero de escalada.
         ..inherits BaseEntity..
         +BoardId: long
         +UserId: long
@@ -89,10 +106,10 @@ package "Boards" {
         +Role: BoardMemberRole
     }
     entity "BoardConfig" as BoardConfig {
+        'Configuración del tablero, que define las propiedades y características del tablero.
         ..inherits BaseEntity..
         +BoardId: long
         +Content: string
-        +Visibility: BoardVisibility
         +Columns: int
         +Rows: int
         +Width: int
@@ -101,6 +118,10 @@ package "Boards" {
         +Difficulty: int
     }
     entity "BoardItemType" as BoardItemType {
+        'Tipo de elemento del tablero, que define las características y propiedades de un elemento (presa).
+        'Representa un tipo de presa o elemento que se puede usar en un tablero de escalada.
+        'Por ejemplo: canto, regleta, etc.
+        'Cada tipo de elemento puede tener diferentes propiedades y características.
         ..inherits BaseEntity..
         +Name: string
         +Description: string?
@@ -108,24 +129,36 @@ package "Boards" {
         +Icon: string?
     }
     entity "BoardItemTextureMaterial" as BoardItemTextureMaterial {
+        'Material de textura del elemento del tablero, que define las características y propiedades de la textura de una presa.
+        'Representa un material o textura que se puede aplicar a un elemento del tablero de escalada.
+        'Por ejemplo, madera, resina, goma, etc.
+        'Cada material de textura puede tener diferentes propiedades y características.
         ..inherits BaseEntity..
         +Name: string
         +Description: string?
         +ImageUrl: string
         +ThumbnailUrl: string?
         +Difficulty: int
+        +Properties: jsonb
     }
     entity "BoardItemTexture" as BoardItemTexture {
+        'Textura del elemento del tablero, que define las características y propiedades de la textura de una presa.
+        'Representa una textura específica que se puede aplicar a un elemento del tablero de escalada
+        'Por ejemplo, liso, rugoso, áspero, etc.
+        'Cada textura puede tener diferentes propiedades y características.
         ..inherits BaseEntity..
         +Name: string
         +Description: string?
         +ImageUrl: string
         +ThumbnailUrl: string?
         +Difficulty: int
+        +Properties: jsonb
     }
     entity "BoardItem" as BoardItem {
+        'Elemento del tablero, que representa una presa o elemento específico en un tablero de escalada.
+        'Cada elemento puede tener diferentes propiedades y características, como posición, tipo, textura, etc
         ..inherits BaseEntity..
-        +BoardId: long <<unique>>
+        +BoardConfigId: long <<unique>>
         +PositionX: int <<unique>>
         +PositionY: int <<unique>>
         +Difficulty: int
@@ -136,6 +169,7 @@ package "Boards" {
 }
 package "Boards.Problems" {
     entity "BoardProblem" as BoardProblem {
+        'Problema del tablero, que representa un conjunto de elementos (presas) organizados en un tablero de escalada.
         ..inherits BaseEntity..
         +BoardId: long
         +Name: string <<unique>>
@@ -145,6 +179,7 @@ package "Boards.Problems" {
         +CreatedByUserId: long
     }
     entity "BoardProblemItem" as BoardProblemItem {
+        'Elemento del problema del tablero, que representa una presa específica en un problema de escalada.
         ..inherits BaseEntity..
         +Sequence: int?
         +BoardProblemId: long
@@ -152,6 +187,8 @@ package "Boards.Problems" {
         +BoardProblemItemTypeId: long
     }
     entity "BoardProblemItemType" as BoardProblemItemType {
+        'Tipo de elemento del problema del tablero, que define las características y propiedades de un elemento (presa) en un problema de escalada.
+
         ..inherits BaseEntity..
         +ColorRed: short
         +ColorGreen: short
@@ -176,6 +213,8 @@ package "Boards.Problems" {
 }
 package "Boards.Users" {
     entity "UserBoardProgress" as UserBoardProgress {
+        'Progreso del usuario en un tablero, que rastrea el progreso del usuario en un tablero de escalada.
+        'Representa el progreso del usuario en un tablero de escalada, incluyendo bloques completados
         ..inherits BaseEntity..
         +BoardId: long
         +UserId: long
@@ -183,6 +222,9 @@ package "Boards.Users" {
         +Attempts: int
     }
     entity "UserBoardProblemProgress" as UserBoardProblemProgress {
+        'Progreso del usuario en un problema del tablero, que rastrea el progreso del usuario en un problema de escalada.
+        'Representa el progreso del usuario en un problema de escalada, incluyendo intentos y completados
+        'y la sesión de usuario asociada.
         ..inherits BaseEntity..
         +BoardProblemId: long
         +IsCompleted: bool
@@ -191,28 +233,41 @@ package "Boards.Users" {
         +UserBoardSessionId: long?
     }
     entity "UserBoardSession" as UserBoardSession {
+        'Sesión del usuario en un tablero, que representa una sesión de escalada en un tablero específico.
+        'Representa una sesión de escalada en un tablero, incluyendo el usuario, el tablero
         ..inherits BaseEntity..
         +UserId: long
         +BoardId: long
-        +Date: Date
+        +BeginAt: DateTime
+        +EndAt: DateTime?
         +Duration: int
         +Notes: string?
     }
 }
 package "DifficultyScales" {
     entity "DifficultyScaleType" as DifficultyScaleType {
+        'Tipo de escalada, por ejemplo, deportiva, boulder, trad, etc.
+        'Define el tipo de escala de dificultad que se utilizará.
+        'Value Object
         ..inherits BaseEntity..
         +Name: string <<unique>>
         +Description: string?
         +Icon: string?
     }
     entity "DifficultyScaleName" as DifficultyScaleName {
+        'Nombre de la escala de dificultad, por ejemplo, VScale, French, etc.
+        'Asocia un nombre de escala de dificultad con un tipo de escala.
+        'Value Object
         ..inherits BaseEntity..
         +Name: string <<unique>>
         +Description: string?
         +DifficultyScaleTypeId: long
     }
     entity "DifficultyScale" as DifficultyScale {
+        'Escala de dificultad, por ejemplo, V1, 5.10a, etc.
+        'Asocia un nombre de escala de dificultad con un grupo de dificultad.
+        'Value Object
+        'Representa una escala de dificultad específica dentro de un tipo y nombre de escala.
         ..inherits BaseEntity..
         +DifficultyScaleNameId: long
         +DifficultyGroupId: long
@@ -220,6 +275,9 @@ package "DifficultyScales" {
         +IRCRA: int
     }
     entity "DifficultyGroup" as DifficultyGroup {
+        'Grupo de dificultad, por ejemplo, principiante, intermedio, avanzado, elite, etc.
+        'Agrupa escalas de dificultad bajo un mismo grupo.
+        'Value Object
         ..inherits BaseEntity..
         +Level: int
         +Name: string
@@ -227,13 +285,76 @@ package "DifficultyScales" {
     }
 }
 package "Mountains" {
-
+    entity "Mountain" as Mountain {
+        ..inherits BaseEntity..
+        +Name: string <<unique>>
+        +Description: string?
+        +Location: Point?
+        +Elevation: int?
+        +Country: string
+        +Region: string?
+        +IsPublic: bool
+        +ImageUrl: string?
+    }
 }
 package "Mountains.Itinerary" {
 
 }
 package "Climbing" {
-
+    entity "ClimbRoute" as ClimbRoute {
+        'sketch se refiere a un croquis o dibujo de la ruta de escalada.
+        'PitchCount se refiere al número de tramos o largos de la ruta.
+        'FirstAscentDate se refiere a la fecha de la primera ascensión de la ruta
+        ..inherits BaseEntity..
+        +Name: string
+        +Description: string
+        +DifficultyScaleId: long
+        +Location: Point?
+        +IsPublic: bool
+        +IsIndoor: bool
+        +DifficultyScaleNameId: long
+        +SketchName: string?
+        +SketchFile: string?
+        +SketchFileUrl: string?
+        +SketchFileType: string?
+        +SketchFileSize: int?
+        +SketchResourceUrl: string[]?
+        +ClimbTagId: long?
+        +PitchCount: int?
+        +FirstAscentDate: DateTime?
+    }
+    entity "ClimbTag" as ClimbTag {
+        'Etiqueta de escalada, que se utiliza para clasificar y organizar rutas de escalada.
+        'Representa una etiqueta o categoría que se puede asignar a una ruta de escalada
+        'Por ejemplo, Placa, Tech, Crack, etc.
+        ..inherits BaseEntity..
+        +Name: string <<unique>>
+        +Description: string?
+    }
+    entity "UserClimbSession" as UserClimbSession {
+        'Sesión del usuario en un tablero, que representa una sesión de escalada en un tablero específico.
+        'Representa una sesión de escalada en un tablero, incluyendo el usuario, el tablero
+        ..inherits BaseEntity..
+        +UserId: long
+        +BoardId: long
+        +BeginAt: DateTime
+        +EndAt: DateTime?
+        +Duration: int
+        +Notes: string?
+    }
+}
+package "Climbing.Users" {
+    entity "UserBoardSession" as UserBoardSession {
+        'Sesión del usuario en un tablero, que representa una sesión de escalada en un tablero específico.
+        'Representa una sesión de escalada en un tablero, incluyendo el usuario, el tablero
+        ..inherits BaseEntity..
+        +UserId: long
+        +BoardId: long
+        +BeginAt: DateTime
+        +EndAt: DateTime?
+        +Duration: int
+        +Notes: string?
+    }
 }
 package "Training" {
 
