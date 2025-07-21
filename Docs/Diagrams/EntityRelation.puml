@@ -331,25 +331,14 @@ package "Climbing" {
         +Name: string <<unique>>
         +Description: string?
     }
-    entity "UserClimbSession" as UserClimbSession {
-        'Sesión del usuario en un tablero, que representa una sesión de escalada en un tablero específico.
-        'Representa una sesión de escalada en un tablero, incluyendo el usuario, el tablero
-        ..inherits BaseEntity..
-        +UserId: long
-        +BoardId: long
-        +BeginAt: DateTime
-        +EndAt: DateTime?
-        +Duration: int
-        +Notes: string?
-    }
 }
 package "Climbing.Users" {
-    entity "UserBoardSession" as UserBoardSession {
-        'Sesión del usuario en un tablero, que representa una sesión de escalada en un tablero específico.
-        'Representa una sesión de escalada en un tablero, incluyendo el usuario, el tablero
+    entity "UserClimbSession" as UserClimbSession {
+        'Sesión del usuario en escalada, que representa una sesión de escalada específica.
+        'Representa una sesión de escalada del usuario, incluyendo el usuario, la ruta de escalada
+        'y la duración de la sesión.
         ..inherits BaseEntity..
         +UserId: long
-        +BoardId: long
         +BeginAt: DateTime
         +EndAt: DateTime?
         +Duration: int
@@ -357,13 +346,10 @@ package "Climbing.Users" {
     }
 }
 package "Training" {
-
 }
 package "Payment" {
-
 }
 package "Help" {
-    
 }
 UserProfile "1" -- "1" AppUser : has <
 AppRole "0..*" -- "0..*" AppUser : belongs to
