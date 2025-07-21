@@ -13,6 +13,8 @@ entity "BaseEntity" as BaseEntity {
     +LockedAt: DateTime?
 }
 entity "Configuration" as Configuration {
+    'Configuración del sistema, que almacena configuraciones globales y personalizadas.
+    'Representa una configuración específica del sistema, como preferencias de usuario, configuraciones de aplicación
     ..inherits BaseEntity..
     +Key: string <<unique>>
     +Value: string
@@ -171,7 +173,7 @@ package "Boards.Problems" {
     entity "BoardProblem" as BoardProblem {
         'Problema del tablero, que representa un conjunto de elementos (presas) organizados en un tablero de escalada.
         ..inherits BaseEntity..
-        +BoardId: long
+        +BoardConfigId: long
         +Name: string <<unique>>
         +Description: string?
         +DifficultyScaleId: long
@@ -188,7 +190,6 @@ package "Boards.Problems" {
     }
     entity "BoardProblemItemType" as BoardProblemItemType {
         'Tipo de elemento del problema del tablero, que define las características y propiedades de un elemento (presa) en un problema de escalada.
-
         ..inherits BaseEntity..
         +ColorRed: short
         +ColorGreen: short
@@ -209,39 +210,6 @@ package "Boards.Problems" {
         'Mandatory: Presa que debe usarse, aunque el orden no importa.
         +IsTouchOnly: bool
         'TouchOnly: Solo se toca, no se debe mantener
-    }
-}
-package "Boards.Users" {
-    entity "UserBoardProgress" as UserBoardProgress {
-        'Progreso del usuario en un tablero, que rastrea el progreso del usuario en un tablero de escalada.
-        'Representa el progreso del usuario en un tablero de escalada, incluyendo bloques completados
-        ..inherits BaseEntity..
-        +BoardId: long
-        +UserId: long
-        +CompletedBlocks: int
-        +Attempts: int
-    }
-    entity "UserBoardProblemProgress" as UserBoardProblemProgress {
-        'Progreso del usuario en un problema del tablero, que rastrea el progreso del usuario en un problema de escalada.
-        'Representa el progreso del usuario en un problema de escalada, incluyendo intentos y completados
-        'y la sesión de usuario asociada.
-        ..inherits BaseEntity..
-        +BoardProblemId: long
-        +IsCompleted: bool
-        +Duration: int?
-        +TryAt: DateTime?
-        +UserBoardSessionId: long?
-    }
-    entity "UserBoardSession" as UserBoardSession {
-        'Sesión del usuario en un tablero, que representa una sesión de escalada en un tablero específico.
-        'Representa una sesión de escalada en un tablero, incluyendo el usuario, el tablero
-        ..inherits BaseEntity..
-        +UserId: long
-        +BoardId: long
-        +BeginAt: DateTime
-        +EndAt: DateTime?
-        +Duration: int
-        +Notes: string?
     }
 }
 package "DifficultyScales" {
@@ -284,41 +252,49 @@ package "DifficultyScales" {
         +Description: string?
     }
 }
+'
+' Las relaciones falta poner desde aquí
+'
 package "Mountains" {
-    entity "Mountain" as Mountain {
+}
+package "Mountains.Itinerary" {
+    enum MountaineerTickType {
+        'Summit: Cima alcanzada exitosamente.
+        Summit
+        'Attempted: Intentado, pero no se alcanzó la cumbre (retirada por clima, fatiga, etc.).
+        Attempted
+        'Planned: Ascenso planificado, aún no intentado.
+        Planned
+        'Abandoned: Expedición abandonada antes o durante el intento.
+        Abandoned
+        'Failed: Intento fallido por causas externas o físicas (no cima, no éxito, más grave).
+        Failed
+        'Rescue: Se necesitó rescate o evacuación.
+        Rescue
+        'Repeat: Cima ya alcanzada previamente, ruta repetida.
+        Repeat
+    }
+}
+package "Climbing" {
+    entity "ClimbZone" as ClimbZone {
+        'Zona de escalada, que representa una ubicación geográfica específica para escalar.
+        'Representa una zona de escalada, que puede contener múltiples rutas de escalada.
         ..inherits BaseEntity..
         +Name: string <<unique>>
         +Description: string?
         +Location: Point?
-        +Elevation: int?
-        +Country: string
-        +Region: string?
         +IsPublic: bool
+        +IsIndoor: bool
         +ImageUrl: string?
     }
-}
-package "Mountains.Itinerary" {
-
-}
-package "Climbing" {
     entity "ClimbRoute" as ClimbRoute {
-        'sketch se refiere a un croquis o dibujo de la ruta de escalada.
         'PitchCount se refiere al número de tramos o largos de la ruta.
         'FirstAscentDate se refiere a la fecha de la primera ascensión de la ruta
         ..inherits BaseEntity..
         +Name: string
         +Description: string
         +DifficultyScaleId: long
-        +Location: Point?
-        +IsPublic: bool
-        +IsIndoor: bool
         +DifficultyScaleNameId: long
-        +SketchName: string?
-        +SketchFile: string?
-        +SketchFileUrl: string?
-        +SketchFileType: string?
-        +SketchFileSize: int?
-        +SketchResourceUrl: string[]?
         +ClimbTagId: long?
         +PitchCount: int?
         +FirstAscentDate: DateTime?
@@ -331,18 +307,100 @@ package "Climbing" {
         +Name: string <<unique>>
         +Description: string?
     }
+    entity "rock_features" as RockFeatures {
+        'Características de la roca, que se utilizan para describir las características geológicas de una ruta de escalada.
+        'Representa características geológicas específicas de una ruta de escalada, como tipo de roca, textura, etc.
+        ..inherits BaseEntity..
+        +Description: string?
+        +ClimbRouteId: long
+        +RockType: string?
+    }
+    entity "ClimbRouteDescription" as ClimbRouteDescription {
+        'Descripción de la ruta de escalada, que proporciona información detallada sobre la ruta.
+        'Representa una descripción detallada de una ruta de escalada, incluyendo características, historia, etc.
+        ..inherits BaseEntity..
+        +ClimbRouteId: long
+        +Content: string
+    }
+    entity "ClimbRouteFile" as ClimbRouteFile {
+        'Imagen de la ruta de escalada, que se utiliza para mostrar imágenes relacionadas con la ruta.
+        'Representa una imagen asociada a una ruta de escalada, como fotos de la ruta, croquis, etc.
+        'sketch se refiere a un croquis o dibujo de la ruta de escalada.
+        ..inherits BaseEntity..
+        +ClimbRouteId: long
+        +IsSketch: bool
+        +FileName: string
+        +FileType: string
+        +FileSize: int
+        +FileUrl: string
+        +FileResourceUrl: string[]?
+        +ThumbnailUrl: string?
+        +Description: string?
+    }
+    entity "ClimbZoneFile" as ClimbZoneFile {
+        'Imagen de la zona de escalada, que se utiliza para mostrar imágenes relacionadas con la zona.
+        'Representa una imagen asociada a una zona de escalada, como fotos de la zona, croquis, etc.
+        'sketch se refiere a un croquis o dibujo de la zona de escalada.
+        ..inherits BaseEntity..
+        +ClimbZoneId: long
+        +IsSketch: bool
+        +FileName: string
+        +FileType: string
+        +FileSize: int
+        +FileUrl: string
+        +FileResourceUrl: string[]?
+        +ThumbnailUrl: string?
+        +Description: string?
+    }
 }
-package "Climbing.Users" {
-    entity "UserClimbSession" as UserClimbSession {
+package "Sessions" {
+    entity "UserSession" as UserSession {
         'Sesión del usuario en escalada, que representa una sesión de escalada específica.
         'Representa una sesión de escalada del usuario, incluyendo el usuario, la ruta de escalada
         'y la duración de la sesión.
         ..inherits BaseEntity..
         +UserId: long
+        +BoardId: long?
+        +ClimbZoneId: long?
         +BeginAt: DateTime
         +EndAt: DateTime?
         +Duration: int
         +Notes: string?
+    }
+    entity "UserSessionProgress" as UserSessionProgress {
+        'Progreso del usuario en una ruta de escalada, que rastrea el progreso del usuario en una ruta específica.
+        'Representa el progreso del usuario en una ruta de escalada, incluyendo intentos y completados
+        'y la sesión de usuario asociada.
+        'Tick se refiere al modo en que se completa la ruta
+        ..inherits BaseEntity..
+        +ClimbRouteId: long
+        +ClimbTickType: ClimbTickType
+        +IsCompleted: bool
+        +Duration: int?
+        +TryAt: DateTime?
+        +UserSessionId: long
+    }
+    enum ClimbTickType {
+        'Onsight: Primera vez que se intenta la ruta, sin información previa ni caídas.
+        Onsight
+        'Flash: Primera vez que se intenta la ruta, pero con información previa (beta).
+        Flash
+        'Redpoint: Ruta encadenada tras varios intentos anteriores.
+        Redpoint
+        'Repeat: Ruta que ya fue encadenada antes, repetida nuevamente.
+        Repeat
+        'Project: Ruta que está en proceso, aún no ha sido encadenada.
+        Project
+        'Attempt: Intento en la ruta, sin haber llegado al encadenamiento.
+        Attempt
+        'Toprope: Ruta encadenada o intentada en top rope (no líder). [no aplica en boulder]
+        Toprope
+        'Dogged: Ruta encadenada con descansos (colgado de la cuerda). [no aplica en boulder]
+        Dogged
+        'Fell: El usuario se cayó intentando la ruta.
+        Fell
+        'Abandoned: El usuario decidió no continuar intentando la ruta.
+        Abandoned
     }
 }
 package "Training" {
@@ -350,6 +408,7 @@ package "Training" {
 package "Payment" {
 }
 package "Help" {
+    ' Sección de ayuda y soporte para los usuarios.
 }
 UserProfile "1" -- "1" AppUser : has <
 AppRole "0..*" -- "0..*" AppUser : belongs to
@@ -370,12 +429,17 @@ BoardProblemItem "0**1" -- "0..*" BoardProblemItemType : has type <
 AppUser "0..1" -- "0..*" BoardProblem : created by <
 AppUser "0..1" -- "0..*" Configuration : created by <
 BoardProblem "0..*" -- "0..1" DifficultyScale : has <
-UserBoardProgress "0..*" -- "1" Board : tracks progress on <
-UserBoardProgress "0..*" -- "1" AppUser : belongs to <
-UserBoardProblemProgress "0..*" -- "1" BoardProblem : tracks progress on <
-UserBoardProblemProgress "0..*" -- "0..1" UserBoardSession : belongs to <
-UserBoardSession "0..*" -- "1" AppUser : belongs to <
-UserBoardSession "0..*" -- "1" Board : belongs to <
+ClimbZone "1" -- "0..*" ClimbRoute : has <
+ClimbRoute "1" -- "0..*" ClimbRouteDescription : has <
+ClimbRoute "1" -- "0..*" ClimbRouteFile : has <
+ClimbRoute "1" -- "0..*" RockFeatures : has <
+ClimbTag "1" -- "0..*" ClimbRoute : tags <
+ClimbZone "1" -- "0..*" ClimbZoneFile : has <
+AppUser "1" -- "0..*" UserSession : has <
+Board "1" -- "0..*" UserSession : session on <
+ClimbZone "1" -- "0..*" UserSession : session on <
+UserSession "1" -- "0..*" UserSessionProgress : progress <
+ClimbRoute "1" -- "0..*" UserSessionProgress : progress <
 
 @enduml
 ' This file is auto-generated by PlantUML.
