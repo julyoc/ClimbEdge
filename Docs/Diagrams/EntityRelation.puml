@@ -250,6 +250,8 @@ package "DifficultyScales" {
         +Level: int
         +Name: string
         +Description: string?
+        +IsFemale: bool
+        ' IsFemale: Indica si el grupo de dificultad es específico para escaladoras mujeres.
     }
 }
 '
