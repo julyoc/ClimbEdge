@@ -19,10 +19,6 @@
 ****_> BoardProblem
 ****_> BoardProblemItem
 ****_> BoardProblemItemType
-*** Users
-****_> UserBoardProgress
-****_> UserBoardProblemProgress
-****_> UserBoardSession
 ** DifficultyScales
 ***_> DifficultyScaleType
 ***_> DifficultyScaleName
@@ -30,6 +26,17 @@
 ***_> DifficultyGroup
 ** Mountains
 ** Climbing
+***_> ClimbZone
+***_> ClimbRoute
+***_> ClimbTag
+***_> RockFeatures
+***_> ClimbRouteDescription
+***_> ClimbRouteFile
+***_> ClimbZoneFile
+** Sessions
+***_> UserSession
+***_> UserSessionProgress
+***_> ClimbTickType <<enum>>
 ** Training
 ** Payment
 ** Help

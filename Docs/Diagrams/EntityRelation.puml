@@ -309,7 +309,7 @@ package "Climbing" {
         +Name: string <<unique>>
         +Description: string?
     }
-    entity "rock_features" as RockFeatures {
+    entity "RockFeatures" as RockFeatures {
         'Características de la roca, que se utilizan para describir las características geológicas de una ruta de escalada.
         'Representa características geológicas específicas de una ruta de escalada, como tipo de roca, textura, etc.
         ..inherits BaseEntity..
