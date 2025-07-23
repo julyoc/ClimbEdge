@@ -2,6 +2,28 @@
 
 ---
 
+## 📑 Índice
+
+1. [Tipos de Presas de Escalada](#🧗-tipos-de-presas-de-escalada)
+   - [Edges (Cantos o Romos Pequeños)](#1️⃣-edges-cantos-o-romos-pequeños)
+   - [Crimps (Regletas Afiladas)](#2️⃣-crimps-regletas-afiladas)
+   - [Slopers (Bolas o Presas Redondeadas)](#3️⃣-slopers-bolas-o-presas-redondeadas)
+   - [Pockets (Agujeros)](#4️⃣-pockets-agujeros)
+   - [Pinches (Presas para Pinzar)](#5️⃣-pinches-presas-para-pinzar)
+   - [Jugs (Cazos Grandes)](#6️⃣-jugs-cazos-grandes)
+2. [Sets Oficiales de MoonBoard (Referenciales)](#🛠️-sets-oficiales-de-moonboard-referenciales)
+3. [Tipos de Texturas en Presas de Escalada](#🔹-tipos-de-texturas-en-presas-de-escalada)
+   - [Rugosa / Áspera (Grit / Rough)](#1️⃣-rugosa--áspera-grit--rough)
+   - [Grano Fino (Fine Grit / Smooth Grit)](#2️⃣-grano-fino-fine-grit--smooth-grit)
+   - [Lisa (Smooth / Slick)](#3️⃣-lisa-smooth--slick)
+   - [Natural / Orgánica (Rock-Like / Sandstone / Granite)](#4️⃣-natural--orgánica-rock-like--sandstone--granite)
+   - [Microtextura (Microskin / Micropores)](#5️⃣-microtextura-microskin--micropores)
+   - [Mixta (Mixed Texture)](#6️⃣-mixta-mixed-texture)
+4. [Relación entre Material y Textura](#🔧-relación-entre-material-y-textura)
+5. [¿Para Qué Sirve Cada Textura?](#🎯-para-qué-sirve-cada-textura)
+
+---
+
 ## 🧗 Tipos de Presas de Escalada
 
 Las presas se clasifican según la forma y el tipo de agarre que requieren:
@@ -101,7 +123,7 @@ La textura influye en la fricción, dificultad y desgaste de la piel.
 
 ---
 
-## 🎯 ¿Para Qué Sirve Cada Textura?
+## 🎯 Para Qué Sirve Cada Textura
 
 | **Textura**   | **Ideal para...**               |
 |---------------|---------------------------------|
