@@ -1,5 +1,5 @@
 @startuml ClimbEdge.Docs.Diagrams.EntityRelation
-'revisar la relacion entre BoardProblem y BoardConfig 
+
 entity "BaseEntity" as BaseEntity {
     +Id: long
     +Uid: Guid
@@ -24,7 +24,7 @@ entity "Configuration" as Configuration {
 }
 entity "UserProfile" as UserProfile {
     ..inherits BaseEntity..
-    +UserId: long
+    +UserId: long <<unique>>
     +FirstName: string?
     +LastName: string?
     +DateOfBirth: DateOnly?
@@ -45,10 +45,10 @@ entity "UserProfile" as UserProfile {
 }
 entity "AppUser" as AppUser {
     ..inherits BaseEntity..
-    +Username: string?
-    +NormalizedUserName: string?
-    +Email: string?
-    +NormalizedEmail: string?
+    +Username: string? <<unique>>
+    +NormalizedUserName: string? <<unique>>
+    +Email: string? <<unique>>
+    +NormalizedEmail: string? <<unique>>
     +EmailConfirmed: bool
     +PasswordHash: string?
     +SecurityStamp: string?
@@ -62,8 +62,8 @@ entity "AppUser" as AppUser {
 }
 entity "AppRole" as AppRole {
     +Id: long
-    +Name: string?
-    +NormalizedName: string?
+    +Name: string? <<unique>>
+    +NormalizedName: string? <<unique>>
     +ConcurrencyStamp: string?
 }
 package "Boards" {
@@ -97,6 +97,8 @@ package "Boards" {
         +Name: string
         +Description: string?
         +Visibility: BoardVisibility
+        +BoardConfigId: long
+        ' Configuración del tablero, que define las propiedades y características del tablero.
     }
     entity "BoardMember" as BoardMember {
         'Miembro del tablero, que puede tener diferentes roles y permisos.
@@ -110,14 +112,32 @@ package "Boards" {
     entity "BoardConfig" as BoardConfig {
         'Configuración del tablero, que define las propiedades y características del tablero.
         ..inherits BaseEntity..
-        +BoardId: long
         +Content: string
         +Columns: int
         +Rows: int
         +Width: int
         +Height: int
-        +Inclination_grades: int?
+        +InterItemSpacingVertical: int
+        +InterItemSpacingHorizontal: int
+        ' Espacio entre elementos del tablero, que define la separación media entre las presas.
+        +IsStaggeredGrid: bool
+        ' StaggeredGrid: Indica si el tablero utiliza un diseño de cuadrícula escalonada.
+        '   true: El tablero utiliza un diseño de cuadrícula escalonada.
+        '   false: El tablero utiliza un diseño de cuadrícula regular.
+        +StaggeredGridOffset: int
+        ' StaggeredGridOffset: Desplazamiento de la cuadrícula escalonada
         +Difficulty: int
+    }
+    entity "BoardAngle" as BoardAngle {
+        'Ángulo de inclinación del tablero, que define la inclinación del tablero de escalada.
+        'Representa un ángulo específico de inclinación del tablero, como vertical, 20 grados, etc.
+        'El rango del ángulo puede variar según el tipo de tablero. Normal de 10 a 65 grados.
+        'Cada ángulo puede tener diferentes propiedades y características.
+        ..inherits BaseEntity..
+        +Angle: int <<unique>>
+        +Unit: string
+        ' Unidad del ángulo, por ejemplo, grados, radianes, etc.
+        +Description: string?
     }
     entity "BoardItemType" as BoardItemType {
         'Tipo de elemento del tablero, que define las características y propiedades de un elemento (presa).
@@ -160,9 +180,10 @@ package "Boards" {
         'Elemento del tablero, que representa una presa o elemento específico en un tablero de escalada.
         'Cada elemento puede tener diferentes propiedades y características, como posición, tipo, textura, etc
         ..inherits BaseEntity..
-        +BoardConfigId: long <<unique>>
-        +PositionX: int <<unique>>
-        +PositionY: int <<unique>>
+        +BoardConfigId: long
+        +PositionX: int
+        +PositionY: int
+        'unique(BoardConfigId, PositionX, PositionY)
         +Difficulty: int
         +BoardItemTypeId: long
         +BoardItemTextureId: long?
@@ -170,15 +191,27 @@ package "Boards" {
     }
 }
 package "Boards.Problems" {
+    entity "BoardProblemAngle" as BoardProblemAngle {
+        'Ángulo del problema del tablero, que define la inclinación del problema de escalada.
+        +BoardProblemId: long
+        +BoardAngleId: long
+        'unique(BoardProblemId, BoardAngleId)
+        +DifficultyScaleId: long
+        +Rating: float?
+    }
+    entity "BoardProblemTag" {
+        +Id: long
+        +Name: string
+        +Description: string?
+    }
     entity "BoardProblem" as BoardProblem {
         'Problema del tablero, que representa un conjunto de elementos (presas) organizados en un tablero de escalada.
         ..inherits BaseEntity..
         +BoardConfigId: long
         +Name: string <<unique>>
         +Description: string?
-        +DifficultyScaleId: long
         +IsPublic: bool
-        +CreatedByUserId: long
+        +CreatedByUserId: long? <<index>>
     }
     entity "BoardProblemItem" as BoardProblemItem {
         'Elemento del problema del tablero, que representa una presa específica en un problema de escalada.
@@ -210,6 +243,8 @@ package "Boards.Problems" {
         'Mandatory: Presa que debe usarse, aunque el orden no importa.
         +IsTouchOnly: bool
         'TouchOnly: Solo se toca, no se debe mantener
+        +Difficulty: int
+        ' Dificultad del elemento, que debe ser un valor numérico.
     }
 }
 package "DifficultyScales" {
@@ -254,9 +289,6 @@ package "DifficultyScales" {
         ' IsFemale: Indica si el grupo de dificultad es específico para escaladoras mujeres.
     }
 }
-'
-' Las relaciones falta poner desde aquí
-'
 package "Mountains" {
 }
 package "Mountains.Itinerary" {
@@ -361,11 +393,13 @@ package "Sessions" {
         'Representa una sesión de escalada del usuario, incluyendo el usuario, la ruta de escalada
         'y la duración de la sesión.
         ..inherits BaseEntity..
-        +UserId: long
-        +BoardId: long?
-        +ClimbZoneId: long?
-        +BeginAt: DateTime
-        +EndAt: DateTime?
+        +UserId: long <<index>>
+        +BoardId: long? <<index>>
+        +ClimbZoneId: long? <<index>>
+        'index(UserId, ClimbZoneId)
+        'index(UserId, BoardId)
+        +StartedAt: DateTime
+        +EndedAt: DateTime?
         +Notes: string?
     }
     entity "UserSessionProgress" as UserSessionProgress {
@@ -375,12 +409,24 @@ package "Sessions" {
         'Tick se refiere al modo en que se completa la ruta
         ..inherits BaseEntity..
         +ClimbRouteId: long?
-        +BoardProblemId: long?
+        +BoardProblemId: long? <<index>>
+        +BoardAngleId: long? <<index>>
+        'index(BoardProblemId, BoardAngleId)
         +ClimbTickType: ClimbTickType
         +IsCompleted: bool
         +Duration: int?
         +TryAt: DateTime?
         +UserSessionId: long
+    }
+    entity "BoardSessionSummary" {
+        ..inherits BaseEntity..
+        +BoardId: long
+        +UserId: long
+        +TotalSessions: int
+        +TotalProblemsCompleted: int
+        +TotalAttempts: int
+        +AttemptNumber: int?
+        +SentOnAttempt: int?
     }
     enum ClimbTickType {
         'Onsight: Primera vez que se intenta la ruta, sin información previa ni caídas.
@@ -491,7 +537,7 @@ UserProfile "1" -- "1" AppUser : has <
 AppRole "0..*" -- "0..*" AppUser : belongs to
 Board "1" -- "0..*" BoardMember : has <
 BoardMember "0..*" -- "1" AppUser : is member of <
-BoardConfig "1" -- "1" Board : has <
+BoardConfig "1" -- "0..*" Board : used by >
 BoardItemType "0..*" -- "0..*" BoardItem : is of type <
 BoardItemTextureMaterial "0..*" -- "0..*" BoardItem : is of material
 BoardItemTexture "0..*" -- "0..*" BoardItem : is of texture <
@@ -499,13 +545,12 @@ BoardItem "0..*" -- "1" BoardConfig : belongs to <
 DifficultyScaleType "0..1" -- "0..*" DifficultyScaleName : has <
 DifficultyScaleName "0..1" -- "0..*" DifficultyScale : has <
 DifficultyScale "0..*" -- "1" DifficultyGroup : belongs to <
-BoardProblem "0..*" -- "0..*" BoardConfig : belongs to <
+BoardConfig "1" -- "0..*" BoardProblem : defines >
 BoardProblemItem "0..*" -- "1" BoardProblem : belongs to <
 BoardProblemItem "0..*" -- "1" BoardItem : is of item <
 BoardProblemItem "0..1" -- "0..*" BoardProblemItemType : has type <
 AppUser "0..1" -- "0..*" BoardProblem : created by <
 AppUser "0..1" -- "0..*" Configuration : created by <
-BoardProblem "0..*" -- "0..1" DifficultyScale : has <
 ClimbZone "1" -- "0..*" ClimbRoute : has <
 ClimbRoute "1" -- "0..*" ClimbRouteDescription : has <
 ClimbRoute "1" -- "0..*" ClimbRouteFile : has <
@@ -518,6 +563,13 @@ ClimbZone "1" -- "0..*" UserSession : session on <
 UserSession "1" -- "0..*" UserSessionProgress : progress <
 ClimbRoute "1" -- "0..*" UserSessionProgress : progress <
 UserSessionProgress "0..*" -- "1" BoardProblem : progress on <
+BoardProblemAngle "0..*" -- "1" BoardProblem : has angle <
+BoardProblemAngle "0..*" -- "1" BoardAngle : is of angle <
+BoardProblemAngle "0..*" -- "1" DifficultyScale : has difficulty scale <
+BoardAngle "0..*" -- "0..*" BoardProblemAngle : has angles <
+Board "1" -- "0..*" BoardSessionSummary : summarized in >
+AppUser "1" -- "0..*" BoardSessionSummary : stats for user >
+BoardProblem "0..*" -- "0..*" BoardProblemTag : has tags <
 
 @enduml
 ' This file is auto-generated by PlantUML.
