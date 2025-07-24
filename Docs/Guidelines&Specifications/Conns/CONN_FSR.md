@@ -41,30 +41,30 @@ Cada sensor FSR se ubica en el cruce entre una fila y una columna.
 
 Cada sensor FSR se conecta **entre una salida digital (fila)** y una **entrada analógica (columna)**.
 
-### 🧱 Organización física:
+### 🧱 Organización física
 
 - Crea una rejilla de alambre o pistas donde:
-    - Horizontalmente tienes 18 líneas (Filas).
-    - Verticalmente tienes 12 líneas (Columnas).
+  - Horizontalmente tienes 18 líneas (Filas).
+  - Verticalmente tienes 12 líneas (Columnas).
 - En cada cruce va un FSR casero conectado entre la fila y la columna.
 
-### ⚡ Parte eléctrica:
+### ⚡ Parte eléctrica
 
 🔵 Columnas (12 canales analógicos):
 
 - Cada columna conecta a una entrada analógica del MCP3008 (CH0 a CH7).
 - Como el MCP3008 solo tiene 8 canales, puedes usar:
-    - 👉 Directo: solo 8 columnas = 144 sensores.
-    - 👉 Con CD74HC4067: multiplexas las 12 columnas → solo 1 canal al MCP3008.
+  - 👉 Directo: solo 8 columnas = 144 sensores.
+  - 👉 Con CD74HC4067: multiplexas las 12 columnas → solo 1 canal al MCP3008.
 
 🔵 Filas (18 canales digitales):
 
 - Cada fila conecta a un GPIO de la Raspberry Pi (por ejemplo, GPIO2 a GPIO19).
 - Cada fila se activa poniendo su GPIO en HIGH, y se lee el voltaje en las columnas.
-    - 👉 Directo: solo 18 columnas = 18 pines GPIO
-    - 👉 Multiplexado: usa un CD74HC4067 para leer más columnas con menos GPIOs (ej. 4 GPIOs para 16 columnas, se usan 2).
+  - 👉 Directo: solo 18 columnas = 18 pines GPIO
+  - 👉 Multiplexado: usa un CD74HC4067 para leer más columnas con menos GPIOs (ej. 4 GPIOs para 16 columnas, se usan 2).
 
-### 🔌 Esquema por sensor:
+### 🔌 Esquema por sensor
 
 ```
 GPIO salida (fila) ─────┬────[ FSR ]────┬──── Entrada columna
