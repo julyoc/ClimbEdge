@@ -1,0 +1,154 @@
+@startuml ClimbEdge.UseCases.EmbeddedSystem
+!theme plain
+
+' Actores
+actor "Usuario" as User
+actor "Tablero Hardware" as HardwareBoard
+actor "Sistema Cloud" as CloudSystem
+actor "Administrador Hardware" as HardwareAdmin
+
+' Casos de uso principales
+package "Conexión y Comunicación" {
+    usecase "Establecer Conexión WebSocket" as UC1
+    usecase "Mantener Conexión" as UC2
+    usecase "Reconectar Automáticamente" as UC3
+    usecase "Enviar Heartbeat" as UC4
+    usecase "Recibir Comandos" as UC5
+    usecase "Enviar Estado" as UC6
+    usecase "Reportar Errores" as UC7
+}
+
+package "Gestión de Sensores" {
+    usecase "Inicializar Sensores FSR" as UC8
+    usecase "Calibrar Sensores" as UC9
+    usecase "Leer Datos Sensores" as UC10
+    usecase "Detectar Toque Presa" as UC11
+    usecase "Filtrar Ruido" as UC12
+    usecase "Procesar Señales" as UC13
+    usecase "Validar Lectura" as UC14
+    usecase "Enviar Datos Sensor" as UC15
+}
+
+package "Control de Iluminación" {
+    usecase "Inicializar LEDs WS2812B" as UC16
+    usecase "Recibir Patrón Iluminación" as UC17
+    usecase "Iluminar Presas Específicas" as UC18
+    usecase "Mostrar Secuencia Problema" as UC19
+    usecase "Cambiar Color LEDs" as UC20
+    usecase "Ajustar Brillo" as UC21
+    usecase "Crear Efectos Visuales" as UC22
+    usecase "Apagar LEDs" as UC23
+}
+
+package "Configuración Hardware" {
+    usecase "Configurar Multiplexores" as UC24
+    usecase "Configurar ADC" as UC25
+    usecase "Mapear Posiciones Presas" as UC26
+    usecase "Calibrar Tablero" as UC27
+    usecase "Ajustar Sensibilidad" as UC28
+    usecase "Configurar Umbrales" as UC29
+    usecase "Guardar Configuración" as UC30
+    usecase "Cargar Configuración" as UC31
+}
+
+package "Monitoreo Sistema" {
+    usecase "Monitorear Temperatura" as UC32
+    usecase "Monitorear Voltaje" as UC33
+    usecase "Verificar Estado Componentes" as UC34
+    usecase "Detectar Fallos Hardware" as UC35
+    usecase "Reportar Estado Sistema" as UC36
+    usecase "Gestionar Energía" as UC37
+    usecase "Modo Bajo Consumo" as UC38
+}
+
+package "Mantenimiento" {
+    usecase "Ejecutar Diagnósticos" as UC39
+    usecase "Actualizar Firmware" as UC40
+    usecase "Reiniciar Sistema" as UC41
+    usecase "Realizar Backup Config" as UC42
+    usecase "Restaurar Configuración" as UC43
+    usecase "Limpiar Logs" as UC44
+    usecase "Verificar Integridad" as UC45
+}
+
+' Relaciones Usuario (a través del sistema cloud)
+User --> UC17 : solicita patrón (via cloud)
+User --> UC18 : solicita iluminar (via cloud)
+User --> UC19 : solicita secuencia (via cloud)
+User --> UC20 : cambia color (via cloud)
+User --> UC21 : ajusta brillo (via cloud)
+User --> UC23 : apaga LEDs (via cloud)
+
+' Relaciones Tablero Hardware
+HardwareBoard --> UC1 : inicia conexión
+HardwareBoard --> UC2 : mantiene conexión
+HardwareBoard --> UC3 : reconecta
+HardwareBoard --> UC4 : envía heartbeat
+HardwareBoard --> UC5 : recibe comandos
+HardwareBoard --> UC6 : envía estado
+HardwareBoard --> UC7 : reporta errores
+HardwareBoard --> UC8 : inicializa sensores
+HardwareBoard --> UC10 : lee sensores
+HardwareBoard --> UC11 : detecta toque
+HardwareBoard --> UC12 : filtra ruido
+HardwareBoard --> UC13 : procesa señales
+HardwareBoard --> UC14 : valida lectura
+HardwareBoard --> UC15 : envía datos
+HardwareBoard --> UC16 : inicializa LEDs
+HardwareBoard --> UC18 : ilumina presas
+HardwareBoard --> UC19 : muestra secuencia
+HardwareBoard --> UC20 : cambia color
+HardwareBoard --> UC21 : ajusta brillo
+HardwareBoard --> UC22 : crea efectos
+HardwareBoard --> UC23 : apaga LEDs
+HardwareBoard --> UC32 : monitorea temperatura
+HardwareBoard --> UC33 : monitorea voltaje
+HardwareBoard --> UC34 : verifica componentes
+HardwareBoard --> UC35 : detecta fallos
+HardwareBoard --> UC36 : reporta estado
+HardwareBoard --> UC37 : gestiona energía
+HardwareBoard --> UC38 : activa bajo consumo
+
+' Relaciones Sistema Cloud
+CloudSystem --> UC5 : envía comandos
+CloudSystem --> UC17 : envía patrón
+CloudSystem --> UC27 : solicita calibración
+CloudSystem --> UC40 : actualiza firmware
+
+' Relaciones Administrador Hardware
+HardwareAdmin --> UC9 : calibra sensores
+HardwareAdmin --> UC24 : configura multiplexores
+HardwareAdmin --> UC25 : configura ADC
+HardwareAdmin --> UC26 : mapea posiciones
+HardwareAdmin --> UC27 : calibra tablero
+HardwareAdmin --> UC28 : ajusta sensibilidad
+HardwareAdmin --> UC29 : configura umbrales
+HardwareAdmin --> UC30 : guarda configuración
+HardwareAdmin --> UC31 : carga configuración
+HardwareAdmin --> UC39 : ejecuta diagnósticos
+HardwareAdmin --> UC40 : actualiza firmware
+HardwareAdmin --> UC41 : reinicia sistema
+HardwareAdmin --> UC42 : backup config
+HardwareAdmin --> UC43 : restaura config
+HardwareAdmin --> UC44 : limpia logs
+HardwareAdmin --> UC45 : verifica integridad
+
+' Extensiones e inclusiones
+UC1 ..> UC8 : <<include>>
+UC1 ..> UC16 : <<include>>
+UC3 ..> UC1 : <<include>>
+UC10 ..> UC11 : <<include>>
+UC10 ..> UC12 : <<include>>
+UC13 ..> UC14 : <<include>>
+UC14 ..> UC15 : <<include>>
+UC17 ..> UC18 : <<include>>
+UC19 ..> UC20 : <<include>>
+UC19 ..> UC22 : <<extend>>
+UC27 ..> UC9 : <<include>>
+UC27 ..> UC26 : <<include>>
+UC35 ..> UC7 : <<include>>
+UC40 ..> UC41 : <<include>>
+UC2 ..> UC4 : <<include>>
+UC2 ..> UC36 : <<include>>
+
+@enduml

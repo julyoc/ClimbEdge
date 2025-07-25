@@ -1,0 +1,117 @@
+@startuml ClimbEdge.UseCases.SessionAndProgress
+!theme plain
+
+' Actores
+actor "Escalador" as Climber
+actor "Entrenador" as Coach
+actor "Sistema Embebido" as EmbeddedSystem
+actor "Sistema" as System
+
+' Casos de uso principales
+package "Gestión de Sesiones" {
+    usecase "Iniciar Sesión Escalada" as UC1
+    usecase "Finalizar Sesión" as UC2
+    usecase "Pausar Sesión" as UC3
+    usecase "Reanudar Sesión" as UC4
+    usecase "Seleccionar Tablero" as UC5
+    usecase "Seleccionar Zona Escalada" as UC6
+    usecase "Añadir Notas Sesión" as UC7
+    usecase "Ver Historial Sesiones" as UC8
+}
+
+package "Seguimiento de Progreso" {
+    usecase "Intentar Problema" as UC9
+    usecase "Completar Problema" as UC10
+    usecase "Marcar Tick Type" as UC11
+    usecase "Registrar Tiempo" as UC12
+    usecase "Registrar Intentos" as UC13
+    usecase "Detectar Toque Presa" as UC14
+    usecase "Validar Secuencia" as UC15
+    usecase "Registrar Progreso" as UC16
+}
+
+package "Análisis de Rendimiento" {
+    usecase "Ver Estadísticas" as UC17
+    usecase "Generar Resumen Sesión" as UC18
+    usecase "Comparar Progreso" as UC19
+    usecase "Analizar Tendencias" as UC20
+    usecase "Ver Problemas Completados" as UC21
+    usecase "Ver Tiempo por Problema" as UC22
+    usecase "Ver Ratio Éxito" as UC23
+}
+
+package "Feedback y Evaluación" {
+    usecase "Evaluar Dificultad" as UC24
+    usecase "Reportar Problema" as UC25
+    usecase "Sugerir Mejora" as UC26
+    usecase "Calificar Problema" as UC27
+    usecase "Añadir Comentario" as UC28
+}
+
+package "Entrenamiento Dirigido" {
+    usecase "Crear Plan Entrenamiento" as UC29
+    usecase "Asignar Problemas" as UC30
+    usecase "Monitorear Progreso" as UC31
+    usecase "Ajustar Dificultad" as UC32
+    usecase "Revisar Rendimiento" as UC33
+    usecase "Dar Feedback" as UC34
+}
+
+' Relaciones Escalador
+Climber --> UC1 : inicia sesión
+Climber --> UC2 : finaliza sesión
+Climber --> UC3 : pausa sesión
+Climber --> UC4 : reanuda sesión
+Climber --> UC5 : selecciona tablero
+Climber --> UC6 : selecciona zona
+Climber --> UC7 : añade notas
+Climber --> UC8 : ve historial
+Climber --> UC9 : intenta problema
+Climber --> UC10 : completa problema
+Climber --> UC11 : marca tick type
+Climber --> UC17 : ve estadísticas
+Climber --> UC18 : genera resumen
+Climber --> UC19 : compara progreso
+Climber --> UC20 : analiza tendencias
+Climber --> UC21 : ve completados
+Climber --> UC22 : ve tiempo problema
+Climber --> UC23 : ve ratio éxito
+Climber --> UC24 : evalúa dificultad
+Climber --> UC25 : reporta problema
+Climber --> UC26 : sugiere mejora
+Climber --> UC27 : califica problema
+Climber --> UC28 : añade comentario
+
+' Relaciones Entrenador
+Coach --> UC29 : crea plan
+Coach --> UC30 : asigna problemas
+Coach --> UC31 : monitorea progreso
+Coach --> UC32 : ajusta dificultad
+Coach --> UC33 : revisa rendimiento
+Coach --> UC34 : da feedback
+
+' Relaciones Sistema Embebido
+EmbeddedSystem --> UC14 : detecta toque
+EmbeddedSystem --> UC12 : registra tiempo
+EmbeddedSystem --> UC15 : valida secuencia
+
+' Relaciones Sistema
+System --> UC16 : registra progreso
+System --> UC13 : cuenta intentos
+System --> UC18 : calcula resumen
+
+' Extensiones e inclusiones
+UC1 ..> UC5 : <<include>>
+UC9 ..> UC14 : <<include>>
+UC9 ..> UC12 : <<include>>
+UC10 ..> UC11 : <<include>>
+UC10 ..> UC16 : <<include>>
+UC14 ..> UC15 : <<extend>>
+UC15 ..> UC10 : <<extend>>
+UC2 ..> UC18 : <<include>>
+UC8 ..> UC17 : <<extend>>
+UC19 ..> UC20 : <<extend>>
+UC31 ..> UC33 : <<include>>
+UC33 ..> UC32 : <<extend>>
+
+@enduml
