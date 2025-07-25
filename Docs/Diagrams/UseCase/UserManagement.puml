@@ -1,0 +1,69 @@
+@startuml ClimbEdge.UseCases.UserManagement
+!theme plain
+
+' Actores
+actor "Usuario" as User
+actor "Administrador" as Admin
+actor "Sistema" as System
+
+' Casos de uso principales
+package "Gestión de Usuarios" {
+    usecase "Registrar Usuario" as UC1
+    usecase "Iniciar Sesión" as UC2
+    usecase "Cerrar Sesión" as UC3
+    usecase "Recuperar Contraseña" as UC4
+    usecase "Cambiar Contraseña" as UC5
+    usecase "Actualizar Perfil" as UC6
+    usecase "Ver Perfil" as UC7
+    usecase "Confirmar Email" as UC8
+    usecase "Configurar 2FA" as UC9
+    usecase "Gestionar Roles" as UC10
+    usecase "Bloquear Usuario" as UC11
+    usecase "Desbloquear Usuario" as UC12
+    usecase "Eliminar Usuario" as UC13
+}
+
+package "Perfil de Usuario" {
+    usecase "Configurar Preferencias" as UC14
+    usecase "Establecer Nivel de Experiencia" as UC15
+    usecase "Configurar Notificaciones" as UC16
+    usecase "Configurar Privacidad" as UC17
+    usecase "Gestionar Contacto de Emergencia" as UC18
+}
+
+' Relaciones Usuario
+User --> UC1 : registra
+User --> UC2 : inicia sesión
+User --> UC3 : cierra sesión
+User --> UC4 : recupera contraseña
+User --> UC5 : cambia contraseña
+User --> UC6 : actualiza perfil
+User --> UC7 : ve perfil
+User --> UC8 : confirma email
+User --> UC9 : configura 2FA
+User --> UC14 : configura preferencias
+User --> UC15 : establece nivel
+User --> UC16 : configura notificaciones
+User --> UC17 : configura privacidad
+User --> UC18 : gestiona contacto emergencia
+
+' Relaciones Administrador
+Admin --> UC10 : gestiona roles
+Admin --> UC11 : bloquea usuario
+Admin --> UC12 : desbloquea usuario
+Admin --> UC13 : elimina usuario
+
+' Extensiones y inclusiones
+UC1 ..> UC8 : <<include>>
+UC4 ..> UC5 : <<extend>>
+UC6 ..> UC14 : <<include>>
+UC6 ..> UC15 : <<include>>
+UC6 ..> UC16 : <<include>>
+UC6 ..> UC17 : <<include>>
+UC6 ..> UC18 : <<include>>
+
+' Relaciones con el sistema
+System --> UC8 : envía confirmación
+System --> UC4 : envía recuperación
+
+@enduml

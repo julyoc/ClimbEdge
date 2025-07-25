@@ -1,74 +1,2042 @@
 @startuml ClimbEdge.Docs.Diagrams.EntityRelation
 
-!include <C4/C4_Container>
-
-package "Entities" {
-
-    entity "BaseEntity" as BaseEntity {
-        +Id: long
-        +Uid: Guid
-        +Slug: string
-        +Metadata: jsonb
-        +RowVersion: byte[]
-        +CreatedAt: DateTime
-        +UpdatedAt: DateTime?
-        +DeletedAt: DateTime?
-        +RestoredAt: DateTime?
-        +LockedAt: DateTime?
+entity "BaseEntity" as BaseEntity {
+    +Id: long
+    +Uid: Guid
+    +Slug: string <<unique>>
+    +Metadata: jsonb
+    +RowVersion: byte[]
+    +CreatedAt: DateTime
+    +UpdatedAt: DateTime?
+    +DeletedAt: DateTime?
+    +RestoredAt: DateTime?
+    +LockedAt: DateTime?
+}
+entity "Configuration" as Configuration {
+    'Configuración del sistema, que almacena configuraciones globales y personalizadas.
+    'Representa una configuración específica del sistema, como preferencias de usuario, configuraciones de aplicación
+    ..inherits BaseEntity..
+    +Key: string <<unique>>
+    +Value: string
+    +Description: string?
+    +IsSensitive: bool
+    +UserId: long
+}
+entity "UserProfile" as UserProfile {
+    ..inherits BaseEntity..
+    +UserId: long <<unique>>
+    +FirstName: string?
+    +LastName: string?
+    +DateOfBirth: DateOnly?
+    +Bio: string?
+    +ProfilePictureUrl: string?
+    +Website: string?
+    +Location: string?
+    +Country: string
+    +TimeZone: string
+    +PreferredLanguage: string
+    +IsPublic: bool
+    +EmailNotifications: bool
+    +PushNotifications: bool
+    +ClimbingExperienceLevel: string?
+    +PreferredClimbingStyle: string?
+    +EmergencyContact: string?
+    +EmergencyContactName: string?
+}
+entity "AppUser" as AppUser {
+    ..inherits BaseEntity..
+    +Username: string? <<unique>>
+    +NormalizedUserName: string? <<unique>>
+    +Email: string? <<unique>>
+    +NormalizedEmail: string? <<unique>>
+    +EmailConfirmed: bool
+    +PasswordHash: string?
+    +SecurityStamp: string?
+    +ConcurrencyStamp: string?
+    +PhoneNumber: string?
+    +PhoneNumberConfirmed: bool
+    +TwoFactorEnabled: bool
+    +LockoutEnd: DateTime?
+    +LockoutEnabled: bool
+    +AccessFailedCount: int
+}
+entity "AppRole" as AppRole {
+    +Id: long
+    +Name: string? <<unique>>
+    +NormalizedName: string? <<unique>>
+    +ConcurrencyStamp: string?
+}
+package "Boards" {
+    enum "BoardVisibility" as BoardVisibility {
+        +Public
+        'Public: El tablero es visible para todos los usuarios.
+        +Private
+        'Private: El tablero es visible solo para los miembros del tablero.
+        +Protected
+        'Protected: El tablero es visible para los miembros del tablero y aquellos con el enlace directo.
+        +Hidden
+        'Hidden: El tablero no es visible en la lista de tableros, pero accesible mediante enlace directo.
+        +Archived
+        'Archived: El tablero está archivado y no es visible, pero se puede restaurar.
     }
-
-    entity "UserProfile" as UserProfile {
+    enum "BoardMemberRole" as BoardMemberRole {
+        +Owner 
+        'Owner: Propietario del tablero, tiene todos los permisos.
+        +Admin
+        'Admin: Administrador del tablero, puede gestionar miembros y configuraciones.
+        +Member
+        'Member: Miembro del tablero, puede ver y participar en el tablero.
+        +Viewer
+        'Viewer: Solo puede ver el tablero, sin permisos de edición.
+    }
+    entity "Board" as Board {
+        'Tablero de escalada, que puede contener problemas, configuraciones y miembros.
+        'Representa un espacio de trabajo para organizar y gestionar problemas de escalada.
+        'Por ejemplo un moon board, un muro de escalada o una zona de escalada.
         ..inherits BaseEntity..
-
+        +Name: string
+        +Description: string?
+        +Visibility: BoardVisibility
+        +BoardConfigId: long
+        ' Configuración del tablero, que define las propiedades y características del tablero.
+    }
+    entity "BoardMember" as BoardMember {
+        'Miembro del tablero, que puede tener diferentes roles y permisos.
+        'Representa a un usuario que forma parte de un tablero de escalada.
+        ..inherits BaseEntity..
+        +BoardId: long
         +UserId: long
-        +FirstName: string?
-        +LastName: string?
-        +DateOfBirth: DateOnly?
-        +Bio: string?
-        +ProfilePictureUrl: string?
-        +Website: string?
-        +Location: string?
-        +Country: string
-        +TimeZone: string
-        +PreferredLanguage: string
-        +IsPublic: bool
-        +EmailNotifications: bool
-        +PushNotifications: bool
-        +ClimbingExperienceLevel: string?
-        +PreferredClimbingStyle: string?
-        +EmergencyContact: string?
-        +EmergencyContactName: string?
+        +IsPropertyOwner: bool
+        +Role: BoardMemberRole
     }
-
-    entity "AppUser" as AppUser {
+    entity "BoardConfig" as BoardConfig {
+        'Configuración del tablero, que define las propiedades y características del tablero.
         ..inherits BaseEntity..
+        +Content: string
+        +Columns: int
+        +Rows: int
+        +Width: int
+        +Height: int
+        +InterItemSpacingVertical: int
+        +InterItemSpacingHorizontal: int
+        ' Espacio entre elementos del tablero, que define la separación media entre las presas.
+        +IsStaggeredGrid: bool
+        ' StaggeredGrid: Indica si el tablero utiliza un diseño de cuadrícula escalonada.
+        '   true: El tablero utiliza un diseño de cuadrícula escalonada.
+        '   false: El tablero utiliza un diseño de cuadrícula regular.
+        +StaggeredGridOffset: int
+        ' StaggeredGridOffset: Desplazamiento de la cuadrícula escalonada
+        +Difficulty: int
+    }
+    entity "BoardAngle" as BoardAngle {
+        'Ángulo de inclinación del tablero, que define la inclinación del tablero de escalada.
+        'Representa un ángulo específico de inclinación del tablero, como vertical, 20 grados, etc.
+        'El rango del ángulo puede variar según el tipo de tablero. Normal de 10 a 65 grados.
+        'Cada ángulo puede tener diferentes propiedades y características.
+        ..inherits BaseEntity..
+        +Angle: int <<unique>>
+        +Unit: string
+        ' Unidad del ángulo, por ejemplo, grados, radianes, etc.
+        +Description: string?
+    }
+    entity "BoardItemType" as BoardItemType {
+        'Tipo de elemento del tablero, que define las características y propiedades de un elemento (presa).
+        'Representa un tipo de presa o elemento que se puede usar en un tablero de escalada.
+        'Por ejemplo: canto, regleta, etc.
+        'Cada tipo de elemento puede tener diferentes propiedades y características.
+        ..inherits BaseEntity..
+        +Name: string
+        +Description: string?
+        +Difficulty: int
+        +Icon: string?
+    }
+    entity "BoardItemTextureMaterial" as BoardItemTextureMaterial {
+        'Material de textura del elemento del tablero, que define las características y propiedades de la textura de una presa.
+        'Representa un material o textura que se puede aplicar a un elemento del tablero de escalada.
+        'Por ejemplo, madera, resina, goma, etc.
+        'Cada material de textura puede tener diferentes propiedades y características.
+        ..inherits BaseEntity..
+        +Name: string
+        +Description: string?
+        +ImageUrl: string
+        +ThumbnailUrl: string?
+        +Difficulty: int
+        +Properties: jsonb
+    }
+    entity "BoardItemTexture" as BoardItemTexture {
+        'Textura del elemento del tablero, que define las características y propiedades de la textura de una presa.
+        'Representa una textura específica que se puede aplicar a un elemento del tablero de escalada
+        'Por ejemplo, liso, rugoso, áspero, etc.
+        'Cada textura puede tener diferentes propiedades y características.
+        ..inherits BaseEntity..
+        +Name: string
+        +Description: string?
+        +ImageUrl: string
+        +ThumbnailUrl: string?
+        +Difficulty: int
+        +Properties: jsonb
+    }
+    entity "BoardItem" as BoardItem {
+        'Elemento del tablero, que representa una presa o elemento específico en un tablero de escalada.
+        'Cada elemento puede tener diferentes propiedades y características, como posición, tipo, textura, etc
+        ..inherits BaseEntity..
+        +BoardConfigId: long
+        +PositionX: int
+        +PositionY: int
+        'unique(BoardConfigId, PositionX, PositionY)
+        +Difficulty: int
+        +BoardItemTypeId: long
+        +BoardItemTextureId: long?
+        +BoardItemTextureMaterialId: long?
+    }
+}
+package "Boards.Problems" {
+    entity "BoardProblemAngle" as BoardProblemAngle {
+        'Ángulo del problema del tablero, que define la inclinación del problema de escalada.
+        +BoardProblemId: long
+        +BoardAngleId: long
+        'unique(BoardProblemId, BoardAngleId)
+        +DifficultyScaleId: long
+        +Rating: float?
+    }
+    entity "BoardProblemTag" {
+        +Id: long
+        +Name: string
+        +Description: string?
+    }
+    entity "BoardProblem" as BoardProblem {
+        'Problema del tablero, que representa un conjunto de elementos (presas) organizados en un tablero de escalada.
+        ..inherits BaseEntity..
+        +BoardConfigId: long
+        +Name: string <<unique>>
+        +Description: string?
+        +IsPublic: bool
+        +CreatedByUserId: long? <<index>>
+    }
+    entity "BoardProblemItem" as BoardProblemItem {
+        'Elemento del problema del tablero, que representa una presa específica en un problema de escalada.
+        ..inherits BaseEntity..
+        +Sequence: int?
+        +BoardProblemId: long
+        +BoardItemId: long
+        +BoardProblemItemTypeId: long
+    }
+    entity "BoardProblemItemType" as BoardProblemItemType {
+        'Tipo de elemento del problema del tablero, que define las características y propiedades de un elemento (presa) en un problema de escalada.
+        ..inherits BaseEntity..
+        +ColorRed: short
+        +ColorGreen: short
+        +ColorBlue: short
+        +ColorName: string?
+        +ColorCode: int
+        +IsFoot: bool
+        ' Foot: Presa que se usa como pie.
+        +IsHand: bool
+        ' Hand: Presa que se usa como mano.
+        +IsStart: bool
+        ' Start: Presa(s) que se usa como inicio del problema.
+        +IsEnd: bool
+        ' End: Presa(s) que se usa como final del problema.
+        +IsZone: bool
+        ' Zone: Presa que se puede designar como zona de descanso, pero no es obligatoria.
+        +IsMandatory: bool
+        'Mandatory: Presa que debe usarse, aunque el orden no importa.
+        +IsTouchOnly: bool
+        'TouchOnly: Solo se toca, no se debe mantener
+        +Difficulty: int
+        ' Dificultad del elemento, que debe ser un valor numérico.
+    }
+    entity "FootRule" as FootRule {
+        ..inherits BaseEntity..
+        'Regla de uso de pies en el problema de escalada.
+        +Name: string
+        +Code: string
+        +Description: string
+    }
+}
+package "DifficultyScales" {
+    entity "DifficultyScaleType" as DifficultyScaleType {
+        'Tipo de escalada, por ejemplo, deportiva, boulder, trad, etc.
+        'Define el tipo de escala de dificultad que se utilizará.
+        'Value Object
+        ..inherits BaseEntity..
+        +Name: string <<unique>>
+        +Description: string?
+        +Icon: string?
+    }
+    entity "DifficultyScaleName" as DifficultyScaleName {
+        'Nombre de la escala de dificultad, por ejemplo, VScale, French, etc.
+        'Asocia un nombre de escala de dificultad con un tipo de escala.
+        'Value Object
+        ..inherits BaseEntity..
+        +Name: string <<unique>>
+        +Description: string?
+        +DifficultyScaleTypeId: long
+    }
+    entity "DifficultyScale" as DifficultyScale {
+        'Escala de dificultad, por ejemplo, V1, 5.10a, etc.
+        'Asocia un nombre de escala de dificultad con un grupo de dificultad.
+        'Value Object
+        'Representa una escala de dificultad específica dentro de un tipo y nombre de escala.
+        ..inherits BaseEntity..
+        +DifficultyScaleNameId: long
+        +DifficultyGroupId: long
+        +Value: string
+        +IRCRA: int
+    }
+    entity "DifficultyGroup" as DifficultyGroup {
+        'Grupo de dificultad, por ejemplo, principiante, intermedio, avanzado, elite, etc.
+        'Agrupa escalas de dificultad bajo un mismo grupo.
+        'Value Object
+        ..inherits BaseEntity..
+        +Level: int
+        +Name: string
+        +Description: string?
+        +IsFemale: bool
+        ' IsFemale: Indica si el grupo de dificultad es específico para escaladoras mujeres.
+    }
+}
+package "Mountains" {
+    enum "MountainType" as MountainType {
+        +Peak
+        'Peak: Pico o cumbre montañosa.
+        +Ridge
+        'Ridge: Cordillera o cresta.
+        +Volcano
+        'Volcano: Volcán.
+        +Hill
+        'Hill: Colina.
+        +Plateau
+        'Plateau: Meseta.
+        +Canyon
+        'Canyon: Cañón.
+        +Valley
+        'Valley: Valle.
+    }
+    enum "RouteType" as RouteType {
+        +Hiking
+        'Hiking: Senderismo.
+        +Mountaineering
+        'Mountaineering: Montañismo.
+        +RockClimbing
+        'RockClimbing: Escalada en roca.
+        +IceClimbing
+        'IceClimbing: Escalada en hielo.
+        +MixedClimbing
+        'MixedClimbing: Escalada mixta.
+        +Skiing
+        'Skiing: Esquí.
+        +Snowboarding
+        'Snowboarding: Snowboard.
+        +Via_Ferrata
+        'Via_Ferrata: Vía ferrata.
+    }
+    enum "SeasonType" as SeasonType {
+        +Spring
+        'Spring: Primavera.
+        +Summer
+        'Summer: Verano.
+        +Autumn
+        'Autumn: Otoño.
+        +Winter
+        'Winter: Invierno.
+        +YearRound
+        'YearRound: Todo el año.
+    }
+    entity "Mountain" as Mountain {
+        'Montaña o formación geológica específica.
+        ..inherits BaseEntity..
+        +Name: string <<unique>>
+        +Description: string?
+        +Type: MountainType
+        +Elevation: int
+        ' Elevación en metros sobre el nivel del mar.
+        +Location: geography(POINT,4326)
+        ' Coordenadas geográficas usando PostGIS (latitud, longitud).
+        +Country: string
+        +Region: string?
+        +Province: string?
+        +FirstAscentDate: DateTime?
+        +FirstAscentBy: string?
+        ' Nombre de quien realizó la primera ascensión.
+        +IsActive: bool
+        ' Indica si la montaña está disponible para actividades.
+        +DangerLevel: int
+        ' Nivel de peligro del 1 al 5.
+        +ImageUrl: string?
+        +WeatherStationId: string?
+        ' ID de estación meteorológica cercana.
+    }
+    entity "MountainRoute" as MountainRoute {
+        'Ruta específica en una montaña.
+        ..inherits BaseEntity..
+        +MountainId: long
+        +Name: string
+        +Description: string?
+        +Type: RouteType
+        +DifficultyScaleId: long
+        +Distance: decimal
+        ' Distancia total de la ruta en kilómetros.
+        +ElevationGain: int
+        ' Ganancia de elevación en metros.
+        +EstimatedDuration: int
+        ' Duración estimada en minutos.
+        +BestSeason: SeasonType
+        +RequiresPermit: bool
+        +MaxGroupSize: int?
+        +IsGuided: bool
+        ' Indica si requiere guía obligatorio.
+        +DangerLevel: int
+        ' Nivel de peligro específico de la ruta.
+        +FirstAscentDate: DateTime?
+        +FirstAscentBy: string?
+    }
+    entity "RouteWaypoint" as RouteWaypoint {
+        'Puntos de referencia a lo largo de una ruta.
+        ..inherits BaseEntity..
+        +MountainRouteId: long
+        +Name: string
+        +Description: string?
+        +Location: geography(POINT,4326)
+        ' Coordenadas del waypoint usando PostGIS.
+        +Elevation: int
+        ' Elevación del punto en metros.
+        +Sequence: int
+        ' Orden en la secuencia de la ruta.
+        +WaypointType: string
+        ' Tipo: "Start", "Summit", "Camp", "Water", "Danger", "Rest", "Junction", "End".
+        +EstimatedTimeFromPrevious: int?
+        ' Tiempo estimado desde el waypoint anterior en minutos.
+        +Notes: string?
+        +ImageUrl: string?
+    }
+    entity "RouteTrack" as RouteTrack {
+        'Track GPS completo de la ruta.
+        ..inherits BaseEntity..
+        +MountainRouteId: long
+        +Name: string?
+        +TrackData: geography(LINESTRING,4326)
+        ' Línea GPS completa usando PostGIS.
+        +TotalDistance: decimal
+        ' Distancia total calculada del track.
+        +MinElevation: int
+        +MaxElevation: int
+        +RecordedBy: string?
+        ' Quien registró el track.
+        +RecordedDate: DateTime?
+        +GpsDevice: string?
+        ' Dispositivo GPS utilizado.
+        +Accuracy: decimal?
+        ' Precisión del GPS en metros.
+    }
+    entity "MountainFile" as MountainFile {
+        'Archivos asociados a montañas (fotos, mapas, documentos).
+        ..inherits BaseEntity..
+        +MountainId: long
+        +FileType: string
+        ' Tipo: "Photo", "Map", "Topo", "Document", "Video", "3DModel".
+        +FileName: string
+        +FileSize: int
+        +FileUrl: string
+        +ThumbnailUrl: string?
+        +Title: string?
+        +Description: string?
+        +TakenAt: DateTime?
+        ' Fecha en que se tomó la foto/video.
+        +TakenBy: string?
+        ' Quien tomó la foto/video.
+        +Location: geography(POINT,4326)?
+        ' Ubicación donde se tomó la foto.
+        +Elevation: int?
+        +IsPublic: bool
+    }
+    entity "RouteFile" as RouteFile {
+        'Archivos específicos de rutas (croquis, fotos, GPX).
+        ..inherits BaseEntity..
+        +MountainRouteId: long
+        +FileType: string
+        ' Tipo: "Topo", "Photo", "GPX", "KML", "Croquis", "Document".
+        +FileName: string
+        +FileSize: int
+        +FileUrl: string
+        +ThumbnailUrl: string?
+        +Title: string?
+        +Description: string?
+        +IsOfficial: bool
+        ' Indica si es un archivo oficial de la ruta.
+        +UploadedBy: long?
+        ' Usuario que subió el archivo.
+    }
+    entity "WeatherCondition" as WeatherCondition {
+        'Condiciones meteorológicas históricas y actuales.
+        ..inherits BaseEntity..
+        +MountainId: long
+        +RecordedAt: DateTime
+        +Temperature: decimal?
+        ' Temperatura en grados Celsius.
+        +WindSpeed: decimal?
+        ' Velocidad del viento en km/h.
+        +WindDirection: int?
+        ' Dirección del viento en grados.
+        +Humidity: decimal?
+        ' Humedad relativa en porcentaje.
+        +Pressure: decimal?
+        ' Presión atmosférica en hPa.
+        +Visibility: decimal?
+        ' Visibilidad en kilómetros.
+        +WeatherCondition: string?
+        ' Descripción: "Clear", "Cloudy", "Rain", "Snow", "Storm", etc.
+        +SnowDepth: decimal?
+        ' Profundidad de nieve en centímetros.
+        +DataSource: string?
+        ' Fuente de datos: "Manual", "WeatherAPI", "Station", etc.
+    }
+}
+package "Mountains.Itinerary" {
+    enum MountaineerTickType {
+        'Summit: Cima alcanzada exitosamente.
+        Summit
+        'Attempted: Intentado, pero no se alcanzó la cumbre (retirada por clima, fatiga, etc.).
+        Attempted
+        'Planned: Ascenso planificado, aún no intentado.
+        Planned
+        'Abandoned: Expedición abandonada antes o durante el intento.
+        Abandoned
+        'Failed: Intento fallido por causas externas o físicas (no cima, no éxito, más grave).
+        Failed
+        'Rescue: Se necesitó rescate o evacuación.
+        Rescue
+        'Repeat: Cima ya alcanzada previamente, ruta repetida.
+        Repeat
+    }
+    enum "ExpeditionStatus" as ExpeditionStatus {
+        +Planning
+        'Planning: En planificación.
+        +Scheduled
+        'Scheduled: Programada.
+        +InProgress
+        'InProgress: En curso.
+        +Completed
+        'Completed: Completada.
+        +Cancelled
+        'Cancelled: Cancelada.
+        +Postponed
+        'Postponed: Pospuesta.
+        +Emergency
+        'Emergency: Situación de emergencia.
+    }
+    enum "ParticipantRole" as ParticipantRole {
+        +Guide
+        'Guide: Guía certificado.
+        +Leader
+        'Leader: Líder de expedición.
+        +Participant
+        'Participant: Participante.
+        +Assistant
+        'Assistant: Asistente.
+        +Medic
+        'Medic: Médico.
+        +Cook
+        'Cook: Cocinero.
+        +Porter
+        'Porter: Porteador.
+    }
+    enum "DayActivityType" as DayActivityType {
+        +Ascent
+        'Ascent: Ascenso.
+        +Descent
+        'Descent: Descenso.
+        +Rest
+        'Rest: Descanso.
+        +Acclimatization
+        'Acclimatization: Aclimatación.
+        +Travel
+        'Travel: Viaje/Aproximación.
+        +Setup
+        'Setup: Montaje de campamento.
+        +Recovery
+        'Recovery: Recuperación.
+        +Weather_Wait
+        'Weather_Wait: Espera por clima.
+    }
+    entity "Expedition" as Expedition {
+        'Expedición completa a una montaña con itinerario detallado.
+        ..inherits BaseEntity..
+        +MountainId: long
+        +MountainRouteId: long?
+        +Name: string
+        +Description: string?
+        +Status: ExpeditionStatus
+        +StartDate: DateTime
+        +EndDate: DateTime
+        +PlannedDuration: int
+        ' Duración planificada en días.
+        +ActualDuration: int?
+        ' Duración real en días.
+        +MaxParticipants: int
+        +MinParticipants: int
+        +RequiredExperienceLevel: string?
+        +Cost: decimal?
+        +Currency: string?
+        +RequiresPermit: bool
+        +PermitNumber: string?
+        +InsuranceRequired: bool
+        +EmergencyContactInfo: string?
+        +BaseLocation: string?
+        ' Ubicación del campamento base.
+        +OrganizedBy: long
+        ' Usuario organizador.
+        +IsPublic: bool
+        +RegistrationDeadline: DateTime?
+    }
+    entity "ExpeditionParticipant" as ExpeditionParticipant {
+        'Participantes de la expedición.
+        ..inherits BaseEntity..
+        +ExpeditionId: long
+        +UserId: long
+        +Role: ParticipantRole
+        +JoinedAt: DateTime
+        +Status: string
+        ' Estado: "Registered", "Confirmed", "Cancelled", "Completed".
+        +ExperienceLevel: string?
+        +MedicalClearance: bool
+        +EmergencyContact: string?
+        +SpecialRequirements: string?
+        +PaymentStatus: string?
+        ' Estado del pago: "Pending", "Paid", "Refunded".
+        +Notes: string?
+    }
+    entity "ItineraryDay" as ItineraryDay {
+        'Día específico del itinerario.
+        ..inherits BaseEntity..
+        +ExpeditionId: long
+        +DayNumber: int
+        +Date: DateTime
+        +ActivityType: DayActivityType
+        +Title: string
+        +Description: string?
+        +StartLocation: string?
+        +EndLocation: string?
+        +StartElevation: int?
+        +EndElevation: int?
+        +Distance: decimal?
+        ' Distancia en kilómetros.
+        +ElevationGain: int?
+        +ElevationLoss: int?
+        +EstimatedDuration: int?
+        ' Duración estimada en minutos.
+        +DifficultyLevel: int?
+        ' Nivel de dificultad del 1 al 5.
+        +WeatherDependency: bool
+        +IsRestDay: bool
+        +Notes: string?
+    }
+    entity "DayActivity" as DayActivity {
+        'Actividades específicas dentro de un día.
+        ..inherits BaseEntity..
+        +ItineraryDayId: long
+        +Sequence: int
+        +StartTime: time?
+        +EndTime: time?
+        +ActivityName: string
+        +Description: string?
+        +Location: geography(POINT,4326)?
+        +Elevation: int?
+        +EstimatedDuration: int?
+        +IsOptional: bool
+        +RequiredEquipment: string?
+        +SafetyNotes: string?
+        +AlternativePlan: string?
+        ' Plan alternativo en caso de problemas.
+    }
+    entity "Equipment" as Equipment {
+        'Equipamiento necesario para la expedición.
+        ..inherits BaseEntity..
+        +Name: string
+        +Category: string
+        ' Categoría: "Climbing", "Camping", "Safety", "Clothing", "Navigation", etc.
+        +Description: string?
+        +IsPersonal: bool
+        ' Indica si es equipo personal o grupal.
+        +IsMandatory: bool
+        +Weight: decimal?
+        ' Peso en kilogramos.
+        +Brand: string?
+        +Model: string?
+        +Specifications: string?
+        +ImageUrl: string?
+    }
+    entity "ExpeditionEquipment" as ExpeditionEquipment {
+        'Equipamiento requerido para una expedición específica.
+        ..inherits BaseEntity..
+        +ExpeditionId: long
+        +EquipmentId: long
+        +Quantity: int
+        +IsMandatory: bool
+        +IsProvided: bool
+        ' Indica si el equipo es proporcionado por la organización.
+        +ResponsibleParticipant: long?
+        ' Participante responsable del equipo.
+        +Notes: string?
+    }
+    entity "ExpeditionBudget" as ExpeditionBudget {
+        'Presupuesto detallado de la expedición.
+        ..inherits BaseEntity..
+        +ExpeditionId: long
+        +Category: string
+        ' Categoría: "Transport", "Accommodation", "Food", "Equipment", "Permits", "Insurance", "Guide", "Emergency".
+        +Description: string
+        +PlannedCost: decimal
+        +ActualCost: decimal?
+        +Currency: string
+        +IsPaid: bool
+        +PaymentDate: DateTime?
+        +Vendor: string?
+        +Notes: string?
+    }
+    entity "SafetyPlan" as SafetyPlan {
+        'Plan de seguridad de la expedición.
+        ..inherits BaseEntity..
+        +ExpeditionId: long
+        +EmergencyContactName: string
+        +EmergencyContactPhone: string
+        +EmergencyContactRelation: string
+        +LocalRescueService: string?
+        +NearestHospital: string?
+        +EvacuationPlan: string?
+        +CommunicationPlan: string?
+        ' Plan de comunicación y horarios de contacto.
+        +RiskAssessment: string?
+        +ContingencyPlans: string?
+        +MedicalSupplies: string?
+        +LastUpdated: DateTime
+    }
+    entity "ItineraryFile" as ItineraryFile {
+        'Archivos relacionados con el itinerario.
+        ..inherits BaseEntity..
+        +ExpeditionId: long
+        +FileType: string
+        ' Tipo: "Itinerary", "Map", "PermitDoc", "Insurance", "MedicalForm", "Agreement".
+        +FileName: string
+        +FileSize: int
+        +FileUrl: string
+        +Title: string?
+        +Description: string?
+        +IsOfficial: bool
+        +UploadedBy: long?
+        +RequiresSignature: bool
+        ' Indica si el documento requiere firma.
+    }
+    entity "ItineraryDayTrack" as ItineraryDayTrack {
+        'Track GPS completo de un día específico de la expedición.
+        ..inherits BaseEntity..
+        +ItineraryDayId: long
+        +ParticipantId: long?
+        ' Participante que registró el track (opcional, puede ser el guía).
+        +Name: string?
+        +TrackData: geography(LINESTRING,4326)
+        ' Línea GPS completa del día usando PostGIS.
+        +PlannedRoute: geography(LINESTRING,4326)?
+        ' Ruta planificada vs ruta real.
+        +TotalDistance: decimal
+        ' Distancia total calculada del track.
+        +MovingTime: int
+        ' Tiempo en movimiento en minutos.
+        +TotalTime: int
+        ' Tiempo total incluyendo paradas.
+        +MinElevation: int
+        +MaxElevation: int
+        +ElevationGain: int
+        +ElevationLoss: int
+        +StartTime: DateTime?
+        +EndTime: DateTime?
+        +RecordedBy: string?
+        ' Quien registró el track.
+        +GpsDevice: string?
+        ' Dispositivo GPS utilizado.
+        +Accuracy: decimal?
+        ' Precisión promedio del GPS en metros.
+        +WeatherConditions: string?
+        ' Condiciones climáticas durante el recorrido.
+        +Notes: string?
+        +IsOfficial: bool
+        ' Indica si es el track oficial del día.
+    }
+    entity "ItineraryDayWaypoint" as ItineraryDayWaypoint {
+        'Waypoints específicos registrados durante un día de expedición.
+        ..inherits BaseEntity..
+        +ItineraryDayId: long
+        +ItineraryDayTrackId: long?
+        ' Track al que pertenece este waypoint (opcional).
+        +Name: string
+        +Description: string?
+        +Location: geography(POINT,4326)
+        ' Coordenadas del waypoint usando PostGIS.
+        +Elevation: int
+        ' Elevación del punto en metros.
+        +Timestamp: DateTime
+        ' Momento exacto en que se registró el waypoint.
+        +WaypointType: string
+        ' Tipo: "Start", "Break", "Lunch", "Camp", "Summit", "Danger", "Photo", "End", "Emergency".
+        +Duration: int?
+        ' Tiempo de permanencia en el waypoint en minutos.
+        +Photo: string?
+        ' URL de foto tomada en el waypoint.
+        +Notes: string?
+        +RecordedBy: long?
+        ' Usuario que registró el waypoint.
+        +WeatherConditions: string?
+        +Temperature: decimal?
+        +IsPlanned: bool
+        ' Indica si era un waypoint planificado o se agregó durante la expedición.
+        +IsEmergency: bool
+        ' Indica si es un waypoint de emergencia.
+    }
+}
+package "Mountains.Itinerary.Logistics" {
+        entity "Accommodation" as Accommodation {
+            'Alojamiento durante la expedición.
+            ..inherits BaseEntity..
+            +ExpeditionId: long
+            +ItineraryDayId: long?
+            +Name: string
+            +Type: string
+            ' Tipo: "Hotel", "Hostel", "Camping", "Refuge", "Tent", "Bivouac".
+            +Location: geography(POINT,4326)?
+            +Address: string?
+            +Elevation: int?
+            +Capacity: int?
+            +Cost: decimal?
+            +Currency: string?
+            +ContactInfo: string?
+            +BookingReference: string?
+            +CheckIn: DateTime?
+            +CheckOut: DateTime?
+            +Amenities: string?
+            ' Comodidades disponibles.
+            +Notes: string?
+        }
 
-        +Username: string?
-        +NormalizedUserName: string?
-        +Email: string?
-        +NormalizedEmail: string?
-        +EmailConfirmed: bool
-        +PasswordHash: string?
-        +SecurityStamp: string?
-        +ConcurrencyStamp: string?
-        +PhoneNumber: string?
-        +PhoneNumberConfirmed: bool
-        +TwoFactorEnabled: bool
-        +LockoutEnd: DateTime?
-        +LockoutEnabled: bool
-        +AccessFailedCount: int
+        entity "Transportation" as Transportation {
+            'Transporte durante la expedición.
+            ..inherits BaseEntity..
+            +ExpeditionId: long
+            +ItineraryDayId: long?
+            +Type: string
+            ' Tipo: "Flight", "Bus", "Car", "Taxi", "Helicopter", "Boat", "Train".
+            +Provider: string?
+            +Departure: geography(POINT,4326)?
+            +Arrival: geography(POINT,4326)?
+            +DepartureLocation: string
+            +ArrivalLocation: string
+            +DepartureTime: DateTime
+            +ArrivalTime: DateTime
+            +Duration: int?
+            ' Duración en minutos.
+            +Cost: decimal?
+            +Currency: string?
+            +BookingReference: string?
+            +ContactInfo: string?
+            +Notes: string?
+        }
+
+        entity "Meal" as Meal {
+            'Comidas planificadas durante la expedición.
+            ..inherits BaseEntity..
+            +ExpeditionId: long
+            +ItineraryDayId: long?
+            +MealType: string
+            ' Tipo: "Breakfast", "Lunch", "Dinner", "Snack".
+            +Time: time?
+            +Location: string?
+            +Description: string?
+            +Calories: int?
+            +IsVegetarian: bool
+            +IsVegan: bool
+            +Allergens: string?
+            +PreparedBy: string?
+            ' Quien prepara la comida: "Self", "Guide", "Service".
+            +Cost: decimal?
+            +Currency: string?
+            +Notes: string?
+        }
+}
+package "Climbing" {
+    entity "ClimbZone" as ClimbZone {
+        'Zona de escalada, que representa una ubicación geográfica específica para escalar.
+        'Representa una zona de escalada, que puede contener múltiples rutas de escalada.
+        ..inherits BaseEntity..
+        +Name: string <<unique>>
+        +Description: string?
+        +Location: geography(POINT,4326)?
+        ' Coordenadas geográficas usando PostGIS (latitud, longitud).
+        +IsPublic: bool
+        +IsIndoor: bool
+        +ImageUrl: string?
+    }
+    entity "ClimbRoute" as ClimbRoute {
+        'PitchCount se refiere al número de tramos o largos de la ruta.
+        'FirstAscentDate se refiere a la fecha de la primera ascensión de la ruta
+        ..inherits BaseEntity..
+        +Name: string
+        +Description: string
+        +DifficultyScaleId: long
+        +DifficultyScaleNameId: long
+        +ClimbTagId: long?
+        +PitchCount: int?
+        +FirstAscentDate: DateTime?
+    }
+    entity "ClimbTag" as ClimbTag {
+        'Etiqueta de escalada, que se utiliza para clasificar y organizar rutas de escalada.
+        'Representa una etiqueta o categoría que se puede asignar a una ruta de escalada
+        'Por ejemplo, Placa, Tech, Crack, etc.
+        ..inherits BaseEntity..
+        +Name: string <<unique>>
+        +Description: string?
+    }
+    entity "RockFeatures" as RockFeatures {
+        'Características de la roca, que se utilizan para describir las características geológicas de una ruta de escalada.
+        'Representa características geológicas específicas de una ruta de escalada, como tipo de roca, textura, etc.
+        ..inherits BaseEntity..
+        +Description: string?
+        +ClimbRouteId: long
+        +RockType: string?
+    }
+    entity "ClimbRouteDescription" as ClimbRouteDescription {
+        'Descripción de la ruta de escalada, que proporciona información detallada sobre la ruta.
+        'Representa una descripción detallada de una ruta de escalada, incluyendo características, historia, etc.
+        ..inherits BaseEntity..
+        +ClimbRouteId: long
+        +Content: string
+    }
+    entity "ClimbRouteFile" as ClimbRouteFile {
+        'Imagen de la ruta de escalada, que se utiliza para mostrar imágenes relacionadas con la ruta.
+        'Representa una imagen asociada a una ruta de escalada, como fotos de la ruta, croquis, etc.
+        'sketch se refiere a un croquis o dibujo de la ruta de escalada.
+        ..inherits BaseEntity..
+        +ClimbRouteId: long
+        +IsSketch: bool
+        +FileName: string
+        +FileType: string
+        +FileSize: int
+        +FileUrl: string
+        +FileResourceUrl: string[]?
+        +ThumbnailUrl: string?
+        +Description: string?
+    }
+    entity "ClimbZoneFile" as ClimbZoneFile {
+        'Imagen de la zona de escalada, que se utiliza para mostrar imágenes relacionadas con la zona.
+        'Representa una imagen asociada a una zona de escalada, como fotos de la zona, croquis, etc.
+        'sketch se refiere a un croquis o dibujo de la zona de escalada.
+        ..inherits BaseEntity..
+        +ClimbZoneId: long
+        +IsSketch: bool
+        +FileName: string
+        +FileType: string
+        +FileSize: int
+        +FileUrl: string
+        +FileResourceUrl: string[]?
+        +ThumbnailUrl: string?
+        +Description: string?
+    }
+}
+package "Sessions" {
+    entity "UserSession" as UserSession {
+        'Sesión del usuario en escalada, que representa una sesión de escalada específica.
+        'Representa una sesión de escalada del usuario, incluyendo el usuario, la ruta de escalada
+        'y la duración de la sesión.
+        ..inherits BaseEntity..
+        +UserId: long <<index>>
+        +BoardId: long? <<index>>
+        +ClimbZoneId: long? <<index>>
+        +MountainRouteId: long? <<index>>
+        'index(UserId, ClimbZoneId)
+        'index(UserId, BoardId)
+        'index(UserId, MountainRouteId)
+        +StartedAt: DateTime
+        +EndedAt: DateTime?
+        +Notes: string?
+    }
+    entity "UserSessionProgress" as UserSessionProgress {
+        'Progreso del usuario en una ruta de escalada, que rastrea el progreso del usuario en una ruta específica.
+        'Representa el progreso del usuario en una ruta de escalada, incluyendo intentos y completados
+        'y la sesión de usuario asociada.
+        'Tick se refiere al modo en que se completa la ruta
+        ..inherits BaseEntity..
+        +ClimbRouteId: long?
+        +BoardProblemId: long? <<index>>
+        +BoardAngleId: long? <<index>>
+        +FootRuleId: long? <<index>>
+        +MountainRouteId: long? <<index>>
+        'index(BoardProblemId, BoardAngleId)
+        +ClimbTickType: ClimbTickType
+        +MountaineerTickType: MountaineerTickType?
+        +IsCompleted: bool
+        +Duration: int?
+        +TryAt: DateTime?
+        +UserSessionId: long
+        +MaxElevationReached: int?
+        ' Máxima elevación alcanzada en rutas de montaña.
+        +WeatherConditions: string?
+        ' Condiciones meteorológicas durante el intento.
+    }
+    entity "BoardSessionSummary" {
+        ..inherits BaseEntity..
+        +BoardId: long
+        +UserId: long
+        +TotalSessions: int
+        +TotalProblemsCompleted: int
+        +TotalAttempts: int
+        +AttemptNumber: int?
+        +SentOnAttempt: int?
+    }
+    enum ClimbTickType {
+        'Onsight: Primera vez que se intenta la ruta, sin información previa ni caídas.
+        Onsight
+        'Flash: Primera vez que se intenta la ruta, pero con información previa (beta).
+        Flash
+        'Redpoint: Ruta encadenada tras varios intentos anteriores.
+        Redpoint
+        'Repeat: Ruta que ya fue encadenada antes, repetida nuevamente.
+        Repeat
+        'Project: Ruta que está en proceso, aún no ha sido encadenada.
+        Project
+        'Attempt: Intento en la ruta, sin haber llegado al encadenamiento.
+        Attempt
+        'Toprope: Ruta encadenada o intentada en top rope (no líder). [no aplica en boulder]
+        Toprope
+        'Dogged: Ruta encadenada con descansos (colgado de la cuerda). [no aplica en boulder]
+        Dogged
+        'Fell: El usuario se cayó intentando la ruta.
+        Fell
+        'Abandoned: El usuario decidió no continuar intentando la ruta.
+        Abandoned
+    }
+}
+package "Training" {
+}
+package "Payment" {
+    enum "PaymentStatus" as PaymentStatus {
+        +Pending
+        'Pending: Pago pendiente de procesamiento.
+        +Processing
+        'Processing: Pago en proceso de verificación.
+        +Completed
+        'Completed: Pago completado exitosamente.
+        +Failed
+        'Failed: Pago falló por algún motivo.
+        +Cancelled
+        'Cancelled: Pago cancelado por el usuario.
+        +Refunded
+        'Refunded: Pago reembolsado.
+        +Disputed
+        'Disputed: Pago en disputa o controversia.
     }
 
-    entity "AppRole" as AppRole {
-        +Id: long
-        +Name: string?
-        +NormalizedName: string?
-        +ConcurrencyStamp: string?
+    enum "SubscriptionStatus" as SubscriptionStatus {
+        +Active
+        'Active: Suscripción activa y vigente.
+        +Inactive
+        'Inactive: Suscripción inactiva.
+        +Cancelled
+        'Cancelled: Suscripción cancelada.
+        +Expired
+        'Expired: Suscripción expirada.
+        +Suspended
+        'Suspended: Suscripción suspendida temporalmente.
+        +PendingCancellation
+        'PendingCancellation: Suscripción pendiente de cancelación.
+    }
+
+    entity "PaymentMethod" as PaymentMethod {
+        'Método de pago del usuario (tarjeta de crédito, PayPal, etc.).
+        ..inherits BaseEntity..
+        +UserId: long
+        +Type: string
+        ' Tipo de método: "CreditCard", "DebitCard", "PayPal", "BankTransfer", etc.
+        +Provider: string
+        ' Proveedor del servicio de pago: "Stripe", "PayPal", "Square", etc.
+        +Token: string
+        ' Token seguro del método de pago.
+        +LastFourDigits: string?
+        ' Últimos 4 dígitos para tarjetas.
+        +ExpiryDate: DateTime?
+        ' Fecha de expiración para tarjetas.
+        +IsDefault: bool
+        +IsActive: bool
+    }
+
+    entity "Plan" as Plan {
+        'Plan de suscripción disponible.
+        ..inherits BaseEntity..
+        +Name: string <<unique>>
+        +Description: string?
+        +Price: decimal
+        +Currency: string
+        +BillingPeriod: string
+        ' Período de facturación: "Monthly", "Yearly", "Lifetime", etc.
+        +Features: jsonb
+        ' Características incluidas en el plan.
+        +IsActive: bool
+        +MaxBoards: int?
+        ' Número máximo de tableros permitidos.
+        +MaxMembers: int?
+        ' Número máximo de miembros por tablero.
+        +AIGenerationsPerMonth: int?
+        ' Generaciones de IA permitidas por mes.
+    }
+
+    entity "Subscription" as Subscription {
+        'Suscripción del usuario a un plan.
+        ..inherits BaseEntity..
+        +UserId: long
+        +PlanId: long
+        +Status: SubscriptionStatus
+        +StartDate: DateTime
+        +EndDate: DateTime?
+        +NextBillingDate: DateTime?
+        +AutoRenew: bool
+        +CancelledAt: DateTime?
+        +CancellationReason: string?
+    }
+
+    entity "Payment" as Payment {
+        'Registro de pago realizado.
+        ..inherits BaseEntity..
+        +UserId: long
+        +SubscriptionId: long?
+        +PayPerUseId: long?
+        ' Referencia a pago por uso específico (ej: generación de IA).
+        +PaymentMethodId: long
+        +Amount: decimal
+        +Currency: string
+        +Status: PaymentStatus
+        +TransactionId: string
+        ' ID de transacción del proveedor de pago.
+        +ProcessedAt: DateTime?
+        +FailureReason: string?
+        +RefundedAt: DateTime?
+        +RefundAmount: decimal?
+    }
+
+    entity "Invoice" as Invoice {
+        'Factura generada para un pago.
+        ..inherits BaseEntity..
+        +PaymentId: long
+        +InvoiceNumber: string <<unique>>
+        +IssueDate: DateTime
+        +DueDate: DateTime
+        +Amount: decimal
+        +Currency: string
+        +TaxAmount: decimal?
+        +DiscountAmount: decimal?
+        +Status: string
+        ' Estado de la factura: "Draft", "Sent", "Paid", "Overdue", "Cancelled".
+        +PdfUrl: string?
+    }
+
+    entity "PayPerUse" as PayPerUse {
+        'Pago por uso específico (rutas generadas por IA, funciones premium, etc.).
+        ..inherits BaseEntity..
+        +UserId: long
+        +ServiceType: string
+        ' Tipo de servicio: "AIGeneration", "PremiumFeature", "ExtraStorage", etc.
+        +ServiceId: long?
+        ' ID del servicio específico (ej: AIGenerationRequestId).
+        +UnitPrice: decimal
+        +Quantity: int
+        ' Cantidad de unidades consumidas.
+        +TotalAmount: decimal
+        +Currency: string
+        +Status: PaymentStatus
+        +ConsumedAt: DateTime
+        +PaidAt: DateTime?
+        +Description: string?
+        ' Descripción del servicio consumido.
+    }
+}
+package "Notifications" {
+    enum "NotificationType" as NotificationType {
+        +Email
+        'Email: Notificación por correo electrónico.
+        +Push
+        'Push: Notificación push en dispositivos móviles.
+        +InApp
+        'InApp: Notificación dentro de la aplicación.
+        +SMS
+        'SMS: Notificación por mensaje de texto.
+        +Webhook
+        'Webhook: Notificación a través de webhook.
+    }
+
+    enum "NotificationStatus" as NotificationStatus {
+        +Pending
+        'Pending: Notificación pendiente de envío.
+        +Sent
+        'Sent: Notificación enviada.
+        +Delivered
+        'Delivered: Notificación entregada.
+        +Failed
+        'Failed: Falló el envío de la notificación.
+        +Read
+        'Read: Notificación leída por el usuario.
+        +Cancelled
+        'Cancelled: Notificación cancelada.
+    }
+
+    entity "NotificationTemplate" as NotificationTemplate {
+        'Plantilla para notificaciones.
+        ..inherits BaseEntity..
+        +Name: string <<unique>>
+        +Subject: string?
+        ' Asunto para emails o título para push notifications.
+        +Body: string
+        ' Cuerpo del mensaje, puede contener variables.
+        +Type: NotificationType
+        +Language: string
+        +IsActive: bool
+        +Variables: jsonb
+        ' Variables disponibles en la plantilla.
+    }
+
+    entity "NotificationPreference" as NotificationPreference {
+        'Preferencias de notificación del usuario.
+        ..inherits BaseEntity..
+        +UserId: long
+        +Category: string
+        ' Categoría: "Security", "Marketing", "BoardActivity", "Payment", etc.
+        +EmailEnabled: bool
+        +PushEnabled: bool
+        +InAppEnabled: bool
+        +SMSEnabled: bool
+    }
+
+    entity "Notification" as Notification {
+        'Notificación enviada a un usuario.
+        ..inherits BaseEntity..
+        +UserId: long
+        +TemplateId: long?
+        +Type: NotificationType
+        +Subject: string?
+        +Message: string
+        +Status: NotificationStatus
+        +SentAt: DateTime?
+        +DeliveredAt: DateTime?
+        +ReadAt: DateTime?
+        +FailureReason: string?
+        +ExternalId: string?
+        ' ID externo del proveedor de notificaciones.
+        +Metadata: jsonb
+        ' Datos adicionales específicos del tipo de notificación.
+    }
+
+    entity "NotificationQueue" as NotificationQueue {
+        'Cola de notificaciones para procesamiento.
+        ..inherits BaseEntity..
+        +NotificationId: long
+        +Priority: int
+        ' Prioridad de la notificación (1 = alta, 5 = baja).
+        +ScheduledAt: DateTime
+        ' Hora programada para envío.
+        +RetryCount: int
+        +MaxRetries: int
+        +LastAttemptAt: DateTime?
+        +NextRetryAt: DateTime?
+        +Status: string
+        ' Estado en la cola: "Queued", "Processing", "Completed", "Failed".
+    }
+
+    entity "NotificationLog" as NotificationLog {
+        'Registro detallado de actividad de notificaciones.
+        ..inherits BaseEntity..
+        +NotificationId: long
+        +Action: string
+        ' Acción: "Created", "Queued", "Sent", "Delivered", "Failed", "Read".
+        +Details: string?
+        +OccurredAt: DateTime
+        +IpAddress: string?
+        +UserAgent: string?
+    }
+}
+package "AI" {
+    entity "AIModel" as AIModel {
+        'Modelo de inteligencia artificial que se utiliza para generar problemas de escalada.
+        'Puede ser una red neuronal, un modelo de lenguaje o un algoritmo genético.
+        ..inherits BaseEntity..
+        +Name: string <<unique>>
+        +Description: string?
+        +Type: AIModelType
+        ' Tipo del modelo usando el enum AIModelType.
+        +Version: string
+        +Parameters: jsonb
+        ' Parámetros específicos del modelo, como hiperparámetros o configuraciones.
+        +IsActive: bool
+        +ModelSize: long?
+        ' Tamaño del modelo en bytes.
+        +TrainingDataSize: long?
+        ' Tamaño de datos de entrenamiento.
+        +AccuracyScore: decimal?
+        ' Puntuación de precisión del modelo.
+        +LastTrainedAt: DateTime?
+        +DeployedAt: DateTime?
+        +ResourceRequirements: jsonb?
+        ' Requerimientos de CPU, memoria, GPU, etc.
+    }
+
+    entity "AIGenerationRequest" as AIGenerationRequest {
+        'Solicitud para generar un problema de escalada utilizando un modelo de IA.
+        ..inherits BaseEntity..
+        +RequestedByUserId: long
+        +AIModelId: long
+        +AIModelVersionId: long?
+        ' Versión específica del modelo a usar.
+        +Difficulty: int?
+        ' Dificultad deseada para el problema.
+        +Description: string?
+        ' Descripción opcional de la ruta o características deseadas.
+        +Status: AIGenerationStatus
+        ' Estado usando el enum AIGenerationStatus.
+        +GeneratedBoardProblemId: long?
+        ' Referencia al problema generado, si aplica.
+        +Cost: decimal?
+        ' Costo de la generación (para usuarios pay-per-use).
+        +Currency: string?
+        +IsPaid: bool
+        ' Indica si la generación ha sido pagada.
+        +ErrorMessage: string?
+        ' Mensaje de error en caso de fallo.
+        +GenerationTimeMs: int?
+        ' Tiempo de generación en milisegundos.
+        +QualityScore: decimal?
+        ' Puntuación de calidad del resultado generado.
+        +InputParameters: jsonb?
+        ' Parámetros de entrada específicos.
+        +OutputMetadata: jsonb?
+        ' Metadatos del resultado generado.
+        +CreatedAt: DateTime
+        +CompletedAt: DateTime?
+    }
+
+    entity "AITrainingData" as AITrainingData {
+        'Datos de entrenamiento utilizados para mejorar los modelos de IA.
+        'En este caso, los datos provienen de los problemas de escalada existentes.
+        ..inherits BaseEntity..
+        +BoardProblemId: long
+        ' Referencia al problema de escalada utilizado como dato de entrenamiento.
+        +Content: jsonb
+        ' Datos específicos del problema, como dificultad, descripción, y elementos.
+        +UsedByModelId: long
+        ' Modelo que utilizó estos datos para entrenamiento.
+        +CreatedAt: DateTime
+    }
+
+    entity "AIModelLog" as AIModelLog {
+        'Registro de actividades y resultados de los modelos de IA.
+        ..inherits BaseEntity..
+        +AIModelId: long
+        +Action: string
+        ' Acción realizada: "Training", "Generation", etc.
+        +InputData: jsonb
+        ' Datos de entrada utilizados.
+        +OutputData: jsonb
+        ' Datos de salida generados.
+        +Duration: int
+        ' Duración de la acción en milisegundos.
+        +Status: string
+        ' Estado de la acción: "Success", "Failure".
+        +ErrorMessage: string?
+        ' Mensaje de error en caso de fallo.
+        +CreatedAt: DateTime
+    }
+
+    entity "AIModelConfiguration" as AIModelConfiguration {
+        'Configuración específica de un modelo de IA.
+        ..inherits BaseEntity..
+        +AIModelId: long
+        +ConfigKey: string
+        +ConfigValue: string
+        +DataType: string
+        ' Tipo de dato: "string", "int", "float", "bool", "json".
+        +Description: string?
+        +IsRequired: bool
+        +DefaultValue: string?
+        +ValidationRules: jsonb?
+        ' Reglas de validación para el valor de configuración.
+    }
+
+    entity "AIModelVersion" as AIModelVersion {
+        'Versiones específicas de un modelo de IA.
+        ..inherits BaseEntity..
+        +AIModelId: long
+        +VersionNumber: string
+        +Description: string?
+        +TrainingDataVersion: string?
+        +ModelFile: string?
+        ' Ruta o URL del archivo del modelo.
+        +Metrics: jsonb
+        ' Métricas de rendimiento: accuracy, precision, recall, etc.
+        +IsActive: bool
+        +IsDeprecated: bool
+        +ReleaseDate: DateTime
+        +TrainingStartDate: DateTime?
+        +TrainingEndDate: DateTime?
+    }
+
+    entity "AIGenerationFeedback" as AIGenerationFeedback {
+        'Retroalimentación del usuario sobre las generaciones de IA.
+        ..inherits BaseEntity..
+        +AIGenerationRequestId: long
+        +UserId: long
+        +Rating: int
+        ' Calificación del 1 al 5.
+        +Comment: string?
+        +IsUseful: bool
+        +ImprovementSuggestions: string?
+        +ProblemQuality: int?
+        ' Calidad del problema generado del 1 al 5.
+        +DifficultyAccuracy: int?
+        ' Precisión de la dificultad del 1 al 5.
+    }
+
+    entity "AITrainingSession" as AITrainingSession {
+        'Sesión de entrenamiento de un modelo de IA.
+        ..inherits BaseEntity..
+        +AIModelId: long
+        +AIModelVersionId: long?
+        +SessionName: string
+        +StartDate: DateTime
+        +EndDate: DateTime?
+        +Status: string
+        ' Estado: "Preparing", "Training", "Completed", "Failed", "Cancelled".
+        +TrainingDataCount: int
+        +ValidationDataCount: int
+        +TestDataCount: int
+        +Epochs: int?
+        +BatchSize: int?
+        +LearningRate: decimal?
+        +TrainingMetrics: jsonb
+        ' Métricas durante el entrenamiento.
+        +ValidationMetrics: jsonb
+        ' Métricas de validación.
+        +FinalMetrics: jsonb
+        ' Métricas finales del modelo entrenado.
+        +LogFile: string?
+        ' Archivo de logs del entrenamiento.
+        +ConfigSnapshot: jsonb
+        ' Snapshot de la configuración usada.
+    }
+
+    entity "AIGenerationTemplate" as AIGenerationTemplate {
+        'Plantillas predefinidas para generación de problemas.
+        ..inherits BaseEntity..
+        +Name: string <<unique>>
+        +Description: string?
+        +AIModelId: long
+        +TemplateParameters: jsonb
+        ' Parámetros predefinidos para la generación.
+        +DifficultyRange: string
+        ' Rango de dificultad: "V0-V3", "5.7-5.10", etc.
+        +ProblemStyle: string?
+        ' Estilo del problema: "Technical", "Power", "Endurance", etc.
+        +IsPublic: bool
+        +CreatedByUserId: long
+        +UsageCount: int
+        ' Número de veces que se ha usado esta plantilla.
+        +SuccessRate: decimal?
+        ' Tasa de éxito de las generaciones con esta plantilla.
+    }
+
+    entity "AIModelBenchmark" as AIModelBenchmark {
+        'Benchmarks y pruebas de rendimiento de modelos de IA.
+        ..inherits BaseEntity..
+        +AIModelId: long
+        +AIModelVersionId: long
+        +BenchmarkName: string
+        +TestDataset: string
+        ' Nombre o descripción del dataset de prueba.
+        +TestCount: int
+        +SuccessCount: int
+        +FailureCount: int
+        +AverageGenerationTime: decimal
+        ' Tiempo promedio de generación en segundos.
+        +AccuracyScore: decimal
+        +PrecisionScore: decimal
+        +RecallScore: decimal
+        +F1Score: decimal
+        +CustomMetrics: jsonb
+        ' Métricas personalizadas específicas del dominio.
+        +TestDate: DateTime
+        +Notes: string?
+    }
+
+    entity "AIGenerationHistory" as AIGenerationHistory {
+        'Historial detallado de generaciones de IA.
+        ..inherits BaseEntity..
+        +AIGenerationRequestId: long
+        +AIModelVersionId: long
+        +Step: string
+        ' Paso del proceso: "Preprocessing", "Generation", "Postprocessing", "Validation".
+        +StepData: jsonb
+        ' Datos específicos del paso.
+        +Duration: int
+        ' Duración del paso en milisegundos.
+        +Status: string
+        ' Estado del paso: "Success", "Warning", "Error".
+        +Message: string?
+        +Timestamp: DateTime
+    }
+
+    enum "AIModelType" as AIModelType {
+        +NeuralNetwork
+        'NeuralNetwork: Red neuronal tradicional.
+        +DeepLearning
+        'DeepLearning: Aprendizaje profundo.
+        +GeneticAlgorithm
+        'GeneticAlgorithm: Algoritmo genético.
+        +LanguageModel
+        'LanguageModel: Modelo de lenguaje (GPT, etc).
+        +ReinforcementLearning
+        'ReinforcementLearning: Aprendizaje por refuerzo.
+        +DecisionTree
+        'DecisionTree: Árbol de decisión.
+        +RandomForest
+        'RandomForest: Bosque aleatorio.
+        +SVM
+        'SVM: Máquina de vectores de soporte.
+        +Ensemble
+        'Ensemble: Conjunto de modelos.
+    }
+
+    enum "AIGenerationStatus" as AIGenerationStatus {
+        +Pending
+        'Pending: Solicitud pendiente de procesamiento.
+        +Queued
+        'Queued: En cola de procesamiento.
+        +InProgress
+        'InProgress: En proceso de generación.
+        +Completed
+        'Completed: Generación completada exitosamente.
+        +Failed
+        'Failed: Generación falló.
+        +Cancelled
+        'Cancelled: Generación cancelada por el usuario.
+        +RequiresPayment
+        'RequiresPayment: Requiere pago antes de procesar.
+        +UnderReview
+        'UnderReview: Resultado bajo revisión por calidad.
+    }
+}
+package "Help" {
+    enum "TicketStatus" as TicketStatus {
+        +Open
+        'Open: Ticket abierto, pendiente de atención.
+        +InProgress
+        'InProgress: Ticket en proceso de resolución.
+        +Pending
+        'Pending: Ticket pendiente de información del usuario.
+        +Resolved
+        'Resolved: Ticket resuelto.
+        +Closed
+        'Closed: Ticket cerrado.
+        +Reopened
+        'Reopened: Ticket reabierto.
+        +Escalated
+        'Escalated: Ticket escalado a nivel superior.
+    }
+
+    enum "TicketPriority" as TicketPriority {
+        +Low
+        'Low: Prioridad baja.
+        +Normal
+        'Normal: Prioridad normal.
+        +High
+        'High: Prioridad alta.
+        +Urgent
+        'Urgent: Prioridad urgente.
+        +Critical
+        'Critical: Prioridad crítica.
+    }
+
+    enum "TicketCategory" as TicketCategory {
+        +Technical
+        'Technical: Problema técnico.
+        +Bug
+        'Bug: Error en el software.
+        +FeatureRequest
+        'FeatureRequest: Solicitud de nueva funcionalidad.
+        +Account
+        'Account: Problema con la cuenta.
+        +Payment
+        'Payment: Problema con pagos.
+        +General
+        'General: Consulta general.
+        +Feedback
+        'Feedback: Retroalimentación.
+        +Complaint
+        'Complaint: Queja o reclamo.
+    }
+
+    enum "ArticleStatus" as ArticleStatus {
+        +Draft
+        'Draft: Artículo en borrador.
+        +Review
+        'Review: Artículo en revisión.
+        +Published
+        'Published: Artículo publicado.
+        +Archived
+        'Archived: Artículo archivado.
+        +Deprecated
+        'Deprecated: Artículo obsoleto.
+    }
+
+    entity "HelpCategory" as HelpCategory {
+        'Categorías de artículos de ayuda.
+        ..inherits BaseEntity..
+        +Name: string <<unique>>
+        +Description: string?
+        +Icon: string?
+        +ParentCategoryId: long?
+        +SortOrder: int
+        +IsActive: bool
+        +ArticleCount: int
+        ' Número de artículos en esta categoría.
+    }
+
+    entity "HelpArticle" as HelpArticle {
+        'Artículos de ayuda y documentación.
+        ..inherits BaseEntity..
+        +Title: string
+        +Content: string
+        +Summary: string?
+        +CategoryId: long
+        +AuthorId: long
+        +Status: ArticleStatus
+        +IsPublic: bool
+        +IsFeatured: bool
+        +ViewCount: int
+        +LikeCount: int
+        +DislikeCount: int
+        +SearchKeywords: string?
+        +LastReviewedAt: DateTime?
+        +LastReviewedBy: long?
+        +PublishedAt: DateTime?
+        +EstimatedReadTime: int?
+        ' Tiempo estimado de lectura en minutos.
+    }
+
+    entity "HelpArticleVersion" as HelpArticleVersion {
+        'Versiones de artículos de ayuda para control de cambios.
+        ..inherits BaseEntity..
+        +ArticleId: long
+        +VersionNumber: string
+        +Title: string
+        +Content: string
+        +ChangeLog: string?
+        +EditedBy: long
+        +EditDate: DateTime
+        +IsCurrentVersion: bool
+    }
+
+    entity "HelpArticleAttachment" as HelpArticleAttachment {
+        'Archivos adjuntos de artículos de ayuda.
+        ..inherits BaseEntity..
+        +ArticleId: long
+        +FileName: string
+        +FileType: string
+        +FileSize: int
+        +FileUrl: string
+        +ThumbnailUrl: string?
+        +Description: string?
+        +UploadedBy: long
+    }
+
+    entity "FAQ" as FAQ {
+        'Preguntas frecuentes.
+        ..inherits BaseEntity..
+        +Question: string
+        +Answer: string
+        +CategoryId: long
+        +IsActive: bool
+        +ViewCount: int
+        +HelpfulCount: int
+        +NotHelpfulCount: int
+        +SortOrder: int
+        +SearchKeywords: string?
+        +LastUpdatedBy: long?
+    }
+
+    entity "SupportTicket" as SupportTicket {
+        'Tickets de soporte técnico.
+        ..inherits BaseEntity..
+        +TicketNumber: string <<unique>>
+        +Subject: string
+        +Description: string
+        +Category: TicketCategory
+        +Priority: TicketPriority
+        +Status: TicketStatus
+        +CreatedByUserId: long
+        +AssignedToUserId: long?
+        +ResolvedAt: DateTime?
+        +FirstResponseAt: DateTime?
+        +LastActivityAt: DateTime
+        +EstimatedResolutionTime: int?
+        ' Tiempo estimado de resolución en horas.
+        +ActualResolutionTime: int?
+        ' Tiempo real de resolución en horas.
+        +CustomerSatisfactionRating: int?
+        ' Calificación de satisfacción del 1 al 5.
+        +ResolutionNotes: string?
+    }
+
+    entity "TicketMessage" as TicketMessage {
+        'Mensajes dentro de un ticket de soporte.
+        ..inherits BaseEntity..
+        +TicketId: long
+        +SenderId: long
+        +Message: string
+        +IsInternalNote: bool
+        ' Indica si es una nota interna del staff.
+        +IsSystemMessage: bool
+        ' Indica si es un mensaje generado por el sistema.
+        +MessageType: string
+        ' Tipo: "Reply", "Note", "StatusChange", "Assignment".
+        +Attachments: jsonb?
+        ' Array de archivos adjuntos.
+    }
+
+    entity "TicketAttachment" as TicketAttachment {
+        'Archivos adjuntos de tickets de soporte.
+        ..inherits BaseEntity..
+        +TicketId: long
+        +TicketMessageId: long?
+        +FileName: string
+        +FileType: string
+        +FileSize: int
+        +FileUrl: string
+        +UploadedBy: long
+        +IsPublic: bool
+        ' Indica si el archivo es visible para el cliente.
+    }
+
+    entity "HelpSearchLog" as HelpSearchLog {
+        'Registro de búsquedas en la ayuda.
+        ..inherits BaseEntity..
+        +UserId: long?
+        +SearchQuery: string
+        +ResultCount: int
+        +ClickedArticleId: long?
+        +SessionId: string?
+        +IpAddress: string?
+        +UserAgent: string?
+        +SearchDate: DateTime
+        +WasHelpful: bool?
+        ' Indica si la búsqueda fue útil para el usuario.
+    }
+
+    entity "UserHelpActivity" as UserHelpActivity {
+        'Actividad del usuario en el sistema de ayuda.
+        ..inherits BaseEntity..
+        +UserId: long
+        +ActivityType: string
+        ' Tipo: "ViewArticle", "SearchHelp", "CreateTicket", "RateArticle", "DownloadAttachment".
+        +EntityType: string
+        ' Tipo de entidad: "Article", "FAQ", "Ticket".
+        +EntityId: long
+        +Details: jsonb?
+        ' Detalles adicionales de la actividad.
+        +Duration: int?
+        ' Duración de la actividad en segundos.
+        +IpAddress: string?
+        +UserAgent: string?
+    }
+
+    entity "HelpFeedback" as HelpFeedback {
+        'Retroalimentación sobre artículos de ayuda.
+        ..inherits BaseEntity..
+        +UserId: long?
+        +EntityType: string
+        ' Tipo: "Article", "FAQ", "SearchResult".
+        +EntityId: long
+        +FeedbackType: string
+        ' Tipo: "Like", "Dislike", "Helpful", "NotHelpful", "Suggestion".
+        +Rating: int?
+        ' Calificación del 1 al 5.
+        +Comment: string?
+        +IsAnonymous: bool
+        +IpAddress: string?
+    }
+
+    entity "LiveChatSession" as LiveChatSession {
+        'Sesiones de chat en vivo para soporte.
+        ..inherits BaseEntity..
+        +SessionId: string <<unique>>
+        +UserId: long?
+        +AgentId: long?
+        +Status: string
+        ' Estado: "Waiting", "Active", "Ended", "Abandoned".
+        +StartedAt: DateTime
+        +EndedAt: DateTime?
+        +WaitTime: int?
+        ' Tiempo de espera en segundos.
+        +Duration: int?
+        ' Duración de la sesión en segundos.
+        +SatisfactionRating: int?
+        ' Calificación de satisfacción del 1 al 5.
+        +Tags: string?
+        ' Etiquetas para categorizar la sesión.
+        +TranscriptUrl: string?
+        ' URL del transcript de la conversación.
+    }
+
+    entity "ChatMessage" as ChatMessage {
+        'Mensajes de chat en vivo.
+        ..inherits BaseEntity..
+        +SessionId: long
+        +SenderId: long
+        +Message: string
+        +MessageType: string
+        ' Tipo: "Text", "Image", "File", "SystemMessage".
+        +IsFromAgent: bool
+        +IsSystemMessage: bool
+        +Timestamp: DateTime
+        +IsRead: bool
+        +AttachmentUrl: string?
+    }
+
+    entity "KnowledgeBase" as KnowledgeBase {
+        'Base de conocimiento para agentes de soporte.
+        ..inherits BaseEntity..
+        +Title: string
+        +Content: string
+        +Tags: string?
+        +CategoryId: long
+        +IsInternal: bool
+        ' Indica si es solo para uso interno del staff.
+        +AccessLevel: string
+        ' Nivel de acceso: "Public", "Registered", "Premium", "Staff".
+        +LastUpdatedBy: long
+        +ViewCount: int
+        +UseCount: int
+        ' Número de veces que se ha usado en soporte.
+    }
+
+    entity "SupportAgent" as SupportAgent {
+        'Agentes de soporte técnico.
+        ..inherits BaseEntity..
+        +UserId: long
+        +AgentLevel: string
+        ' Nivel: "Junior", "Senior", "Lead", "Supervisor".
+        +Specializations: string?
+        ' Especializaciones separadas por comas.
+        +IsActive: bool
+        +IsAvailable: bool
+        +MaxConcurrentChats: int
+        +CurrentActiveChats: int
+        +TotalTicketsResolved: int
+        +AverageResolutionTime: decimal?
+        ' Tiempo promedio de resolución en horas.
+        +AverageRating: decimal?
+        ' Calificación promedio del agente.
+        +LastActiveAt: DateTime?
+    }
+
+    entity "EscalationRule" as EscalationRule {
+        'Reglas de escalación para tickets.
+        ..inherits BaseEntity..
+        +Name: string
+        +Description: string?
+        +Category: TicketCategory?
+        +Priority: TicketPriority?
+        +TimeThreshold: int
+        ' Tiempo en horas antes de escalar.
+        +EscalateToUserId: long?
+        +EscalateToLevel: string?
+        ' Nivel al que escalar: "Supervisor", "Manager", "Director".
+        +IsActive: bool
+        +Conditions: jsonb
+        ' Condiciones adicionales para la escalación.
+    }
+
+    entity "SupportMetrics" as SupportMetrics {
+        'Métricas de soporte y rendimiento.
+        ..inherits BaseEntity..
+        +MetricDate: DateTime
+        +TicketsCreated: int
+        +TicketsResolved: int
+        +TicketsClosed: int
+        +AverageFirstResponseTime: decimal
+        ' Tiempo promedio de primera respuesta en horas.
+        +AverageResolutionTime: decimal
+        ' Tiempo promedio de resolución en horas.
+        +CustomerSatisfactionScore: decimal
+        ' Puntuación promedio de satisfacción.
+        +ChatSessionsStarted: int
+        +ChatSessionsCompleted: int
+        +AverageChatWaitTime: decimal
+        ' Tiempo promedio de espera para chat en minutos.
+        +KnowledgeBaseViews: int
+        +FAQViews: int
+        +SearchQueries: int
     }
 }
 
+' Relaciones
+AppUser "1" -- "0..*" AIGenerationRequest : requests >
+AIModel "1" -- "0..*" AIGenerationRequest : processes >
+AIModel "1" -- "0..*" AITrainingData : trained with >
+AIModel "1" -- "0..*" AIModelLog : logs >
+BoardProblem "1" -- "0..*" AITrainingData : used as training data <
+BoardProblem "1" -- "0..*" AIGenerationRequest : generated by <
 UserProfile "1" -- "1" AppUser : has <
 AppRole "0..*" -- "0..*" AppUser : belongs to
+Board "1" -- "0..*" BoardMember : has <
+BoardMember "0..*" -- "1" AppUser : is member of <
+BoardConfig "1" -- "0..*" Board : used by >
+BoardItemType "0..*" -- "0..*" BoardItem : is of type <
+BoardItemTextureMaterial "0..*" -- "0..*" BoardItem : is of material
+BoardItemTexture "0..*" -- "0..*" BoardItem : is of texture <
+BoardItem "0..*" -- "1" BoardConfig : belongs to <
+DifficultyScaleType "0..1" -- "0..*" DifficultyScaleName : has <
+DifficultyScaleName "0..1" -- "0..*" DifficultyScale : has <
+DifficultyScale "0..*" -- "1" DifficultyGroup : belongs to <
+BoardConfig "1" -- "0..*" BoardProblem : defines >
+BoardProblemItem "0..*" -- "1" BoardProblem : belongs to <
+BoardProblemItem "0..*" -- "1" BoardItem : is of item <
+BoardProblemItem "0..1" -- "0..*" BoardProblemItemType : has type <
+AppUser "0..1" -- "0..*" BoardProblem : created by <
+AppUser "0..1" -- "0..*" Configuration : created by <
+ClimbZone "1" -- "0..*" ClimbRoute : has <
+ClimbRoute "1" -- "0..*" ClimbRouteDescription : has <
+ClimbRoute "1" -- "0..*" ClimbRouteFile : has <
+ClimbRoute "1" -- "0..*" RockFeatures : has <
+ClimbTag "1" -- "0..*" ClimbRoute : tags <
+ClimbZone "1" -- "0..*" ClimbZoneFile : has <
+AppUser "1" -- "0..*" UserSession : has <
+Board "1" -- "0..*" UserSession : session on <
+ClimbZone "1" -- "0..*" UserSession : session on <
+MountainRoute "1" -- "0..*" UserSession : session on <
+UserSession "1" -- "0..*" UserSessionProgress : progress <
+ClimbRoute "1" -- "0..*" UserSessionProgress : progress <
+MountainRoute "1" -- "0..*" UserSessionProgress : progress <
+UserSessionProgress "0..*" -- "1" BoardProblem : progress on <
+BoardProblemAngle "0..*" -- "1" BoardProblem : has angle <
+BoardProblemAngle "0..*" -- "1" BoardAngle : is of angle <
+BoardProblemAngle "0..*" -- "1" DifficultyScale : has difficulty scale <
+BoardAngle "0..*" -- "0..*" BoardProblemAngle : has angles <
+Board "1" -- "0..*" BoardSessionSummary : summarized in >
+AppUser "1" -- "0..*" BoardSessionSummary : stats for user >
+BoardProblem "0..*" -- "0..*" BoardProblemTag : has tags <
+BoardProblem "0..*" -- "0..*" FootRule : has foot rules <
+UserSessionProgress "0..*" -- "1" FootRule : uses foot rule <
+
+' Mountains Relations
+Mountain "1" -- "0..*" MountainRoute : has routes >
+Mountain "1" -- "0..*" MountainFile : has files >
+Mountain "1" -- "0..*" WeatherCondition : has weather data >
+MountainRoute "1" -- "0..*" RouteWaypoint : has waypoints >
+MountainRoute "1" -- "0..*" RouteTrack : has tracks >
+MountainRoute "1" -- "0..*" RouteFile : has files >
+DifficultyScale "1" -- "0..*" MountainRoute : difficulty rated >
+AppUser "0..1" -- "0..*" RouteFile : uploads files >
+
+' Mountains.Itinerary Relations
+Mountain "1" -- "0..*" Expedition : has expeditions >
+MountainRoute "0..1" -- "0..*" Expedition : follows route >
+AppUser "1" -- "0..*" Expedition : organizes >
+AppUser "1" -- "0..*" ExpeditionParticipant : participates >
+Expedition "1" -- "0..*" ExpeditionParticipant : has participants >
+Expedition "1" -- "0..*" ItineraryDay : has days >
+Expedition "1" -- "0..*" ExpeditionEquipment : requires equipment >
+Expedition "1" -- "0..*" ExpeditionBudget : has budget items >
+Expedition "1" -- "0..1" SafetyPlan : has safety plan >
+Expedition "1" -- "0..*" ItineraryFile : has files >
+ItineraryDay "1" -- "0..*" DayActivity : has activities >
+ItineraryDay "1" -- "0..*" ItineraryDayTrack : has tracks >
+ItineraryDay "1" -- "0..*" ItineraryDayWaypoint : has waypoints >
+ItineraryDayTrack "1" -- "0..*" ItineraryDayWaypoint : contains waypoints >
+Equipment "1" -- "0..*" ExpeditionEquipment : used in expeditions >
+AppUser "0..1" -- "0..*" ItineraryFile : uploads files >
+AppUser "0..1" -- "0..*" ItineraryDayWaypoint : records waypoints >
+ExpeditionParticipant "0..1" -- "0..*" ExpeditionEquipment : responsible for >
+ExpeditionParticipant "0..1" -- "0..*" ItineraryDayTrack : records tracks >
+
+' Mountains.Itinerary.Logistics Relations
+Expedition "1" -- "0..*" Accommodation : has accommodations >
+Expedition "1" -- "0..*" Transportation : has transport >
+Expedition "1" -- "0..*" Meal : has meals >
+ItineraryDay "0..1" -- "0..*" Accommodation : stays at >
+ItineraryDay "0..1" -- "0..*" Transportation : uses transport >
+ItineraryDay "0..1" -- "0..*" Meal : has meals >
+
+' Payment Relations
+AppUser "1" -- "0..*" PaymentMethod : has payment methods >
+AppUser "1" -- "0..*" Subscription : has subscriptions >
+AppUser "1" -- "0..*" Payment : makes payments >
+AppUser "1" -- "0..*" PayPerUse : consumes services >
+Plan "1" -- "0..*" Subscription : subscribed to >
+Subscription "1" -- "0..*" Payment : payments for >
+PayPerUse "1" -- "0..*" Payment : payments for >
+PaymentMethod "1" -- "0..*" Payment : used for payment >
+Payment "1" -- "0..1" Invoice : generates invoice >
+AIGenerationRequest "1" -- "0..1" PayPerUse : may require payment >
+
+' Notifications Relations
+AppUser "1" -- "0..*" NotificationPreference : has preferences >
+AppUser "1" -- "0..*" Notification : receives notifications >
+NotificationTemplate "0..1" -- "0..*" Notification : based on template >
+Notification "1" -- "0..1" NotificationQueue : queued for sending >
+Notification "1" -- "0..*" NotificationLog : logged activities >
+
+' AI Relations (Extended)
+AIModel "1" -- "0..*" AIModelConfiguration : has configurations >
+AIModel "1" -- "0..*" AIModelVersion : has versions >
+AIModel "1" -- "0..*" AITrainingSession : training sessions >
+AIModel "1" -- "0..*" AIGenerationTemplate : has templates >
+AIModelVersion "1" -- "0..*" AIModelBenchmark : benchmarked >
+AIModelVersion "1" -- "0..*" AIGenerationHistory : used in generations >
+AIModelVersion "1" -- "0..*" AITrainingSession : produces versions >
+AIGenerationRequest "1" -- "0..*" AIGenerationFeedback : receives feedback >
+AIGenerationRequest "1" -- "0..*" AIGenerationHistory : has history >
+AIGenerationTemplate "1" -- "0..*" AIGenerationRequest : used for generation >
+AITrainingSession "1" -- "0..*" AITrainingData : uses training data >
+AppUser "1" -- "0..*" AIGenerationFeedback : provides feedback >
+AppUser "1" -- "0..*" AIGenerationTemplate : creates templates >
+
+' Help Relations
+AppUser "1" -- "0..*" SupportTicket : creates tickets >
+AppUser "1" -- "0..*" TicketMessage : sends messages >
+AppUser "1" -- "0..*" TicketAttachment : uploads attachments >
+AppUser "1" -- "0..*" HelpSearchLog : performs searches >
+AppUser "1" -- "0..*" UserHelpActivity : has activity >
+AppUser "1" -- "0..*" HelpFeedback : provides feedback >
+AppUser "1" -- "0..*" LiveChatSession : participates in chat >
+AppUser "1" -- "0..*" ChatMessage : sends chat messages >
+AppUser "1" -- "0..*" HelpArticle : authors articles >
+AppUser "1" -- "0..*" HelpArticleVersion : edits articles >
+AppUser "1" -- "0..*" HelpArticleAttachment : uploads attachments >
+AppUser "1" -- "0..*" FAQ : updates FAQ >
+AppUser "1" -- "0..*" KnowledgeBase : maintains knowledge >
+AppUser "1" -- "0..1" SupportAgent : is agent >
+HelpCategory "1" -- "0..*" HelpArticle : contains articles >
+HelpCategory "1" -- "0..*" FAQ : contains FAQ >
+HelpCategory "1" -- "0..*" KnowledgeBase : organizes knowledge >
+HelpCategory "0..1" -- "0..*" HelpCategory : has subcategories >
+HelpArticle "1" -- "0..*" HelpArticleVersion : has versions >
+HelpArticle "1" -- "0..*" HelpArticleAttachment : has attachments >
+HelpArticle "1" -- "0..*" HelpSearchLog : found in searches >
+HelpArticle "1" -- "0..*" UserHelpActivity : subject of activity >
+HelpArticle "1" -- "0..*" HelpFeedback : receives feedback >
+SupportTicket "1" -- "0..*" TicketMessage : has messages >
+SupportTicket "1" -- "0..*" TicketAttachment : has attachments >
+SupportTicket "1" -- "0..*" UserHelpActivity : subject of activity >
+SupportAgent "1" -- "0..*" SupportTicket : assigned tickets >
+SupportAgent "1" -- "0..*" TicketMessage : sends responses >
+SupportAgent "1" -- "0..*" LiveChatSession : handles sessions >
+SupportAgent "1" -- "0..*" ChatMessage : sends chat responses >
+LiveChatSession "1" -- "0..*" ChatMessage : contains messages >
+LiveChatSession "1" -- "0..*" UserHelpActivity : generates activity >
+TicketMessage "1" -- "0..*" TicketAttachment : has attachments >
+EscalationRule "1" -- "0..*" SupportTicket : applies to tickets >
 
 @enduml
 ' This file is auto-generated by PlantUML.

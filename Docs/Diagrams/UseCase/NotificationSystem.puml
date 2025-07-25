@@ -1,0 +1,129 @@
+@startuml ClimbEdge.UseCases.NotificationSystem
+
+!theme plain
+skinparam packageStyle rectangle
+skinparam usecase {
+    BackgroundColor LightCoral
+    BorderColor DarkRed
+    ArrowColor Black
+}
+skinparam actor {
+    BackgroundColor LightYellow
+    BorderColor DarkOrange
+}
+
+title Casos de Uso - Sistema de Notificaciones
+
+' Actores
+actor "Usuario" as User
+actor "Administrador" as Admin
+actor "Sistema" as System
+actor "Proveedor de Email" as EmailProvider
+actor "Servicio Push" as PushService
+actor "Proveedor SMS" as SMSProvider
+
+' Casos de uso principales
+package "Configuración de Preferencias" {
+    usecase "Configurar Preferencias de Notificación" as UC_ConfigureNotificationPreferences
+    usecase "Habilitar/Deshabilitar Email" as UC_ToggleEmailNotifications
+    usecase "Habilitar/Deshabilitar Push" as UC_TogglePushNotifications
+    usecase "Habilitar/Deshabilitar SMS" as UC_ToggleSMSNotifications
+    usecase "Configurar Horarios de Notificación" as UC_ConfigureNotificationSchedule
+}
+
+package "Gestión de Plantillas" {
+    usecase "Crear Plantilla de Notificación" as UC_CreateNotificationTemplate
+    usecase "Editar Plantilla de Notificación" as UC_EditNotificationTemplate
+    usecase "Eliminar Plantilla de Notificación" as UC_DeleteNotificationTemplate
+    usecase "Previsualizar Plantilla" as UC_PreviewTemplate
+    usecase "Configurar Variables de Plantilla" as UC_ConfigureTemplateVariables
+}
+
+package "Envío de Notificaciones" {
+    usecase "Enviar Notificación Individual" as UC_SendIndividualNotification
+    usecase "Enviar Notificación Masiva" as UC_SendBulkNotification
+    usecase "Programar Notificación" as UC_ScheduleNotification
+    usecase "Enviar Notificación de Emergencia" as UC_SendEmergencyNotification
+    usecase "Reenviar Notificación Fallida" as UC_RetryFailedNotification
+}
+
+package "Procesamiento de Cola" {
+    usecase "Agregar a Cola de Notificaciones" as UC_QueueNotification
+    usecase "Procesar Cola de Notificaciones" as UC_ProcessNotificationQueue
+    usecase "Gestionar Prioridades" as UC_ManagePriorities
+    usecase "Manejar Reintentos" as UC_HandleRetries
+}
+
+package "Notificaciones del Sistema" {
+    usecase "Notificar Actividad de Tablero" as UC_NotifyBoardActivity
+    usecase "Notificar Estado de Pago" as UC_NotifyPaymentStatus
+    usecase "Notificar Cambios de Suscripción" as UC_NotifySubscriptionChanges
+    usecase "Notificar Seguridad" as UC_NotifySecurityEvents
+    usecase "Notificar Marketing" as UC_NotifyMarketing
+    usecase "Notificar Expediciones" as UC_NotifyExpeditionUpdates
+}
+
+package "Monitoreo y Análisis" {
+    usecase "Consultar Estado de Notificaciones" as UC_ViewNotificationStatus
+    usecase "Generar Reportes de Entrega" as UC_GenerateDeliveryReports
+    usecase "Analizar Tasas de Apertura" as UC_AnalyzeOpenRates
+    usecase "Monitorear Fallos de Entrega" as UC_MonitorDeliveryFailures
+    usecase "Consultar Logs de Notificaciones" as UC_ViewNotificationLogs
+}
+
+' Relaciones de actores con casos de uso
+User --> UC_ConfigureNotificationPreferences
+User --> UC_ToggleEmailNotifications
+User --> UC_TogglePushNotifications
+User --> UC_ToggleSMSNotifications
+User --> UC_ConfigureNotificationSchedule
+User --> UC_ViewNotificationStatus
+
+Admin --> UC_CreateNotificationTemplate
+Admin --> UC_EditNotificationTemplate
+Admin --> UC_DeleteNotificationTemplate
+Admin --> UC_PreviewTemplate
+Admin --> UC_ConfigureTemplateVariables
+Admin --> UC_SendBulkNotification
+Admin --> UC_ScheduleNotification
+Admin --> UC_SendEmergencyNotification
+Admin --> UC_GenerateDeliveryReports
+Admin --> UC_AnalyzeOpenRates
+Admin --> UC_MonitorDeliveryFailures
+Admin --> UC_ViewNotificationLogs
+
+System --> UC_NotifyBoardActivity
+System --> UC_NotifyPaymentStatus
+System --> UC_NotifySubscriptionChanges
+System --> UC_NotifySecurityEvents
+System --> UC_NotifyMarketing
+System --> UC_NotifyExpeditionUpdates
+System --> UC_QueueNotification
+System --> UC_ProcessNotificationQueue
+System --> UC_RetryFailedNotification
+
+EmailProvider --> UC_SendIndividualNotification
+PushService --> UC_SendIndividualNotification
+SMSProvider --> UC_SendIndividualNotification
+
+' Relaciones de inclusión y extensión
+UC_SendIndividualNotification ..> UC_QueueNotification : <<include>>
+UC_SendBulkNotification ..> UC_QueueNotification : <<include>>
+
+UC_QueueNotification ..> UC_ManagePriorities : <<include>>
+UC_ProcessNotificationQueue ..> UC_HandleRetries : <<include>>
+
+UC_NotifyBoardActivity ..> UC_SendIndividualNotification : <<include>>
+UC_NotifyPaymentStatus ..> UC_SendIndividualNotification : <<include>>
+UC_NotifySubscriptionChanges ..> UC_SendIndividualNotification : <<include>>
+UC_NotifySecurityEvents ..> UC_SendIndividualNotification : <<include>>
+UC_NotifyMarketing ..> UC_SendBulkNotification : <<include>>
+UC_NotifyExpeditionUpdates ..> UC_SendIndividualNotification : <<include>>
+
+UC_RetryFailedNotification ..> UC_ProcessNotificationQueue : <<extend>>
+UC_SendEmergencyNotification ..> UC_SendIndividualNotification : <<extend>>
+
+UC_CreateNotificationTemplate ..> UC_ConfigureTemplateVariables : <<include>>
+UC_EditNotificationTemplate ..> UC_PreviewTemplate : <<include>>
+
+@enduml

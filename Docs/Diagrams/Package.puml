@@ -1,0 +1,100 @@
+@startwbs Packages Diagram
+
+* Entities
+**_> Configurations
+**_> UserProfile
+**_> AppUser
+**_> AppRole
+** Boards
+***_> BoardVisibility <<enum>>
+***_> BoardMemberRole <<enum>>
+***_> Board
+***_> BoardMember
+***_> BoardConfig
+***_> BoardAngle
+***_> BoardItemType
+***_> BoardItemTextureMaterial
+***_> BoardItemTexture
+***_> BoardItem
+*** Problems
+****_> BoardProblem
+****_> BoardProblemItem
+****_> BoardProblemItemType
+****_> BoardProblemAngle
+****_> BoardProblemTag
+****_> FootRule
+** DifficultyScales
+***_> DifficultyScaleType
+***_> DifficultyScaleName
+***_> DifficultyScale
+***_> DifficultyGroup
+** Mountains
+***_> MountainType <<enum>>
+***_> RouteType <<enum>>
+***_> SeasonType <<enum>>
+***_> Mountain
+***_> MountainRoute
+***_> RouteWaypoint
+***_> RouteTrack
+***_> MountainFile
+***_> RouteFile
+***_> WeatherCondition
+*** Itinerary
+****_> MountaineerTickType <<enum>>
+****_> ExpeditionStatus <<enum>>
+****_> ParticipantRole <<enum>>
+****_> DayActivityType <<enum>>
+****_> Expedition
+****_> ExpeditionParticipant
+****_> ItineraryDay
+****_> DayActivity
+****_> Equipment
+****_> ExpeditionEquipment
+****_> ExpeditionBudget
+****_> SafetyPlan
+****_> ItineraryFile
+****_> ItineraryDayTrack
+****_> ItineraryDayWaypoint
+**** Logistics
+*****_> Accommodation
+*****_> Transportation
+*****_> Meal
+** Climbing
+***_> ClimbZone
+***_> ClimbRoute
+***_> ClimbTag
+***_> RockFeatures
+***_> ClimbRouteDescription
+***_> ClimbRouteFile
+***_> ClimbZoneFile
+** Sessions
+***_> UserSession
+***_> UserSessionProgress
+***_> ClimbTickType <<enum>>
+***_> BoardSessionSummary
+** Training
+** Payment
+***_> PaymentStatus <<enum>>
+***_> SubscriptionStatus <<enum>>
+***_> PaymentMethod
+***_> Plan
+***_> Subscription
+***_> Payment
+***_> Invoice
+***_> PayPerUse
+** Notifications
+***_> NotificationType <<enum>>
+***_> NotificationStatus <<enum>>
+***_> NotificationTemplate
+***_> NotificationPreference
+***_> Notification
+***_> NotificationQueue
+***_> NotificationLog
+** AI
+***_> AIModel
+***_> AIGenerationRequest
+***_> AITrainingData
+***_> AIModelLog
+** Help
+
+@endwbs
