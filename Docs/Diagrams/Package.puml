@@ -19,12 +19,16 @@
 ****_> BoardProblem
 ****_> BoardProblemItem
 ****_> BoardProblemItemType
+****_> BoardProblemAngle
+****_> BoardProblemTag
 ** DifficultyScales
 ***_> DifficultyScaleType
 ***_> DifficultyScaleName
 ***_> DifficultyScale
 ***_> DifficultyGroup
 ** Mountains
+*** Itinerary
+****_> MountaineerTickType <<enum>>
 ** Climbing
 ***_> ClimbZone
 ***_> ClimbRoute
@@ -37,8 +41,14 @@
 ***_> UserSession
 ***_> UserSessionProgress
 ***_> ClimbTickType <<enum>>
+***_> BoardSessionSummary
 ** Training
 ** Payment
-** Help
+** Notifications
+** AI
+***_> AIModel
+***_> AIGenerationRequest
+***_> AITrainingData
+***_> AIModelLog
 
 @endwbs
