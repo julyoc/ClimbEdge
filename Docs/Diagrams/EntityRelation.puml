@@ -1265,12 +1265,22 @@ package "AI" {
         ..inherits BaseEntity..
         +Name: string <<unique>>
         +Description: string?
-        +Type: string
-        ' Tipo del modelo: "NeuralNetwork", "GeneticAlgorithm", "LanguageModel", etc.
+        +Type: AIModelType
+        ' Tipo del modelo usando el enum AIModelType.
         +Version: string
         +Parameters: jsonb
         ' Parámetros específicos del modelo, como hiperparámetros o configuraciones.
         +IsActive: bool
+        +ModelSize: long?
+        ' Tamaño del modelo en bytes.
+        +TrainingDataSize: long?
+        ' Tamaño de datos de entrenamiento.
+        +AccuracyScore: decimal?
+        ' Puntuación de precisión del modelo.
+        +LastTrainedAt: DateTime?
+        +DeployedAt: DateTime?
+        +ResourceRequirements: jsonb?
+        ' Requerimientos de CPU, memoria, GPU, etc.
     }
 
     entity "AIGenerationRequest" as AIGenerationRequest {
@@ -1278,12 +1288,14 @@ package "AI" {
         ..inherits BaseEntity..
         +RequestedByUserId: long
         +AIModelId: long
+        +AIModelVersionId: long?
+        ' Versión específica del modelo a usar.
         +Difficulty: int?
         ' Dificultad deseada para el problema.
         +Description: string?
         ' Descripción opcional de la ruta o características deseadas.
-        +Status: string
-        ' Estado de la solicitud: "Pending", "InProgress", "Completed", "Failed".
+        +Status: AIGenerationStatus
+        ' Estado usando el enum AIGenerationStatus.
         +GeneratedBoardProblemId: long?
         ' Referencia al problema generado, si aplica.
         +Cost: decimal?
@@ -1293,6 +1305,14 @@ package "AI" {
         ' Indica si la generación ha sido pagada.
         +ErrorMessage: string?
         ' Mensaje de error en caso de fallo.
+        +GenerationTimeMs: int?
+        ' Tiempo de generación en milisegundos.
+        +QualityScore: decimal?
+        ' Puntuación de calidad del resultado generado.
+        +InputParameters: jsonb?
+        ' Parámetros de entrada específicos.
+        +OutputMetadata: jsonb?
+        ' Metadatos del resultado generado.
         +CreatedAt: DateTime
         +CompletedAt: DateTime?
     }
@@ -1328,8 +1348,536 @@ package "AI" {
         ' Mensaje de error en caso de fallo.
         +CreatedAt: DateTime
     }
+
+    entity "AIModelConfiguration" as AIModelConfiguration {
+        'Configuración específica de un modelo de IA.
+        ..inherits BaseEntity..
+        +AIModelId: long
+        +ConfigKey: string
+        +ConfigValue: string
+        +DataType: string
+        ' Tipo de dato: "string", "int", "float", "bool", "json".
+        +Description: string?
+        +IsRequired: bool
+        +DefaultValue: string?
+        +ValidationRules: jsonb?
+        ' Reglas de validación para el valor de configuración.
+    }
+
+    entity "AIModelVersion" as AIModelVersion {
+        'Versiones específicas de un modelo de IA.
+        ..inherits BaseEntity..
+        +AIModelId: long
+        +VersionNumber: string
+        +Description: string?
+        +TrainingDataVersion: string?
+        +ModelFile: string?
+        ' Ruta o URL del archivo del modelo.
+        +Metrics: jsonb
+        ' Métricas de rendimiento: accuracy, precision, recall, etc.
+        +IsActive: bool
+        +IsDeprecated: bool
+        +ReleaseDate: DateTime
+        +TrainingStartDate: DateTime?
+        +TrainingEndDate: DateTime?
+    }
+
+    entity "AIGenerationFeedback" as AIGenerationFeedback {
+        'Retroalimentación del usuario sobre las generaciones de IA.
+        ..inherits BaseEntity..
+        +AIGenerationRequestId: long
+        +UserId: long
+        +Rating: int
+        ' Calificación del 1 al 5.
+        +Comment: string?
+        +IsUseful: bool
+        +ImprovementSuggestions: string?
+        +ProblemQuality: int?
+        ' Calidad del problema generado del 1 al 5.
+        +DifficultyAccuracy: int?
+        ' Precisión de la dificultad del 1 al 5.
+    }
+
+    entity "AITrainingSession" as AITrainingSession {
+        'Sesión de entrenamiento de un modelo de IA.
+        ..inherits BaseEntity..
+        +AIModelId: long
+        +AIModelVersionId: long?
+        +SessionName: string
+        +StartDate: DateTime
+        +EndDate: DateTime?
+        +Status: string
+        ' Estado: "Preparing", "Training", "Completed", "Failed", "Cancelled".
+        +TrainingDataCount: int
+        +ValidationDataCount: int
+        +TestDataCount: int
+        +Epochs: int?
+        +BatchSize: int?
+        +LearningRate: decimal?
+        +TrainingMetrics: jsonb
+        ' Métricas durante el entrenamiento.
+        +ValidationMetrics: jsonb
+        ' Métricas de validación.
+        +FinalMetrics: jsonb
+        ' Métricas finales del modelo entrenado.
+        +LogFile: string?
+        ' Archivo de logs del entrenamiento.
+        +ConfigSnapshot: jsonb
+        ' Snapshot de la configuración usada.
+    }
+
+    entity "AIGenerationTemplate" as AIGenerationTemplate {
+        'Plantillas predefinidas para generación de problemas.
+        ..inherits BaseEntity..
+        +Name: string <<unique>>
+        +Description: string?
+        +AIModelId: long
+        +TemplateParameters: jsonb
+        ' Parámetros predefinidos para la generación.
+        +DifficultyRange: string
+        ' Rango de dificultad: "V0-V3", "5.7-5.10", etc.
+        +ProblemStyle: string?
+        ' Estilo del problema: "Technical", "Power", "Endurance", etc.
+        +IsPublic: bool
+        +CreatedByUserId: long
+        +UsageCount: int
+        ' Número de veces que se ha usado esta plantilla.
+        +SuccessRate: decimal?
+        ' Tasa de éxito de las generaciones con esta plantilla.
+    }
+
+    entity "AIModelBenchmark" as AIModelBenchmark {
+        'Benchmarks y pruebas de rendimiento de modelos de IA.
+        ..inherits BaseEntity..
+        +AIModelId: long
+        +AIModelVersionId: long
+        +BenchmarkName: string
+        +TestDataset: string
+        ' Nombre o descripción del dataset de prueba.
+        +TestCount: int
+        +SuccessCount: int
+        +FailureCount: int
+        +AverageGenerationTime: decimal
+        ' Tiempo promedio de generación en segundos.
+        +AccuracyScore: decimal
+        +PrecisionScore: decimal
+        +RecallScore: decimal
+        +F1Score: decimal
+        +CustomMetrics: jsonb
+        ' Métricas personalizadas específicas del dominio.
+        +TestDate: DateTime
+        +Notes: string?
+    }
+
+    entity "AIGenerationHistory" as AIGenerationHistory {
+        'Historial detallado de generaciones de IA.
+        ..inherits BaseEntity..
+        +AIGenerationRequestId: long
+        +AIModelVersionId: long
+        +Step: string
+        ' Paso del proceso: "Preprocessing", "Generation", "Postprocessing", "Validation".
+        +StepData: jsonb
+        ' Datos específicos del paso.
+        +Duration: int
+        ' Duración del paso en milisegundos.
+        +Status: string
+        ' Estado del paso: "Success", "Warning", "Error".
+        +Message: string?
+        +Timestamp: DateTime
+    }
+
+    enum "AIModelType" as AIModelType {
+        +NeuralNetwork
+        'NeuralNetwork: Red neuronal tradicional.
+        +DeepLearning
+        'DeepLearning: Aprendizaje profundo.
+        +GeneticAlgorithm
+        'GeneticAlgorithm: Algoritmo genético.
+        +LanguageModel
+        'LanguageModel: Modelo de lenguaje (GPT, etc).
+        +ReinforcementLearning
+        'ReinforcementLearning: Aprendizaje por refuerzo.
+        +DecisionTree
+        'DecisionTree: Árbol de decisión.
+        +RandomForest
+        'RandomForest: Bosque aleatorio.
+        +SVM
+        'SVM: Máquina de vectores de soporte.
+        +Ensemble
+        'Ensemble: Conjunto de modelos.
+    }
+
+    enum "AIGenerationStatus" as AIGenerationStatus {
+        +Pending
+        'Pending: Solicitud pendiente de procesamiento.
+        +Queued
+        'Queued: En cola de procesamiento.
+        +InProgress
+        'InProgress: En proceso de generación.
+        +Completed
+        'Completed: Generación completada exitosamente.
+        +Failed
+        'Failed: Generación falló.
+        +Cancelled
+        'Cancelled: Generación cancelada por el usuario.
+        +RequiresPayment
+        'RequiresPayment: Requiere pago antes de procesar.
+        +UnderReview
+        'UnderReview: Resultado bajo revisión por calidad.
+    }
 }
 package "Help" {
+    enum "TicketStatus" as TicketStatus {
+        +Open
+        'Open: Ticket abierto, pendiente de atención.
+        +InProgress
+        'InProgress: Ticket en proceso de resolución.
+        +Pending
+        'Pending: Ticket pendiente de información del usuario.
+        +Resolved
+        'Resolved: Ticket resuelto.
+        +Closed
+        'Closed: Ticket cerrado.
+        +Reopened
+        'Reopened: Ticket reabierto.
+        +Escalated
+        'Escalated: Ticket escalado a nivel superior.
+    }
+
+    enum "TicketPriority" as TicketPriority {
+        +Low
+        'Low: Prioridad baja.
+        +Normal
+        'Normal: Prioridad normal.
+        +High
+        'High: Prioridad alta.
+        +Urgent
+        'Urgent: Prioridad urgente.
+        +Critical
+        'Critical: Prioridad crítica.
+    }
+
+    enum "TicketCategory" as TicketCategory {
+        +Technical
+        'Technical: Problema técnico.
+        +Bug
+        'Bug: Error en el software.
+        +FeatureRequest
+        'FeatureRequest: Solicitud de nueva funcionalidad.
+        +Account
+        'Account: Problema con la cuenta.
+        +Payment
+        'Payment: Problema con pagos.
+        +General
+        'General: Consulta general.
+        +Feedback
+        'Feedback: Retroalimentación.
+        +Complaint
+        'Complaint: Queja o reclamo.
+    }
+
+    enum "ArticleStatus" as ArticleStatus {
+        +Draft
+        'Draft: Artículo en borrador.
+        +Review
+        'Review: Artículo en revisión.
+        +Published
+        'Published: Artículo publicado.
+        +Archived
+        'Archived: Artículo archivado.
+        +Deprecated
+        'Deprecated: Artículo obsoleto.
+    }
+
+    entity "HelpCategory" as HelpCategory {
+        'Categorías de artículos de ayuda.
+        ..inherits BaseEntity..
+        +Name: string <<unique>>
+        +Description: string?
+        +Icon: string?
+        +ParentCategoryId: long?
+        +SortOrder: int
+        +IsActive: bool
+        +ArticleCount: int
+        ' Número de artículos en esta categoría.
+    }
+
+    entity "HelpArticle" as HelpArticle {
+        'Artículos de ayuda y documentación.
+        ..inherits BaseEntity..
+        +Title: string
+        +Content: string
+        +Summary: string?
+        +CategoryId: long
+        +AuthorId: long
+        +Status: ArticleStatus
+        +IsPublic: bool
+        +IsFeatured: bool
+        +ViewCount: int
+        +LikeCount: int
+        +DislikeCount: int
+        +SearchKeywords: string?
+        +LastReviewedAt: DateTime?
+        +LastReviewedBy: long?
+        +PublishedAt: DateTime?
+        +EstimatedReadTime: int?
+        ' Tiempo estimado de lectura en minutos.
+    }
+
+    entity "HelpArticleVersion" as HelpArticleVersion {
+        'Versiones de artículos de ayuda para control de cambios.
+        ..inherits BaseEntity..
+        +ArticleId: long
+        +VersionNumber: string
+        +Title: string
+        +Content: string
+        +ChangeLog: string?
+        +EditedBy: long
+        +EditDate: DateTime
+        +IsCurrentVersion: bool
+    }
+
+    entity "HelpArticleAttachment" as HelpArticleAttachment {
+        'Archivos adjuntos de artículos de ayuda.
+        ..inherits BaseEntity..
+        +ArticleId: long
+        +FileName: string
+        +FileType: string
+        +FileSize: int
+        +FileUrl: string
+        +ThumbnailUrl: string?
+        +Description: string?
+        +UploadedBy: long
+    }
+
+    entity "FAQ" as FAQ {
+        'Preguntas frecuentes.
+        ..inherits BaseEntity..
+        +Question: string
+        +Answer: string
+        +CategoryId: long
+        +IsActive: bool
+        +ViewCount: int
+        +HelpfulCount: int
+        +NotHelpfulCount: int
+        +SortOrder: int
+        +SearchKeywords: string?
+        +LastUpdatedBy: long?
+    }
+
+    entity "SupportTicket" as SupportTicket {
+        'Tickets de soporte técnico.
+        ..inherits BaseEntity..
+        +TicketNumber: string <<unique>>
+        +Subject: string
+        +Description: string
+        +Category: TicketCategory
+        +Priority: TicketPriority
+        +Status: TicketStatus
+        +CreatedByUserId: long
+        +AssignedToUserId: long?
+        +ResolvedAt: DateTime?
+        +FirstResponseAt: DateTime?
+        +LastActivityAt: DateTime
+        +EstimatedResolutionTime: int?
+        ' Tiempo estimado de resolución en horas.
+        +ActualResolutionTime: int?
+        ' Tiempo real de resolución en horas.
+        +CustomerSatisfactionRating: int?
+        ' Calificación de satisfacción del 1 al 5.
+        +ResolutionNotes: string?
+    }
+
+    entity "TicketMessage" as TicketMessage {
+        'Mensajes dentro de un ticket de soporte.
+        ..inherits BaseEntity..
+        +TicketId: long
+        +SenderId: long
+        +Message: string
+        +IsInternalNote: bool
+        ' Indica si es una nota interna del staff.
+        +IsSystemMessage: bool
+        ' Indica si es un mensaje generado por el sistema.
+        +MessageType: string
+        ' Tipo: "Reply", "Note", "StatusChange", "Assignment".
+        +Attachments: jsonb?
+        ' Array de archivos adjuntos.
+    }
+
+    entity "TicketAttachment" as TicketAttachment {
+        'Archivos adjuntos de tickets de soporte.
+        ..inherits BaseEntity..
+        +TicketId: long
+        +TicketMessageId: long?
+        +FileName: string
+        +FileType: string
+        +FileSize: int
+        +FileUrl: string
+        +UploadedBy: long
+        +IsPublic: bool
+        ' Indica si el archivo es visible para el cliente.
+    }
+
+    entity "HelpSearchLog" as HelpSearchLog {
+        'Registro de búsquedas en la ayuda.
+        ..inherits BaseEntity..
+        +UserId: long?
+        +SearchQuery: string
+        +ResultCount: int
+        +ClickedArticleId: long?
+        +SessionId: string?
+        +IpAddress: string?
+        +UserAgent: string?
+        +SearchDate: DateTime
+        +WasHelpful: bool?
+        ' Indica si la búsqueda fue útil para el usuario.
+    }
+
+    entity "UserHelpActivity" as UserHelpActivity {
+        'Actividad del usuario en el sistema de ayuda.
+        ..inherits BaseEntity..
+        +UserId: long
+        +ActivityType: string
+        ' Tipo: "ViewArticle", "SearchHelp", "CreateTicket", "RateArticle", "DownloadAttachment".
+        +EntityType: string
+        ' Tipo de entidad: "Article", "FAQ", "Ticket".
+        +EntityId: long
+        +Details: jsonb?
+        ' Detalles adicionales de la actividad.
+        +Duration: int?
+        ' Duración de la actividad en segundos.
+        +IpAddress: string?
+        +UserAgent: string?
+    }
+
+    entity "HelpFeedback" as HelpFeedback {
+        'Retroalimentación sobre artículos de ayuda.
+        ..inherits BaseEntity..
+        +UserId: long?
+        +EntityType: string
+        ' Tipo: "Article", "FAQ", "SearchResult".
+        +EntityId: long
+        +FeedbackType: string
+        ' Tipo: "Like", "Dislike", "Helpful", "NotHelpful", "Suggestion".
+        +Rating: int?
+        ' Calificación del 1 al 5.
+        +Comment: string?
+        +IsAnonymous: bool
+        +IpAddress: string?
+    }
+
+    entity "LiveChatSession" as LiveChatSession {
+        'Sesiones de chat en vivo para soporte.
+        ..inherits BaseEntity..
+        +SessionId: string <<unique>>
+        +UserId: long?
+        +AgentId: long?
+        +Status: string
+        ' Estado: "Waiting", "Active", "Ended", "Abandoned".
+        +StartedAt: DateTime
+        +EndedAt: DateTime?
+        +WaitTime: int?
+        ' Tiempo de espera en segundos.
+        +Duration: int?
+        ' Duración de la sesión en segundos.
+        +SatisfactionRating: int?
+        ' Calificación de satisfacción del 1 al 5.
+        +Tags: string?
+        ' Etiquetas para categorizar la sesión.
+        +TranscriptUrl: string?
+        ' URL del transcript de la conversación.
+    }
+
+    entity "ChatMessage" as ChatMessage {
+        'Mensajes de chat en vivo.
+        ..inherits BaseEntity..
+        +SessionId: long
+        +SenderId: long
+        +Message: string
+        +MessageType: string
+        ' Tipo: "Text", "Image", "File", "SystemMessage".
+        +IsFromAgent: bool
+        +IsSystemMessage: bool
+        +Timestamp: DateTime
+        +IsRead: bool
+        +AttachmentUrl: string?
+    }
+
+    entity "KnowledgeBase" as KnowledgeBase {
+        'Base de conocimiento para agentes de soporte.
+        ..inherits BaseEntity..
+        +Title: string
+        +Content: string
+        +Tags: string?
+        +CategoryId: long
+        +IsInternal: bool
+        ' Indica si es solo para uso interno del staff.
+        +AccessLevel: string
+        ' Nivel de acceso: "Public", "Registered", "Premium", "Staff".
+        +LastUpdatedBy: long
+        +ViewCount: int
+        +UseCount: int
+        ' Número de veces que se ha usado en soporte.
+    }
+
+    entity "SupportAgent" as SupportAgent {
+        'Agentes de soporte técnico.
+        ..inherits BaseEntity..
+        +UserId: long
+        +AgentLevel: string
+        ' Nivel: "Junior", "Senior", "Lead", "Supervisor".
+        +Specializations: string?
+        ' Especializaciones separadas por comas.
+        +IsActive: bool
+        +IsAvailable: bool
+        +MaxConcurrentChats: int
+        +CurrentActiveChats: int
+        +TotalTicketsResolved: int
+        +AverageResolutionTime: decimal?
+        ' Tiempo promedio de resolución en horas.
+        +AverageRating: decimal?
+        ' Calificación promedio del agente.
+        +LastActiveAt: DateTime?
+    }
+
+    entity "EscalationRule" as EscalationRule {
+        'Reglas de escalación para tickets.
+        ..inherits BaseEntity..
+        +Name: string
+        +Description: string?
+        +Category: TicketCategory?
+        +Priority: TicketPriority?
+        +TimeThreshold: int
+        ' Tiempo en horas antes de escalar.
+        +EscalateToUserId: long?
+        +EscalateToLevel: string?
+        ' Nivel al que escalar: "Supervisor", "Manager", "Director".
+        +IsActive: bool
+        +Conditions: jsonb
+        ' Condiciones adicionales para la escalación.
+    }
+
+    entity "SupportMetrics" as SupportMetrics {
+        'Métricas de soporte y rendimiento.
+        ..inherits BaseEntity..
+        +MetricDate: DateTime
+        +TicketsCreated: int
+        +TicketsResolved: int
+        +TicketsClosed: int
+        +AverageFirstResponseTime: decimal
+        ' Tiempo promedio de primera respuesta en horas.
+        +AverageResolutionTime: decimal
+        ' Tiempo promedio de resolución en horas.
+        +CustomerSatisfactionScore: decimal
+        ' Puntuación promedio de satisfacción.
+        +ChatSessionsStarted: int
+        +ChatSessionsCompleted: int
+        +AverageChatWaitTime: decimal
+        ' Tiempo promedio de espera para chat en minutos.
+        +KnowledgeBaseViews: int
+        +FAQViews: int
+        +SearchQueries: int
+    }
 }
 
 ' Relaciones
@@ -1438,6 +1986,57 @@ AppUser "1" -- "0..*" Notification : receives notifications >
 NotificationTemplate "0..1" -- "0..*" Notification : based on template >
 Notification "1" -- "0..1" NotificationQueue : queued for sending >
 Notification "1" -- "0..*" NotificationLog : logged activities >
+
+' AI Relations (Extended)
+AIModel "1" -- "0..*" AIModelConfiguration : has configurations >
+AIModel "1" -- "0..*" AIModelVersion : has versions >
+AIModel "1" -- "0..*" AITrainingSession : training sessions >
+AIModel "1" -- "0..*" AIGenerationTemplate : has templates >
+AIModelVersion "1" -- "0..*" AIModelBenchmark : benchmarked >
+AIModelVersion "1" -- "0..*" AIGenerationHistory : used in generations >
+AIModelVersion "1" -- "0..*" AITrainingSession : produces versions >
+AIGenerationRequest "1" -- "0..*" AIGenerationFeedback : receives feedback >
+AIGenerationRequest "1" -- "0..*" AIGenerationHistory : has history >
+AIGenerationTemplate "1" -- "0..*" AIGenerationRequest : used for generation >
+AITrainingSession "1" -- "0..*" AITrainingData : uses training data >
+AppUser "1" -- "0..*" AIGenerationFeedback : provides feedback >
+AppUser "1" -- "0..*" AIGenerationTemplate : creates templates >
+
+' Help Relations
+AppUser "1" -- "0..*" SupportTicket : creates tickets >
+AppUser "1" -- "0..*" TicketMessage : sends messages >
+AppUser "1" -- "0..*" TicketAttachment : uploads attachments >
+AppUser "1" -- "0..*" HelpSearchLog : performs searches >
+AppUser "1" -- "0..*" UserHelpActivity : has activity >
+AppUser "1" -- "0..*" HelpFeedback : provides feedback >
+AppUser "1" -- "0..*" LiveChatSession : participates in chat >
+AppUser "1" -- "0..*" ChatMessage : sends chat messages >
+AppUser "1" -- "0..*" HelpArticle : authors articles >
+AppUser "1" -- "0..*" HelpArticleVersion : edits articles >
+AppUser "1" -- "0..*" HelpArticleAttachment : uploads attachments >
+AppUser "1" -- "0..*" FAQ : updates FAQ >
+AppUser "1" -- "0..*" KnowledgeBase : maintains knowledge >
+AppUser "1" -- "0..1" SupportAgent : is agent >
+HelpCategory "1" -- "0..*" HelpArticle : contains articles >
+HelpCategory "1" -- "0..*" FAQ : contains FAQ >
+HelpCategory "1" -- "0..*" KnowledgeBase : organizes knowledge >
+HelpCategory "0..1" -- "0..*" HelpCategory : has subcategories >
+HelpArticle "1" -- "0..*" HelpArticleVersion : has versions >
+HelpArticle "1" -- "0..*" HelpArticleAttachment : has attachments >
+HelpArticle "1" -- "0..*" HelpSearchLog : found in searches >
+HelpArticle "1" -- "0..*" UserHelpActivity : subject of activity >
+HelpArticle "1" -- "0..*" HelpFeedback : receives feedback >
+SupportTicket "1" -- "0..*" TicketMessage : has messages >
+SupportTicket "1" -- "0..*" TicketAttachment : has attachments >
+SupportTicket "1" -- "0..*" UserHelpActivity : subject of activity >
+SupportAgent "1" -- "0..*" SupportTicket : assigned tickets >
+SupportAgent "1" -- "0..*" TicketMessage : sends responses >
+SupportAgent "1" -- "0..*" LiveChatSession : handles sessions >
+SupportAgent "1" -- "0..*" ChatMessage : sends chat responses >
+LiveChatSession "1" -- "0..*" ChatMessage : contains messages >
+LiveChatSession "1" -- "0..*" UserHelpActivity : generates activity >
+TicketMessage "1" -- "0..*" TicketAttachment : has attachments >
+EscalationRule "1" -- "0..*" SupportTicket : applies to tickets >
 
 @enduml
 ' This file is auto-generated by PlantUML.

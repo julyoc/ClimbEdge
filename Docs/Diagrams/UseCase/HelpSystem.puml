@@ -1,0 +1,242 @@
+@startuml ClimbEdge.UseCases.HelpSystem
+!theme plain
+
+' Actores
+actor "Usuario" as User
+actor "Agente de Soporte" as SupportAgent
+actor "Administrador de Contenido" as ContentAdmin
+actor "Supervisor de Soporte" as Supervisor
+actor "Sistema de Chat" as ChatSystem
+actor "Sistema de Notificaciones" as NotificationSystem
+
+' Casos de uso principales
+package "Gestión de Artículos de Ayuda" {
+    usecase "Crear Artículo" as UC1
+    usecase "Editar Artículo" as UC2
+    usecase "Publicar Artículo" as UC3
+    usecase "Archivar Artículo" as UC4
+    usecase "Buscar Artículos" as UC5
+    usecase "Ver Artículo" as UC6
+    usecase "Valorar Artículo" as UC7
+    usecase "Comentar Artículo" as UC8
+    usecase "Gestionar Versiones" as UC9
+    usecase "Adjuntar Archivos" as UC10
+    usecase "Categorizar Artículo" as UC11
+    usecase "Revisar Artículo" as UC12
+}
+
+package "Gestión de FAQ" {
+    usecase "Crear FAQ" as UC13
+    usecase "Editar FAQ" as UC14
+    usecase "Buscar FAQ" as UC15
+    usecase "Ver FAQ" as UC16
+    usecase "Valorar FAQ" as UC17
+    usecase "Ordenar FAQ" as UC18
+    usecase "Categorizar FAQ" as UC19
+    usecase "Activar/Desactivar FAQ" as UC20
+}
+
+package "Sistema de Tickets" {
+    usecase "Crear Ticket" as UC21
+    usecase "Ver Tickets" as UC22
+    usecase "Asignar Ticket" as UC23
+    usecase "Responder Ticket" as UC24
+    usecase "Cerrar Ticket" as UC25
+    usecase "Reabrir Ticket" as UC26
+    usecase "Escalar Ticket" as UC27
+    usecase "Transferir Ticket" as UC28
+    usecase "Adjuntar Archivos Ticket" as UC29
+    usecase "Cambiar Prioridad" as UC30
+    usecase "Cambiar Estado" as UC31
+    usecase "Agregar Nota Interna" as UC32
+    usecase "Valorar Resolución" as UC33
+}
+
+package "Chat en Vivo" {
+    usecase "Iniciar Chat" as UC34
+    usecase "Unirse a Chat" as UC35
+    usecase "Enviar Mensaje" as UC36
+    usecase "Transferir Chat" as UC37
+    usecase "Finalizar Chat" as UC38
+    usecase "Ver Historial Chat" as UC39
+    usecase "Enviar Archivo Chat" as UC40
+    usecase "Valorar Sesión Chat" as UC41
+    usecase "Gestionar Cola Chat" as UC42
+    usecase "Configurar Disponibilidad" as UC43
+}
+
+package "Base de Conocimiento" {
+    usecase "Crear Conocimiento" as UC44
+    usecase "Buscar Conocimiento" as UC45
+    usecase "Actualizar Conocimiento" as UC46
+    usecase "Categorizar Conocimiento" as UC47
+    usecase "Configurar Acceso" as UC48
+    usecase "Usar en Soporte" as UC49
+    usecase "Estadísticas Uso" as UC50
+}
+
+package "Gestión de Agentes" {
+    usecase "Registrar Agente" as UC51
+    usecase "Configurar Perfil Agente" as UC52
+    usecase "Asignar Especializaciones" as UC53
+    usecase "Configurar Horarios" as UC54
+    usecase "Ver Estadísticas Agente" as UC55
+    usecase "Cambiar Estado Disponibilidad" as UC56
+    usecase "Gestionar Carga Trabajo" as UC57
+}
+
+package "Configuración Sistema" {
+    usecase "Configurar Categorías" as UC58
+    usecase "Definir Reglas Escalación" as UC59
+    usecase "Configurar SLA" as UC60
+    usecase "Gestionar Plantillas" as UC61
+    usecase "Configurar Notificaciones" as UC62
+    usecase "Configurar Flujos Trabajo" as UC63
+    usecase "Gestionar Permisos" as UC64
+}
+
+package "Reportes y Análisis" {
+    usecase "Generar Reporte Tickets" as UC65
+    usecase "Generar Reporte Chats" as UC66
+    usecase "Analizar Satisfacción Cliente" as UC67
+    usecase "Ver Métricas Rendimiento" as UC68
+    usecase "Analizar Búsquedas" as UC69
+    usecase "Generar Dashboard" as UC70
+    usecase "Exportar Estadísticas" as UC71
+    usecase "Programar Reportes" as UC72
+}
+
+package "Búsqueda y Navegación" {
+    usecase "Buscar en Ayuda" as UC73
+    usecase "Filtrar Resultados" as UC74
+    usecase "Navegar Categorías" as UC75
+    usecase "Ver Contenido Relacionado" as UC76
+    usecase "Registrar Búsqueda" as UC77
+    usecase "Sugerir Contenido" as UC78
+}
+
+' Relaciones Usuario
+User --> UC5 : busca artículos
+User --> UC6 : ve artículo
+User --> UC7 : valora artículo
+User --> UC8 : comenta artículo
+User --> UC15 : busca FAQ
+User --> UC16 : ve FAQ
+User --> UC17 : valora FAQ
+User --> UC21 : crea ticket
+User --> UC22 : ve tickets
+User --> UC24 : responde ticket
+User --> UC29 : adjunta archivos
+User --> UC33 : valora resolución
+User --> UC34 : inicia chat
+User --> UC36 : envía mensaje
+User --> UC38 : finaliza chat
+User --> UC40 : envía archivo
+User --> UC41 : valora sesión
+User --> UC73 : busca en ayuda
+User --> UC74 : filtra resultados
+User --> UC75 : navega categorías
+User --> UC76 : ve contenido relacionado
+
+' Relaciones Agente de Soporte
+SupportAgent --> UC22 : ve tickets
+SupportAgent --> UC23 : asigna ticket
+SupportAgent --> UC24 : responde ticket
+SupportAgent --> UC25 : cierra ticket
+SupportAgent --> UC26 : reabre ticket
+SupportAgent --> UC27 : escala ticket
+SupportAgent --> UC28 : transfiere ticket
+SupportAgent --> UC30 : cambia prioridad
+SupportAgent --> UC31 : cambia estado
+SupportAgent --> UC32 : agrega nota interna
+SupportAgent --> UC35 : se une a chat
+SupportAgent --> UC36 : envía mensaje
+SupportAgent --> UC37 : transfiere chat
+SupportAgent --> UC38 : finaliza chat
+SupportAgent --> UC43 : configura disponibilidad
+SupportAgent --> UC45 : busca conocimiento
+SupportAgent --> UC49 : usa en soporte
+SupportAgent --> UC52 : configura perfil
+SupportAgent --> UC56 : cambia disponibilidad
+
+' Relaciones Administrador de Contenido
+ContentAdmin --> UC1 : crea artículo
+ContentAdmin --> UC2 : edita artículo
+ContentAdmin --> UC3 : publica artículo
+ContentAdmin --> UC4 : archiva artículo
+ContentAdmin --> UC9 : gestiona versiones
+ContentAdmin --> UC10 : adjunta archivos
+ContentAdmin --> UC11 : categoriza artículo
+ContentAdmin --> UC12 : revisa artículo
+ContentAdmin --> UC13 : crea FAQ
+ContentAdmin --> UC14 : edita FAQ
+ContentAdmin --> UC18 : ordena FAQ
+ContentAdmin --> UC19 : categoriza FAQ
+ContentAdmin --> UC20 : activa/desactiva FAQ
+ContentAdmin --> UC44 : crea conocimiento
+ContentAdmin --> UC46 : actualiza conocimiento
+ContentAdmin --> UC47 : categoriza conocimiento
+ContentAdmin --> UC48 : configura acceso
+ContentAdmin --> UC58 : configura categorías
+ContentAdmin --> UC61 : gestiona plantillas
+
+' Relaciones Supervisor de Soporte
+Supervisor --> UC23 : asigna ticket
+Supervisor --> UC27 : escala ticket
+Supervisor --> UC51 : registra agente
+Supervisor --> UC53 : asigna especializaciones
+Supervisor --> UC54 : configura horarios
+Supervisor --> UC55 : ve estadísticas agente
+Supervisor --> UC57 : gestiona carga trabajo
+Supervisor --> UC59 : define reglas escalación
+Supervisor --> UC60 : configura SLA
+Supervisor --> UC62 : configura notificaciones
+Supervisor --> UC63 : configura flujos
+Supervisor --> UC64 : gestiona permisos
+Supervisor --> UC65 : genera reporte tickets
+Supervisor --> UC66 : genera reporte chats
+Supervisor --> UC67 : analiza satisfacción
+Supervisor --> UC68 : ve métricas rendimiento
+Supervisor --> UC69 : analiza búsquedas
+Supervisor --> UC70 : genera dashboard
+Supervisor --> UC71 : exporta estadísticas
+Supervisor --> UC72 : programa reportes
+
+' Relaciones Sistema de Chat
+ChatSystem --> UC34 : gestiona inicio
+ChatSystem --> UC42 : gestiona cola
+ChatSystem --> UC37 : ejecuta transferencia
+ChatSystem --> UC39 : almacena historial
+
+' Relaciones Sistema de Notificaciones
+NotificationSystem --> UC27 : notifica escalación
+NotificationSystem --> UC62 : ejecuta notificaciones
+NotificationSystem --> UC72 : envía reportes programados
+
+' Extensiones e inclusiones
+UC1 ..> UC11 : <<include>>
+UC2 ..> UC9 : <<extend>>
+UC3 ..> UC12 : <<include>>
+UC5 ..> UC74 : <<extend>>
+UC6 ..> UC7 : <<extend>>
+UC6 ..> UC8 : <<extend>>
+UC6 ..> UC76 : <<extend>>
+UC13 ..> UC19 : <<include>>
+UC21 ..> UC23 : <<include>>
+UC21 ..> UC77 : <<include>>
+UC24 ..> UC31 : <<include>>
+UC25 ..> UC33 : <<extend>>
+UC27 ..> UC59 : <<include>>
+UC34 ..> UC42 : <<include>>
+UC35 ..> UC43 : <<include>>
+UC44 ..> UC47 : <<include>>
+UC44 ..> UC48 : <<include>>
+UC45 ..> UC74 : <<extend>>
+UC49 ..> UC50 : <<include>>
+UC65 ..> UC68 : <<include>>
+UC66 ..> UC68 : <<include>>
+UC67 ..> UC68 : <<include>>
+UC73 ..> UC77 : <<include>>
+UC73 ..> UC78 : <<extend>>
+
+@enduml

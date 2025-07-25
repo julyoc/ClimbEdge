@@ -36,6 +36,8 @@ Este directorio contiene la documentación detallada de todos los casos de uso d
 ### 6. Sistema IA
 - [UC-050: Entrenar Modelo IA](./AISystem/UC-050-EntrenarModeloIA.md)
 - [UC-051: Generar Problema Automático](./AISystem/UC-051-GenerarProblemaAutomatico.md)
+- [UC-052: Gestionar Configuraciones de Modelo](./AISystem/UC-052-GestionarConfiguracionesModelo.md)
+- [UC-053: Ejecutar Benchmark de Modelo](./AISystem/UC-053-EjecutarBenchmarkModelo.md)
 
 ### 7. Sistema Embebido
 - [UC-060: Establecer Conexión Hardware](./EmbeddedSystem/UC-060-EstablecerConexionHardware.md)
@@ -59,6 +61,11 @@ Este directorio contiene la documentación detallada de todos los casos de uso d
 - [UC-301: Configurar Preferencias de Notificaciones](./NotificationSystem/UC-301-ConfigurarPreferencias.md)
 - [UC-302: Enviar Notificación Automática](./NotificationSystem/UC-302-EnviarNotificacionAutomatica.md)
 
+### 12. Sistema de Ayuda y Soporte
+- [UC-401: Gestionar Tickets de Soporte](./HelpSystem/UC-401-GestionarTicketsSoporte.md)
+- [UC-402: Sistema de Chat en Vivo](./HelpSystem/UC-402-SistemaChatVivo.md)
+- [UC-403: Gestionar Base de Conocimiento](./HelpSystem/UC-403-GestionarBaseConocimiento.md)
+
 ## Convenciones
 
 - **ID del Caso de Uso**: UC-XXX-NombreCasoUso
@@ -76,12 +83,19 @@ Este directorio contiene la documentación detallada de todos los casos de uso d
 - **Guía de Montaña**: Profesional certificado que lidera expediciones
 - **Organizador de Expediciones**: Usuario que planifica y coordina expediciones
 - **Usuario Premium**: Usuario con suscripción activa a servicios premium
+- **Agente de Soporte**: Personal de primera línea que atiende consultas de usuarios
+- **Supervisor de Soporte**: Gestiona equipos y procesos de soporte técnico
+- **Administrador de Contenido**: Gestiona documentación y base de conocimiento
+- **Data Scientist**: Especialista en análisis de datos y modelos de IA
+- **Administrador IA**: Gestiona modelos y configuraciones de inteligencia artificial
 - **Sistema IA**: Sistema automatizado de inteligencia artificial
 - **Sistema Embebido**: Hardware conectado (sensores, LEDs, Raspberry Pi)
 - **Sistema de Pago**: Procesadores de pago externos (Stripe, PayPal)
 - **Sistema de Notificaciones**: Servicios de envío de notificaciones
 - **Sistema GPS**: Sistema de posicionamiento y tracking
 - **Sistema Meteorológico**: APIs de datos climáticos
+- **Sistema de Chat**: Maneja conversaciones en tiempo real
+- **Sistema de Búsqueda**: Proporciona capacidades de búsqueda inteligente
 
 ## Módulos del Sistema
 
@@ -90,7 +104,7 @@ Este directorio contiene la documentación detallada de todos los casos de uso d
 - **Gestión de Tableros**: Configuración, miembros, hardware
 - **Gestión de Problemas**: Creación, validación, visualización
 - **Sesiones y Progreso**: Tracking de rendimiento y estadísticas
-- **Sistema IA**: Generación automática de problemas
+- **Sistema IA**: Generación automática de problemas y análisis avanzado
 - **Sistema Embebido**: Control de hardware y sensores
 
 ### Extensiones
@@ -98,4 +112,5 @@ Este directorio contiene la documentación detallada de todos los casos de uso d
 - **Montañismo y Expediciones**: Planificación y tracking de expediciones completas
 - **Sistema de Pagos**: Suscripciones y servicios pay-per-use
 - **Sistema de Notificaciones**: Comunicación multi-canal con usuarios
+- **Sistema de Ayuda y Soporte**: Soporte técnico, documentación y chat en vivo
 - **Administración**: Configuración y monitoreo del sistema

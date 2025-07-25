@@ -64,6 +64,12 @@ package "Sistema de Notificaciones" as NotificationMgmt {
     usecase "Configurar Preferencias" as UC_NotifPrefs
 }
 
+package "Sistema de Ayuda y Soporte" as HelpMgmt {
+    usecase "Gestionar Tickets" as UC_SupportTickets
+    usecase "Chat en Vivo" as UC_LiveChat
+    usecase "Base de Conocimiento" as UC_KnowledgeBase
+}
+
 ' Relaciones principales entre actores y casos de uso
 Climber --> UC_UserProfile
 Climber --> UC_Auth
@@ -76,12 +82,16 @@ Climber --> UC_Mountains
 Climber --> UC_Expeditions
 Climber --> UC_Subscriptions
 Climber --> UC_NotifPrefs
+Climber --> UC_SupportTickets
+Climber --> UC_LiveChat
+Climber --> UC_KnowledgeBase
 
 Coach --> UC_Sessions
 Coach --> UC_Progress
 Coach --> UC_CreateProblems
 Coach --> UC_BoardAdmin
 Coach --> UC_Expeditions
+Coach --> UC_KnowledgeBase
 
 Admin --> UC_UserProfile
 Admin --> UC_BoardAdmin
@@ -91,6 +101,9 @@ Admin --> UC_Monitor
 Admin --> UC_TrainAI
 Admin --> UC_Payments
 Admin --> UC_Notifications
+Admin --> UC_SupportTickets
+Admin --> UC_LiveChat
+Admin --> UC_KnowledgeBase
 
 AISystem --> UC_AIGeneration
 AISystem --> UC_GenerateAI
@@ -110,6 +123,9 @@ UC_Monitor ..> UC_SysConfig : <<extend>>
 UC_Subscriptions ..> UC_Payments : <<include>>
 UC_Expeditions ..> UC_Notifications : <<include>>
 UC_Mountains ..> UC_Expeditions : <<extend>>
+UC_SupportTickets ..> UC_Notifications : <<include>>
+UC_LiveChat ..> UC_KnowledgeBase : <<extend>>
+UC_SupportTickets ..> UC_KnowledgeBase : <<extend>>
 
 ' Notas explicativas
 note top of UC_AIGeneration : "Utiliza modelos entrenados\npara generar problemas\nautomáticamente"
@@ -117,5 +133,7 @@ note top of UC_AIGeneration : "Utiliza modelos entrenados\npara generar problema
 note right of UC_Sensors : "Sensores FSR detectan\ntoques en presas\nLEDs WS2812B iluminan\npatrones"
 
 note bottom of UC_Progress : "Registra intentos,\ncompletaciones y\nevaluaciones de problemas"
+
+note left of UC_LiveChat : "Chat en tiempo real\ncon agentes de soporte\ny transferencia automática"
 
 @enduml

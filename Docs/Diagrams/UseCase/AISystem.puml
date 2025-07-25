@@ -6,6 +6,7 @@ actor "Usuario" as User
 actor "Administrador IA" as AIAdmin
 actor "Sistema de Entrenamiento" as TrainingSystem
 actor "Modelo IA" as AIModel
+actor "Data Scientist" as DataScientist
 
 ' Casos de uso principales
 package "Gestión de Modelos IA" {
@@ -17,6 +18,10 @@ package "Gestión de Modelos IA" {
     usecase "Ver Información Modelo" as UC6
     usecase "Actualizar Parámetros" as UC7
     usecase "Versionar Modelo" as UC8
+    usecase "Gestionar Configuraciones" as UC43
+    usecase "Comparar Versiones" as UC44
+    usecase "Desplegar Modelo" as UC45
+    usecase "Rollback Versión" as UC46
 }
 
 package "Entrenamiento de Modelos" {
@@ -28,6 +33,10 @@ package "Entrenamiento de Modelos" {
     usecase "Finalizar Entrenamiento" as UC14
     usecase "Evaluar Modelo" as UC15
     usecase "Validar Rendimiento" as UC16
+    usecase "Crear Sesión Entrenamiento" as UC47
+    usecase "Configurar Hiperparámetros" as UC48
+    usecase "Validar Datos Entrenamiento" as UC49
+    usecase "Generar Métricas Entrenamiento" as UC50
 }
 
 package "Generación de Problemas" {
@@ -39,6 +48,10 @@ package "Generación de Problemas" {
     usecase "Refinar Resultado" as UC22
     usecase "Aprobar Problema IA" as UC23
     usecase "Rechazar Problema IA" as UC24
+    usecase "Usar Plantilla Generación" as UC51
+    usecase "Crear Plantilla Generación" as UC52
+    usecase "Rastrear Historial Generación" as UC53
+    usecase "Proporcionar Feedback" as UC54
 }
 
 package "Gestión de Datos" {
@@ -49,6 +62,8 @@ package "Gestión de Datos" {
     usecase "Exportar Datos" as UC29
     usecase "Importar Datos" as UC30
     usecase "Anonimizar Datos" as UC31
+    usecase "Versionar Datos" as UC55
+    usecase "Sincronizar Datos" as UC56
 }
 
 package "Monitoreo y Logs" {
@@ -58,6 +73,17 @@ package "Monitoreo y Logs" {
     usecase "Detectar Anomalías" as UC35
     usecase "Generar Reportes" as UC36
     usecase "Alertar Problemas" as UC37
+    usecase "Monitorear Tiempo Real" as UC57
+    usecase "Crear Dashboard Métricas" as UC58
+}
+
+package "Benchmarking y Evaluación" {
+    usecase "Ejecutar Benchmark" as UC59
+    usecase "Comparar Modelos" as UC60
+    usecase "Evaluar Calidad Generación" as UC61
+    usecase "Generar Reporte Benchmark" as UC62
+    usecase "Configurar Tests Automáticos" as UC63
+    usecase "Validar Precisión" as UC64
 }
 
 package "Mejora Continua" {
@@ -66,6 +92,8 @@ package "Mejora Continua" {
     usecase "Identificar Mejoras" as UC40
     usecase "Actualizar Algoritmos" as UC41
     usecase "Optimizar Rendimiento" as UC42
+    usecase "Analizar Feedback Usuarios" as UC65
+    usecase "Implementar Mejoras" as UC66
 }
 
 ' Relaciones Usuario
@@ -74,6 +102,8 @@ User --> UC18 : configura parámetros
 User --> UC21 : valida problema
 User --> UC22 : refina resultado
 User --> UC38 : proporciona feedback
+User --> UC51 : usa plantilla
+User --> UC54 : proporciona feedback
 
 ' Relaciones Administrador IA
 AIAdmin --> UC1 : crea modelo
@@ -108,6 +138,29 @@ AIAdmin --> UC36 : genera reportes
 AIAdmin --> UC40 : identifica mejoras
 AIAdmin --> UC41 : actualiza algoritmos
 AIAdmin --> UC42 : optimiza rendimiento
+AIAdmin --> UC43 : gestiona configuraciones
+AIAdmin --> UC44 : compara versiones
+AIAdmin --> UC45 : despliega modelo
+AIAdmin --> UC46 : rollback versión
+AIAdmin --> UC52 : crea plantilla
+AIAdmin --> UC57 : monitorea tiempo real
+AIAdmin --> UC58 : crea dashboard
+
+' Relaciones Data Scientist
+DataScientist --> UC47 : crea sesión entrenamiento
+DataScientist --> UC48 : configura hiperparámetros
+DataScientist --> UC49 : valida datos
+DataScientist --> UC50 : genera métricas
+DataScientist --> UC59 : ejecuta benchmark
+DataScientist --> UC60 : compara modelos
+DataScientist --> UC61 : evalúa calidad
+DataScientist --> UC62 : genera reporte benchmark
+DataScientist --> UC63 : configura tests automáticos
+DataScientist --> UC64 : valida precisión
+DataScientist --> UC65 : analiza feedback
+DataScientist --> UC66 : implementa mejoras
+DataScientist --> UC55 : versiona datos
+DataScientist --> UC56 : sincroniza datos
 
 ' Relaciones Sistema de Entrenamiento
 TrainingSystem --> UC10 : ejecuta entrenamiento
@@ -116,32 +169,56 @@ TrainingSystem --> UC14 : completa entrenamiento
 TrainingSystem --> UC32 : registra actividad
 TrainingSystem --> UC35 : detecta anomalías
 TrainingSystem --> UC37 : alerta problemas
+TrainingSystem --> UC47 : ejecuta sesión
+TrainingSystem --> UC50 : calcula métricas
 
 ' Relaciones Modelo IA
 AIModel --> UC19 : procesa solicitud
 AIModel --> UC20 : genera problema
 AIModel --> UC32 : registra actividad
 AIModel --> UC39 : analiza patrones
+AIModel --> UC53 : registra historial
+AIModel --> UC61 : autoevalúa calidad
 
 ' Extensiones e inclusiones
 UC1 ..> UC2 : <<include>>
+UC1 ..> UC43 : <<include>>
+UC8 ..> UC44 : <<extend>>
+UC8 ..> UC45 : <<include>>
+UC8 ..> UC46 : <<extend>>
 UC10 ..> UC9 : <<include>>
 UC10 ..> UC11 : <<include>>
+UC10 ..> UC47 : <<include>>
+UC10 ..> UC48 : <<include>>
 UC14 ..> UC15 : <<include>>
 UC15 ..> UC16 : <<include>>
 UC17 ..> UC18 : <<include>>
 UC17 ..> UC19 : <<include>>
+UC17 ..> UC51 : <<extend>>
 UC19 ..> UC20 : <<include>>
 UC20 ..> UC21 : <<include>>
+UC20 ..> UC53 : <<include>>
 UC21 ..> UC22 : <<extend>>
 UC21 ..> UC23 : <<extend>>
 UC21 ..> UC24 : <<extend>>
+UC23 ..> UC54 : <<extend>>
+UC24 ..> UC54 : <<extend>>
 UC25 ..> UC26 : <<include>>
 UC26 ..> UC27 : <<include>>
 UC27 ..> UC28 : <<include>>
+UC28 ..> UC55 : <<include>>
 UC38 ..> UC39 : <<include>>
 UC39 ..> UC40 : <<include>>
 UC40 ..> UC41 : <<extend>>
 UC41 ..> UC42 : <<extend>>
+UC47 ..> UC48 : <<include>>
+UC47 ..> UC49 : <<include>>
+UC47 ..> UC50 : <<include>>
+UC54 ..> UC65 : <<include>>
+UC59 ..> UC60 : <<include>>
+UC59 ..> UC61 : <<include>>
+UC59 ..> UC62 : <<include>>
+UC60 ..> UC64 : <<include>>
+UC65 ..> UC66 : <<extend>>
 
 @enduml
