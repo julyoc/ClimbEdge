@@ -1,0 +1,108 @@
+@startuml ClimbEdge.UseCases.BoardManagement
+!theme plain
+
+' Actores
+actor "Usuario" as User
+actor "Propietario de Tablero" as BoardOwner
+actor "Administrador de Tablero" as BoardAdmin
+actor "Miembro de Tablero" as BoardMember
+actor "Sistema Embebido" as EmbeddedSystem
+
+' Casos de uso principales
+package "Gestión de Tableros" {
+    usecase "Crear Tablero" as UC1
+    usecase "Configurar Tablero" as UC2
+    usecase "Editar Tablero" as UC3
+    usecase "Eliminar Tablero" as UC4
+    usecase "Ver Tablero" as UC5
+    usecase "Buscar Tableros" as UC6
+    usecase "Conectar Hardware" as UC7
+    usecase "Desconectar Hardware" as UC8
+}
+
+package "Gestión de Miembros" {
+    usecase "Invitar Miembro" as UC9
+    usecase "Aceptar Invitación" as UC10
+    usecase "Rechazar Invitación" as UC11
+    usecase "Asignar Rol" as UC12
+    usecase "Cambiar Rol" as UC13
+    usecase "Remover Miembro" as UC14
+    usecase "Salir del Tablero" as UC15
+    usecase "Ver Miembros" as UC16
+}
+
+package "Configuración de Elementos" {
+    usecase "Configurar Presas" as UC17
+    usecase "Definir Tipos de Presa" as UC18
+    usecase "Configurar Texturas" as UC19
+    usecase "Configurar Materiales" as UC20
+    usecase "Configurar Ángulos" as UC21
+    usecase "Calibrar Posiciones" as UC22
+}
+
+package "Visibilidad y Acceso" {
+    usecase "Cambiar Visibilidad" as UC23
+    usecase "Gestionar Permisos" as UC24
+    usecase "Archivar Tablero" as UC25
+    usecase "Restaurar Tablero" as UC26
+}
+
+' Relaciones Usuario general
+User --> UC5 : ve tablero público
+User --> UC6 : busca tableros
+User --> UC10 : acepta invitación
+User --> UC11 : rechaza invitación
+
+' Relaciones Propietario de Tablero
+BoardOwner --> UC1 : crea
+BoardOwner --> UC2 : configura
+BoardOwner --> UC3 : edita
+BoardOwner --> UC4 : elimina
+BoardOwner --> UC7 : conecta hardware
+BoardOwner --> UC8 : desconecta hardware
+BoardOwner --> UC9 : invita miembro
+BoardOwner --> UC12 : asigna rol
+BoardOwner --> UC13 : cambia rol
+BoardOwner --> UC14 : remueve miembro
+BoardOwner --> UC16 : ve miembros
+BoardOwner --> UC17 : configura presas
+BoardOwner --> UC18 : define tipos presa
+BoardOwner --> UC19 : configura texturas
+BoardOwner --> UC20 : configura materiales
+BoardOwner --> UC21 : configura ángulos
+BoardOwner --> UC22 : calibra posiciones
+BoardOwner --> UC23 : cambia visibilidad
+BoardOwner --> UC24 : gestiona permisos
+BoardOwner --> UC25 : archiva tablero
+BoardOwner --> UC26 : restaura tablero
+
+' Relaciones Administrador de Tablero
+BoardAdmin --> UC3 : edita
+BoardAdmin --> UC9 : invita miembro
+BoardAdmin --> UC12 : asigna rol
+BoardAdmin --> UC13 : cambia rol
+BoardAdmin --> UC14 : remueve miembro
+BoardAdmin --> UC16 : ve miembros
+BoardAdmin --> UC17 : configura presas
+BoardAdmin --> UC21 : configura ángulos
+BoardAdmin --> UC22 : calibra posiciones
+
+' Relaciones Miembro de Tablero
+BoardMember --> UC5 : ve tablero
+BoardMember --> UC15 : sale del tablero
+BoardMember --> UC16 : ve miembros
+
+' Relaciones Sistema Embebido
+EmbeddedSystem --> UC7 : establece conexión
+EmbeddedSystem --> UC22 : envía datos calibración
+
+' Extensiones e inclusiones
+UC1 ..> UC2 : <<include>>
+UC2 ..> UC17 : <<include>>
+UC2 ..> UC18 : <<include>>
+UC2 ..> UC21 : <<include>>
+UC7 ..> UC22 : <<include>>
+UC3 ..> UC17 : <<extend>>
+UC3 ..> UC21 : <<extend>>
+
+@enduml

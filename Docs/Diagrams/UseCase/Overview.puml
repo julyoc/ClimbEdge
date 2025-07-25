@@ -1,0 +1,96 @@
+@startuml ClimbEdge.UseCases.Overview
+!theme plain
+
+' Actores principales
+actor "Escalador" as Climber
+actor "Administrador" as Admin
+actor "Entrenador" as Coach
+actor "Sistema IA" as AISystem
+actor "Hardware Embebido" as EmbeddedHW
+
+' Paquetes de casos de uso principales
+package "Gestión de Usuarios" as UserMgmt {
+    usecase "Gestionar Perfil" as UC_UserProfile
+    usecase "Autenticación" as UC_Auth
+}
+
+package "Gestión de Tableros" as BoardMgmt {
+    usecase "Administrar Tableros" as UC_BoardAdmin
+    usecase "Configurar Hardware" as UC_HWConfig
+}
+
+package "Gestión de Problemas" as ProblemMgmt {
+    usecase "Crear Problemas" as UC_CreateProblems
+    usecase "Generar con IA" as UC_AIGeneration
+}
+
+package "Sesiones y Progreso" as SessionMgmt {
+    usecase "Gestionar Sesiones" as UC_Sessions
+    usecase "Seguir Progreso" as UC_Progress
+}
+
+package "Rutas de Escalada" as RouteMgmt {
+    usecase "Gestionar Zonas" as UC_Zones
+    usecase "Documentar Rutas" as UC_Routes
+}
+
+package "Sistema IA" as AIMgmt {
+    usecase "Entrenar Modelos" as UC_TrainAI
+    usecase "Generar Contenido" as UC_GenerateAI
+}
+
+package "Administración Sistema" as SysAdmin {
+    usecase "Configurar Sistema" as UC_SysConfig
+    usecase "Monitorear Sistema" as UC_Monitor
+}
+
+package "Sistema Embebido" as EmbeddedSys {
+    usecase "Control Hardware" as UC_HWControl
+    usecase "Sensores y LEDs" as UC_Sensors
+}
+
+' Relaciones principales entre actores y casos de uso
+Climber --> UC_UserProfile
+Climber --> UC_Auth
+Climber --> UC_Sessions
+Climber --> UC_Progress
+Climber --> UC_Zones
+Climber --> UC_Routes
+Climber --> UC_CreateProblems
+
+Coach --> UC_Sessions
+Coach --> UC_Progress
+Coach --> UC_CreateProblems
+Coach --> UC_BoardAdmin
+
+Admin --> UC_UserProfile
+Admin --> UC_BoardAdmin
+Admin --> UC_HWConfig
+Admin --> UC_SysConfig
+Admin --> UC_Monitor
+Admin --> UC_TrainAI
+
+AISystem --> UC_AIGeneration
+AISystem --> UC_GenerateAI
+AISystem --> UC_TrainAI
+
+EmbeddedHW --> UC_HWControl
+EmbeddedHW --> UC_Sensors
+EmbeddedHW --> UC_HWConfig
+
+' Relaciones entre casos de uso (dependencias principales)
+UC_Sessions ..> UC_Progress : <<include>>
+UC_CreateProblems ..> UC_AIGeneration : <<extend>>
+UC_BoardAdmin ..> UC_HWConfig : <<include>>
+UC_HWControl ..> UC_Sensors : <<include>>
+UC_GenerateAI ..> UC_TrainAI : <<include>>
+UC_Monitor ..> UC_SysConfig : <<extend>>
+
+' Notas explicativas
+note top of UC_AIGeneration : "Utiliza modelos entrenados\npara generar problemas\nautomáticamente"
+
+note right of UC_Sensors : "Sensores FSR detectan\ntoques en presas\nLEDs WS2812B iluminan\npatrones"
+
+note bottom of UC_Progress : "Registra intentos,\ncompletaciones y\nevaluaciones de problemas"
+
+@enduml

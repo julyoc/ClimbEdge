@@ -1,0 +1,133 @@
+@startuml ClimbEdge.UseCases.ClimbingRoutes
+!theme plain
+
+' Actores
+actor "Escalador" as Climber
+actor "Guía de Montaña" as Guide
+actor "Administrador Zona" as ZoneAdmin
+actor "Sistema" as System
+
+' Casos de uso principales
+package "Gestión de Zonas de Escalada" {
+    usecase "Crear Zona Escalada" as UC1
+    usecase "Editar Zona" as UC2
+    usecase "Eliminar Zona" as UC3
+    usecase "Ver Zona" as UC4
+    usecase "Buscar Zonas" as UC5
+    usecase "Filtrar por Ubicación" as UC6
+    usecase "Filtrar por Tipo" as UC7
+    usecase "Marcar Zona Favorita" as UC8
+    usecase "Añadir Fotos Zona" as UC9
+    usecase "Añadir Archivos Zona" as UC10
+}
+
+package "Gestión de Rutas" {
+    usecase "Crear Ruta" as UC11
+    usecase "Editar Ruta" as UC12
+    usecase "Eliminar Ruta" as UC13
+    usecase "Ver Ruta" as UC14
+    usecase "Buscar Rutas" as UC15
+    usecase "Filtrar por Dificultad" as UC16
+    usecase "Filtrar por Graduación" as UC17
+    usecase "Asignar Etiquetas" as UC18
+    usecase "Definir Características Roca" as UC19
+    usecase "Registrar Primera Ascensión" as UC20
+}
+
+package "Documentación de Rutas" {
+    usecase "Añadir Descripción" as UC21
+    usecase "Subir Croquis" as UC22
+    usecase "Subir Fotos Ruta" as UC23
+    usecase "Añadir Videos" as UC24
+    usecase "Describir Aproximación" as UC25
+    usecase "Describir Descenso" as UC26
+    usecase "Añadir Gear List" as UC27
+    usecase "Marcar Peligros" as UC28
+}
+
+package "Escalas de Dificultad" {
+    usecase "Configurar Escalas" as UC29
+    usecase "Crear Nueva Escala" as UC30
+    usecase "Editar Escala" as UC31
+    usecase "Convertir Graduaciones" as UC32
+    usecase "Validar Graduación" as UC33
+}
+
+package "Seguimiento Ascensiones" {
+    usecase "Registrar Ascensión" as UC34
+    usecase "Marcar Tick Type" as UC35
+    usecase "Añadir Notas Ascensión" as UC36
+    usecase "Evaluar Ruta" as UC37
+    usecase "Compartir Experiencia" as UC38
+    usecase "Ver Historial Personal" as UC39
+    usecase "Ver Estadísticas Ruta" as UC40
+}
+
+' Relaciones Escalador
+Climber --> UC4 : ve zona
+Climber --> UC5 : busca zonas
+Climber --> UC6 : filtra ubicación
+Climber --> UC7 : filtra tipo
+Climber --> UC8 : marca favorita
+Climber --> UC14 : ve ruta
+Climber --> UC15 : busca rutas
+Climber --> UC16 : filtra dificultad
+Climber --> UC17 : filtra graduación
+Climber --> UC34 : registra ascensión
+Climber --> UC35 : marca tick type
+Climber --> UC36 : añade notas
+Climber --> UC37 : evalúa ruta
+Climber --> UC38 : comparte experiencia
+Climber --> UC39 : ve historial
+Climber --> UC40 : ve estadísticas
+
+' Relaciones Guía de Montaña
+Guide --> UC1 : crea zona
+Guide --> UC2 : edita zona
+Guide --> UC9 : añade fotos zona
+Guide --> UC10 : añade archivos zona
+Guide --> UC11 : crea ruta
+Guide --> UC12 : edita ruta
+Guide --> UC18 : asigna etiquetas
+Guide --> UC19 : define características
+Guide --> UC20 : registra primera ascensión
+Guide --> UC21 : añade descripción
+Guide --> UC22 : sube croquis
+Guide --> UC23 : sube fotos ruta
+Guide --> UC24 : añade videos
+Guide --> UC25 : describe aproximación
+Guide --> UC26 : describe descenso
+Guide --> UC27 : añade gear list
+Guide --> UC28 : marca peligros
+
+' Relaciones Administrador Zona
+ZoneAdmin --> UC1 : crea zona
+ZoneAdmin --> UC2 : edita zona
+ZoneAdmin --> UC3 : elimina zona
+ZoneAdmin --> UC11 : crea ruta
+ZoneAdmin --> UC12 : edita ruta
+ZoneAdmin --> UC13 : elimina ruta
+ZoneAdmin --> UC29 : configura escalas
+ZoneAdmin --> UC30 : crea escala
+ZoneAdmin --> UC31 : edita escala
+ZoneAdmin --> UC33 : valida graduación
+
+' Relaciones Sistema
+System --> UC32 : convierte graduaciones
+System --> UC40 : calcula estadísticas
+
+' Extensiones e inclusiones
+UC1 ..> UC29 : <<include>>
+UC11 ..> UC16 : <<include>>
+UC11 ..> UC18 : <<extend>>
+UC11 ..> UC19 : <<extend>>
+UC12 ..> UC21 : <<extend>>
+UC12 ..> UC22 : <<extend>>
+UC12 ..> UC23 : <<extend>>
+UC34 ..> UC35 : <<include>>
+UC15 ..> UC16 : <<extend>>
+UC15 ..> UC17 : <<extend>>
+UC5 ..> UC6 : <<extend>>
+UC5 ..> UC7 : <<extend>>
+
+@enduml

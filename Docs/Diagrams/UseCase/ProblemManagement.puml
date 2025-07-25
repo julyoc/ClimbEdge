@@ -1,0 +1,124 @@
+@startuml ClimbEdge.UseCases.ProblemManagement
+!theme plain
+
+' Actores
+actor "Usuario" as User
+actor "Creador de Problemas" as ProblemCreator
+actor "Sistema IA" as AISystem
+actor "Sistema Embebido" as EmbeddedSystem
+
+' Casos de uso principales
+package "Gestión de Problemas" {
+    usecase "Crear Problema Manual" as UC1
+    usecase "Generar Problema con IA" as UC2
+    usecase "Editar Problema" as UC3
+    usecase "Eliminar Problema" as UC4
+    usecase "Ver Problema" as UC5
+    usecase "Buscar Problemas" as UC6
+    usecase "Filtrar por Dificultad" as UC7
+    usecase "Filtrar por Ángulo" as UC8
+    usecase "Clonar Problema" as UC9
+    usecase "Compartir Problema" as UC10
+}
+
+package "Configuración de Problema" {
+    usecase "Definir Presas Inicio" as UC11
+    usecase "Definir Presas Fin" as UC12
+    usecase "Definir Presas Mano" as UC13
+    usecase "Definir Presas Pie" as UC14
+    usecase "Definir Zonas Descanso" as UC15
+    usecase "Configurar Secuencia" as UC16
+    usecase "Asignar Dificultad" as UC17
+    usecase "Añadir Etiquetas" as UC18
+    usecase "Añadir Descripción" as UC19
+}
+
+package "Validación de Problema" {
+    usecase "Validar Problema" as UC20
+    usecase "Probar Físicamente" as UC21
+    usecase "Verificar Escalabilidad" as UC22
+    usecase "Revisar Seguridad" as UC23
+    usecase "Aprobar Problema" as UC24
+    usecase "Rechazar Problema" as UC25
+}
+
+package "Visualización" {
+    usecase "Mostrar en Tablero" as UC26
+    usecase "Iluminar Presas" as UC27
+    usecase "Mostrar Secuencia" as UC28
+    usecase "Vista 2D" as UC29
+    usecase "Vista 3D" as UC30
+    usecase "Exportar Imagen" as UC31
+}
+
+package "Generación IA" {
+    usecase "Solicitar Generación IA" as UC32
+    usecase "Configurar Parámetros IA" as UC33
+    usecase "Entrenar Modelo" as UC34
+    usecase "Evaluar Problema Generado" as UC35
+    usecase "Refinar Problema IA" as UC36
+}
+
+' Relaciones Usuario
+User --> UC5 : ve problema
+User --> UC6 : busca problemas
+User --> UC7 : filtra por dificultad
+User --> UC8 : filtra por ángulo
+User --> UC26 : muestra en tablero
+User --> UC29 : vista 2D
+User --> UC30 : vista 3D
+User --> UC31 : exporta imagen
+
+' Relaciones Creador de Problemas
+ProblemCreator --> UC1 : crea manual
+ProblemCreator --> UC3 : edita
+ProblemCreator --> UC4 : elimina
+ProblemCreator --> UC9 : clona
+ProblemCreator --> UC10 : comparte
+ProblemCreator --> UC11 : define inicio
+ProblemCreator --> UC12 : define fin
+ProblemCreator --> UC13 : define mano
+ProblemCreator --> UC14 : define pie
+ProblemCreator --> UC15 : define zonas
+ProblemCreator --> UC16 : configura secuencia
+ProblemCreator --> UC17 : asigna dificultad
+ProblemCreator --> UC18 : añade etiquetas
+ProblemCreator --> UC19 : añade descripción
+ProblemCreator --> UC20 : valida problema
+ProblemCreator --> UC21 : prueba físicamente
+ProblemCreator --> UC22 : verifica escalabilidad
+ProblemCreator --> UC23 : revisa seguridad
+ProblemCreator --> UC24 : aprueba problema
+ProblemCreator --> UC25 : rechaza problema
+ProblemCreator --> UC32 : solicita generación IA
+ProblemCreator --> UC33 : configura parámetros IA
+ProblemCreator --> UC35 : evalúa problema generado
+ProblemCreator --> UC36 : refina problema IA
+
+' Relaciones Sistema IA
+AISystem --> UC2 : genera problema
+AISystem --> UC34 : entrena modelo
+AISystem --> UC35 : evalúa problema
+
+' Relaciones Sistema Embebido
+EmbeddedSystem --> UC26 : recibe comando mostrar
+EmbeddedSystem --> UC27 : ilumina presas
+EmbeddedSystem --> UC28 : muestra secuencia
+
+' Extensiones e inclusiones
+UC1 ..> UC11 : <<include>>
+UC1 ..> UC12 : <<include>>
+UC1 ..> UC17 : <<include>>
+UC2 ..> UC32 : <<include>>
+UC2 ..> UC33 : <<include>>
+UC3 ..> UC20 : <<include>>
+UC20 ..> UC21 : <<extend>>
+UC20 ..> UC22 : <<include>>
+UC20 ..> UC23 : <<include>>
+UC26 ..> UC27 : <<include>>
+UC26 ..> UC28 : <<extend>>
+UC32 ..> UC2 : <<include>>
+UC6 ..> UC7 : <<extend>>
+UC6 ..> UC8 : <<extend>>
+
+@enduml

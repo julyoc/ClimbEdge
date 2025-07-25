@@ -1,0 +1,148 @@
+@startuml ClimbEdge.UseCases.SystemAdministration
+!theme plain
+
+' Actores
+actor "Administrador Sistema" as SysAdmin
+actor "Administrador Base Datos" as DBAdmin
+actor "Sistema" as System
+actor "Sistema Monitoreo" as MonitoringSystem
+
+' Casos de uso principales
+package "Gestión de Sistema" {
+    usecase "Configurar Sistema" as UC1
+    usecase "Actualizar Sistema" as UC2
+    usecase "Reiniciar Servicios" as UC3
+    usecase "Monitorear Estado" as UC4
+    usecase "Ver Logs Sistema" as UC5
+    usecase "Gestionar Backups" as UC6
+    usecase "Restaurar Sistema" as UC7
+    usecase "Configurar Alertas" as UC8
+}
+
+package "Gestión de Usuarios y Roles" {
+    usecase "Crear Roles Sistema" as UC9
+    usecase "Editar Roles" as UC10
+    usecase "Eliminar Roles" as UC11
+    usecase "Asignar Permisos" as UC12
+    usecase "Revocar Permisos" as UC13
+    usecase "Auditar Accesos" as UC14
+    usecase "Bloquear Usuarios" as UC15
+    usecase "Gestionar Sesiones" as UC16
+}
+
+package "Gestión de Base de Datos" {
+    usecase "Ejecutar Migraciones" as UC17
+    usecase "Crear Backup BD" as UC18
+    usecase "Restaurar BD" as UC19
+    usecase "Optimizar BD" as UC20
+    usecase "Monitorear Rendimiento BD" as UC21
+    usecase "Limpiar Datos Obsoletos" as UC22
+    usecase "Mantener Índices" as UC23
+    usecase "Verificar Integridad" as UC24
+}
+
+package "Configuración Global" {
+    usecase "Gestionar Configuraciones" as UC25
+    usecase "Configurar Escalas Dificultad" as UC26
+    usecase "Gestionar Tipos Elementos" as UC27
+    usecase "Configurar Texturas" as UC28
+    usecase "Configurar Materiales" as UC29
+    usecase "Gestionar Etiquetas" as UC30
+    usecase "Configurar Notificaciones" as UC31
+}
+
+package "Monitoreo y Alertas" {
+    usecase "Configurar Métricas" as UC32
+    usecase "Ver Dashboard" as UC33
+    usecase "Configurar Umbrales" as UC34
+    usecase "Recibir Alertas" as UC35
+    usecase "Analizar Tendencias" as UC36
+    usecase "Generar Reportes" as UC37
+    usecase "Exportar Métricas" as UC38
+}
+
+package "Seguridad" {
+    usecase "Configurar Firewall" as UC39
+    usecase "Gestionar Certificados" as UC40
+    usecase "Configurar Autenticación" as UC41
+    usecase "Auditar Seguridad" as UC42
+    usecase "Detectar Intrusiones" as UC43
+    usecase "Gestionar API Keys" as UC44
+    usecase "Configurar Rate Limiting" as UC45
+}
+
+' Relaciones Administrador Sistema
+SysAdmin --> UC1 : configura sistema
+SysAdmin --> UC2 : actualiza sistema
+SysAdmin --> UC3 : reinicia servicios
+SysAdmin --> UC4 : monitorea estado
+SysAdmin --> UC5 : ve logs
+SysAdmin --> UC6 : gestiona backups
+SysAdmin --> UC7 : restaura sistema
+SysAdmin --> UC8 : configura alertas
+SysAdmin --> UC9 : crea roles
+SysAdmin --> UC10 : edita roles
+SysAdmin --> UC11 : elimina roles
+SysAdmin --> UC12 : asigna permisos
+SysAdmin --> UC13 : revoca permisos
+SysAdmin --> UC14 : audita accesos
+SysAdmin --> UC15 : bloquea usuarios
+SysAdmin --> UC16 : gestiona sesiones
+SysAdmin --> UC25 : gestiona configuraciones
+SysAdmin --> UC26 : configura escalas
+SysAdmin --> UC27 : gestiona tipos
+SysAdmin --> UC28 : configura texturas
+SysAdmin --> UC29 : configura materiales
+SysAdmin --> UC30 : gestiona etiquetas
+SysAdmin --> UC31 : configura notificaciones
+SysAdmin --> UC32 : configura métricas
+SysAdmin --> UC33 : ve dashboard
+SysAdmin --> UC34 : configura umbrales
+SysAdmin --> UC35 : recibe alertas
+SysAdmin --> UC36 : analiza tendencias
+SysAdmin --> UC37 : genera reportes
+SysAdmin --> UC38 : exporta métricas
+SysAdmin --> UC39 : configura firewall
+SysAdmin --> UC40 : gestiona certificados
+SysAdmin --> UC41 : configura autenticación
+SysAdmin --> UC42 : audita seguridad
+SysAdmin --> UC43 : detecta intrusiones
+SysAdmin --> UC44 : gestiona API keys
+SysAdmin --> UC45 : configura rate limiting
+
+' Relaciones Administrador Base Datos
+DBAdmin --> UC17 : ejecuta migraciones
+DBAdmin --> UC18 : crea backup
+DBAdmin --> UC19 : restaura BD
+DBAdmin --> UC20 : optimiza BD
+DBAdmin --> UC21 : monitorea rendimiento
+DBAdmin --> UC22 : limpia datos
+DBAdmin --> UC23 : mantiene índices
+DBAdmin --> UC24 : verifica integridad
+
+' Relaciones Sistema
+System --> UC4 : reporta estado
+System --> UC5 : genera logs
+System --> UC35 : envía alertas
+System --> UC43 : detecta amenazas
+
+' Relaciones Sistema Monitoreo
+MonitoringSystem --> UC32 : recopila métricas
+MonitoringSystem --> UC33 : actualiza dashboard
+MonitoringSystem --> UC34 : evalúa umbrales
+MonitoringSystem --> UC35 : genera alertas
+MonitoringSystem --> UC36 : calcula tendencias
+
+' Extensiones e inclusiones
+UC2 ..> UC3 : <<include>>
+UC6 ..> UC18 : <<include>>
+UC7 ..> UC19 : <<include>>
+UC8 ..> UC32 : <<include>>
+UC8 ..> UC34 : <<include>>
+UC14 ..> UC42 : <<include>>
+UC32 ..> UC33 : <<include>>
+UC33 ..> UC35 : <<extend>>
+UC42 ..> UC43 : <<extend>>
+UC1 ..> UC41 : <<include>>
+
+@enduml

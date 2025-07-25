@@ -1,0 +1,147 @@
+@startuml ClimbEdge.UseCases.AISystem
+!theme plain
+
+' Actores
+actor "Usuario" as User
+actor "Administrador IA" as AIAdmin
+actor "Sistema de Entrenamiento" as TrainingSystem
+actor "Modelo IA" as AIModel
+
+' Casos de uso principales
+package "Gestión de Modelos IA" {
+    usecase "Crear Modelo IA" as UC1
+    usecase "Configurar Modelo" as UC2
+    usecase "Activar Modelo" as UC3
+    usecase "Desactivar Modelo" as UC4
+    usecase "Eliminar Modelo" as UC5
+    usecase "Ver Información Modelo" as UC6
+    usecase "Actualizar Parámetros" as UC7
+    usecase "Versionar Modelo" as UC8
+}
+
+package "Entrenamiento de Modelos" {
+    usecase "Preparar Datos Entrenamiento" as UC9
+    usecase "Iniciar Entrenamiento" as UC10
+    usecase "Monitorear Entrenamiento" as UC11
+    usecase "Pausar Entrenamiento" as UC12
+    usecase "Reanudar Entrenamiento" as UC13
+    usecase "Finalizar Entrenamiento" as UC14
+    usecase "Evaluar Modelo" as UC15
+    usecase "Validar Rendimiento" as UC16
+}
+
+package "Generación de Problemas" {
+    usecase "Solicitar Generación" as UC17
+    usecase "Configurar Parámetros Generación" as UC18
+    usecase "Procesar Solicitud" as UC19
+    usecase "Generar Problema" as UC20
+    usecase "Validar Problema Generado" as UC21
+    usecase "Refinar Resultado" as UC22
+    usecase "Aprobar Problema IA" as UC23
+    usecase "Rechazar Problema IA" as UC24
+}
+
+package "Gestión de Datos" {
+    usecase "Recopilar Datos Problemas" as UC25
+    usecase "Limpiar Datos" as UC26
+    usecase "Etiquetar Datos" as UC27
+    usecase "Validar Calidad Datos" as UC28
+    usecase "Exportar Datos" as UC29
+    usecase "Importar Datos" as UC30
+    usecase "Anonimizar Datos" as UC31
+}
+
+package "Monitoreo y Logs" {
+    usecase "Registrar Actividad Modelo" as UC32
+    usecase "Ver Logs Sistema" as UC33
+    usecase "Analizar Rendimiento" as UC34
+    usecase "Detectar Anomalías" as UC35
+    usecase "Generar Reportes" as UC36
+    usecase "Alertar Problemas" as UC37
+}
+
+package "Mejora Continua" {
+    usecase "Recopilar Feedback" as UC38
+    usecase "Analizar Patrones Uso" as UC39
+    usecase "Identificar Mejoras" as UC40
+    usecase "Actualizar Algoritmos" as UC41
+    usecase "Optimizar Rendimiento" as UC42
+}
+
+' Relaciones Usuario
+User --> UC17 : solicita generación
+User --> UC18 : configura parámetros
+User --> UC21 : valida problema
+User --> UC22 : refina resultado
+User --> UC38 : proporciona feedback
+
+' Relaciones Administrador IA
+AIAdmin --> UC1 : crea modelo
+AIAdmin --> UC2 : configura modelo
+AIAdmin --> UC3 : activa modelo
+AIAdmin --> UC4 : desactiva modelo
+AIAdmin --> UC5 : elimina modelo
+AIAdmin --> UC6 : ve información
+AIAdmin --> UC7 : actualiza parámetros
+AIAdmin --> UC8 : versiona modelo
+AIAdmin --> UC9 : prepara datos
+AIAdmin --> UC10 : inicia entrenamiento
+AIAdmin --> UC11 : monitorea entrenamiento
+AIAdmin --> UC12 : pausa entrenamiento
+AIAdmin --> UC13 : reanuda entrenamiento
+AIAdmin --> UC14 : finaliza entrenamiento
+AIAdmin --> UC15 : evalúa modelo
+AIAdmin --> UC16 : valida rendimiento
+AIAdmin --> UC23 : aprueba problema
+AIAdmin --> UC24 : rechaza problema
+AIAdmin --> UC25 : recopila datos
+AIAdmin --> UC26 : limpia datos
+AIAdmin --> UC27 : etiqueta datos
+AIAdmin --> UC28 : valida calidad
+AIAdmin --> UC29 : exporta datos
+AIAdmin --> UC30 : importa datos
+AIAdmin --> UC31 : anonimiza datos
+AIAdmin --> UC33 : ve logs
+AIAdmin --> UC34 : analiza rendimiento
+AIAdmin --> UC35 : detecta anomalías
+AIAdmin --> UC36 : genera reportes
+AIAdmin --> UC40 : identifica mejoras
+AIAdmin --> UC41 : actualiza algoritmos
+AIAdmin --> UC42 : optimiza rendimiento
+
+' Relaciones Sistema de Entrenamiento
+TrainingSystem --> UC10 : ejecuta entrenamiento
+TrainingSystem --> UC11 : reporta progreso
+TrainingSystem --> UC14 : completa entrenamiento
+TrainingSystem --> UC32 : registra actividad
+TrainingSystem --> UC35 : detecta anomalías
+TrainingSystem --> UC37 : alerta problemas
+
+' Relaciones Modelo IA
+AIModel --> UC19 : procesa solicitud
+AIModel --> UC20 : genera problema
+AIModel --> UC32 : registra actividad
+AIModel --> UC39 : analiza patrones
+
+' Extensiones e inclusiones
+UC1 ..> UC2 : <<include>>
+UC10 ..> UC9 : <<include>>
+UC10 ..> UC11 : <<include>>
+UC14 ..> UC15 : <<include>>
+UC15 ..> UC16 : <<include>>
+UC17 ..> UC18 : <<include>>
+UC17 ..> UC19 : <<include>>
+UC19 ..> UC20 : <<include>>
+UC20 ..> UC21 : <<include>>
+UC21 ..> UC22 : <<extend>>
+UC21 ..> UC23 : <<extend>>
+UC21 ..> UC24 : <<extend>>
+UC25 ..> UC26 : <<include>>
+UC26 ..> UC27 : <<include>>
+UC27 ..> UC28 : <<include>>
+UC38 ..> UC39 : <<include>>
+UC39 ..> UC40 : <<include>>
+UC40 ..> UC41 : <<extend>>
+UC41 ..> UC42 : <<extend>>
+
+@enduml
