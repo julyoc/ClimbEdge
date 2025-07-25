@@ -1,0 +1,126 @@
+@startuml ClimbEdge.UseCases.PaymentSystem
+
+!theme plain
+skinparam packageStyle rectangle
+skinparam usecase {
+    BackgroundColor LightGreen
+    BorderColor DarkGreen
+    ArrowColor Black
+}
+skinparam actor {
+    BackgroundColor LightYellow
+    BorderColor DarkOrange
+}
+
+title Casos de Uso - Sistema de Pagos y Suscripciones
+
+' Actores
+actor "Usuario" as User
+actor "Usuario Premium" as PremiumUser
+actor "Administrador" as Admin
+actor "Sistema de Pago" as PaymentGateway
+actor "Sistema Contable" as AccountingSystem
+
+' Casos de uso principales
+package "Gestión de Métodos de Pago" {
+    usecase "Agregar Método de Pago" as UC_AddPaymentMethod
+    usecase "Eliminar Método de Pago" as UC_RemovePaymentMethod
+    usecase "Actualizar Método de Pago" as UC_UpdatePaymentMethod
+    usecase "Establecer Método por Defecto" as UC_SetDefaultPaymentMethod
+    usecase "Validar Método de Pago" as UC_ValidatePaymentMethod
+}
+
+package "Gestión de Planes y Suscripciones" {
+    usecase "Consultar Planes Disponibles" as UC_ViewAvailablePlans
+    usecase "Suscribirse a Plan" as UC_SubscribeToPlan
+    usecase "Cambiar Plan de Suscripción" as UC_ChangePlan
+    usecase "Cancelar Suscripción" as UC_CancelSubscription
+    usecase "Renovar Suscripción" as UC_RenewSubscription
+    usecase "Pausar Suscripción" as UC_PauseSubscription
+}
+
+package "Procesamiento de Pagos" {
+    usecase "Procesar Pago de Suscripción" as UC_ProcessSubscriptionPayment
+    usecase "Procesar Pago por Uso" as UC_ProcessPayPerUse
+    usecase "Reembolsar Pago" as UC_RefundPayment
+    usecase "Gestionar Pago Fallido" as UC_HandleFailedPayment
+    usecase "Verificar Estado de Pago" as UC_VerifyPaymentStatus
+}
+
+package "Facturación" {
+    usecase "Generar Factura" as UC_GenerateInvoice
+    usecase "Enviar Factura por Email" as UC_SendInvoiceByEmail
+    usecase "Descargar Factura" as UC_DownloadInvoice
+    usecase "Consultar Historial de Facturas" as UC_ViewInvoiceHistory
+}
+
+package "Servicios Pay-Per-Use" {
+    usecase "Consumir Servicio Premium" as UC_ConsumePremiumService
+    usecase "Generar con IA" as UC_GenerateWithAI
+    usecase "Acceder Funcionalidad Premium" as UC_AccessPremiumFeature
+    usecase "Consultar Uso de Servicios" as UC_ViewServiceUsage
+}
+
+package "Administración de Pagos" {
+    usecase "Gestionar Planes" as UC_ManagePlans
+    usecase "Configurar Precios" as UC_ConfigurePricing
+    usecase "Generar Reportes Financieros" as UC_GenerateFinancialReports
+    usecase "Gestionar Reembolsos" as UC_ManageRefunds
+    usecase "Monitorear Transacciones" as UC_MonitorTransactions
+}
+
+' Relaciones de actores con casos de uso
+User --> UC_AddPaymentMethod
+User --> UC_RemovePaymentMethod
+User --> UC_UpdatePaymentMethod
+User --> UC_SetDefaultPaymentMethod
+User --> UC_ViewAvailablePlans
+User --> UC_SubscribeToPlan
+User --> UC_ChangePlan
+User --> UC_CancelSubscription
+User --> UC_DownloadInvoice
+User --> UC_ViewInvoiceHistory
+User --> UC_ConsumePremiumService
+User --> UC_ViewServiceUsage
+
+PremiumUser --> UC_GenerateWithAI
+PremiumUser --> UC_AccessPremiumFeature
+PremiumUser --> UC_RenewSubscription
+PremiumUser --> UC_PauseSubscription
+
+Admin --> UC_ManagePlans
+Admin --> UC_ConfigurePricing
+Admin --> UC_GenerateFinancialReports
+Admin --> UC_ManageRefunds
+Admin --> UC_MonitorTransactions
+
+PaymentGateway --> UC_ValidatePaymentMethod
+PaymentGateway --> UC_ProcessSubscriptionPayment
+PaymentGateway --> UC_ProcessPayPerUse
+PaymentGateway --> UC_RefundPayment
+PaymentGateway --> UC_VerifyPaymentStatus
+
+AccountingSystem --> UC_GenerateInvoice
+AccountingSystem --> UC_SendInvoiceByEmail
+
+' Relaciones de inclusión y extensión
+UC_SubscribeToPlan ..> UC_AddPaymentMethod : <<include>>
+UC_SubscribeToPlan ..> UC_ProcessSubscriptionPayment : <<include>>
+UC_SubscribeToPlan ..> UC_GenerateInvoice : <<include>>
+
+UC_ChangePlan ..> UC_ProcessSubscriptionPayment : <<include>>
+UC_ChangePlan ..> UC_GenerateInvoice : <<include>>
+
+UC_ConsumePremiumService ..> UC_ProcessPayPerUse : <<include>>
+UC_GenerateWithAI ..> UC_ProcessPayPerUse : <<include>>
+UC_AccessPremiumFeature ..> UC_ProcessPayPerUse : <<include>>
+
+UC_ProcessSubscriptionPayment ..> UC_ValidatePaymentMethod : <<include>>
+UC_ProcessPayPerUse ..> UC_ValidatePaymentMethod : <<include>>
+
+UC_HandleFailedPayment ..> UC_ProcessSubscriptionPayment : <<extend>>
+UC_RefundPayment ..> UC_ProcessSubscriptionPayment : <<extend>>
+
+UC_GenerateInvoice ..> UC_SendInvoiceByEmail : <<include>>
+
+@enduml

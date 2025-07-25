@@ -46,6 +46,19 @@ Este directorio contiene la documentación detallada de todos los casos de uso d
 - [UC-070: Configurar Sistema](./SystemAdministration/UC-070-ConfigurarSistema.md)
 - [UC-071: Monitorear Sistema](./SystemAdministration/UC-071-MonitorearSistema.md)
 
+### 9. Sistema de Montañismo y Expediciones
+- [UC-101: Crear Expedición](./MountainExpeditions/UC-101-CrearExpedicion.md)
+- [UC-102: Planificar Itinerario](./MountainExpeditions/UC-102-PlanificarItinerario.md)
+- [UC-103: Registrar Progreso con GPS](./MountainExpeditions/UC-103-RegistrarProgresoGPS.md)
+
+### 10. Sistema de Pagos y Suscripciones
+- [UC-201: Suscribirse a Plan Premium](./PaymentSystem/UC-201-SuscribirsePlan.md)
+- [UC-202: Procesar Pago por Uso](./PaymentSystem/UC-202-PagosPorUso.md)
+
+### 11. Sistema de Notificaciones
+- [UC-301: Configurar Preferencias de Notificaciones](./NotificationSystem/UC-301-ConfigurarPreferencias.md)
+- [UC-302: Enviar Notificación Automática](./NotificationSystem/UC-302-EnviarNotificacionAutomatica.md)
+
 ## Convenciones
 
 - **ID del Caso de Uso**: UC-XXX-NombreCasoUso
@@ -59,5 +72,30 @@ Este directorio contiene la documentación detallada de todos los casos de uso d
 - **Administrador**: Usuario con permisos administrativos
 - **Entrenador**: Usuario especializado en crear planes de entrenamiento
 - **Propietario de Tablero**: Usuario que posee y administra un tablero específico
+- **Montañista**: Usuario que participa en expediciones de montaña
+- **Guía de Montaña**: Profesional certificado que lidera expediciones
+- **Organizador de Expediciones**: Usuario que planifica y coordina expediciones
+- **Usuario Premium**: Usuario con suscripción activa a servicios premium
 - **Sistema IA**: Sistema automatizado de inteligencia artificial
 - **Sistema Embebido**: Hardware conectado (sensores, LEDs, Raspberry Pi)
+- **Sistema de Pago**: Procesadores de pago externos (Stripe, PayPal)
+- **Sistema de Notificaciones**: Servicios de envío de notificaciones
+- **Sistema GPS**: Sistema de posicionamiento y tracking
+- **Sistema Meteorológico**: APIs de datos climáticos
+
+## Módulos del Sistema
+
+### Core (Escalada Indoor)
+- **Gestión de Usuarios**: Autenticación, perfiles, preferencias
+- **Gestión de Tableros**: Configuración, miembros, hardware
+- **Gestión de Problemas**: Creación, validación, visualización
+- **Sesiones y Progreso**: Tracking de rendimiento y estadísticas
+- **Sistema IA**: Generación automática de problemas
+- **Sistema Embebido**: Control de hardware y sensores
+
+### Extensiones
+- **Rutas de Escalada**: Gestión de zonas y rutas outdoor
+- **Montañismo y Expediciones**: Planificación y tracking de expediciones completas
+- **Sistema de Pagos**: Suscripciones y servicios pay-per-use
+- **Sistema de Notificaciones**: Comunicación multi-canal con usuarios
+- **Administración**: Configuración y monitoreo del sistema

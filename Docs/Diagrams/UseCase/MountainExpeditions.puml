@@ -1,0 +1,123 @@
+@startuml ClimbEdge.UseCases.MountainExpeditions
+
+!theme plain
+skinparam packageStyle rectangle
+skinparam usecase {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    ArrowColor Black
+}
+skinparam actor {
+    BackgroundColor LightYellow
+    BorderColor DarkOrange
+}
+
+title Casos de Uso - Sistema de Montañismo y Expediciones
+
+' Actores
+actor "Montañista" as Mountaineer
+actor "Guía de Montaña" as Guide
+actor "Organizador de Expediciones" as Organizer
+actor "Administrador" as Admin
+actor "Sistema Meteorológico" as WeatherAPI
+
+' Casos de uso principales
+package "Gestión de Montañas" {
+    usecase "Consultar Montañas" as UC_ViewMountains
+    usecase "Buscar Rutas de Montaña" as UC_SearchMountainRoutes
+    usecase "Ver Detalles de Ruta" as UC_ViewRouteDetails
+    usecase "Consultar Condiciones Meteorológicas" as UC_CheckWeather
+    usecase "Subir Archivos de Montaña" as UC_UploadMountainFiles
+    usecase "Gestionar Rutas de Montaña" as UC_ManageMountainRoutes
+}
+
+package "Planificación de Expediciones" {
+    usecase "Crear Expedición" as UC_CreateExpedition
+    usecase "Planificar Itinerario" as UC_PlanItinerary
+    usecase "Gestionar Participantes" as UC_ManageParticipants
+    usecase "Configurar Equipamiento" as UC_ConfigureEquipment
+    usecase "Establecer Presupuesto" as UC_SetBudget
+    usecase "Crear Plan de Seguridad" as UC_CreateSafetyPlan
+    usecase "Gestionar Logística" as UC_ManageLogistics
+}
+
+package "Ejecución de Expediciones" {
+    usecase "Registrar Progreso Diario" as UC_RecordDailyProgress
+    usecase "Grabar Track GPS" as UC_RecordGPSTrack
+    usecase "Registrar Waypoints" as UC_RecordWaypoints
+    usecase "Actualizar Estado Expedición" as UC_UpdateExpeditionStatus
+    usecase "Gestionar Emergencias" as UC_HandleEmergencies
+    usecase "Comunicar con Base" as UC_CommunicateWithBase
+}
+
+package "Análisis Post-Expedición" {
+    usecase "Generar Reporte de Expedición" as UC_GenerateExpeditionReport
+    usecase "Analizar Tracks GPS" as UC_AnalyzeGPSTracks
+    usecase "Evaluar Participantes" as UC_EvaluateParticipants
+    usecase "Actualizar Base de Datos de Rutas" as UC_UpdateRouteDatabase
+}
+
+' Relaciones de actores con casos de uso
+Mountaineer --> UC_ViewMountains
+Mountaineer --> UC_SearchMountainRoutes
+Mountaineer --> UC_ViewRouteDetails
+Mountaineer --> UC_CheckWeather
+Mountaineer --> UC_CreateExpedition
+Mountaineer --> UC_RecordDailyProgress
+Mountaineer --> UC_RecordGPSTrack
+Mountaineer --> UC_RecordWaypoints
+
+Guide --> UC_ViewMountains
+Guide --> UC_SearchMountainRoutes
+Guide --> UC_ViewRouteDetails
+Guide --> UC_CheckWeather
+Guide --> UC_ManageMountainRoutes
+Guide --> UC_CreateExpedition
+Guide --> UC_PlanItinerary
+Guide --> UC_ManageParticipants
+Guide --> UC_ConfigureEquipment
+Guide --> UC_CreateSafetyPlan
+Guide --> UC_ManageLogistics
+Guide --> UC_RecordDailyProgress
+Guide --> UC_UpdateExpeditionStatus
+Guide --> UC_HandleEmergencies
+Guide --> UC_CommunicateWithBase
+Guide --> UC_GenerateExpeditionReport
+Guide --> UC_EvaluateParticipants
+
+Organizer --> UC_CreateExpedition
+Organizer --> UC_PlanItinerary
+Organizer --> UC_ManageParticipants
+Organizer --> UC_ConfigureEquipment
+Organizer --> UC_SetBudget
+Organizer --> UC_CreateSafetyPlan
+Organizer --> UC_ManageLogistics
+Organizer --> UC_UpdateExpeditionStatus
+Organizer --> UC_GenerateExpeditionReport
+Organizer --> UC_AnalyzeGPSTracks
+Organizer --> UC_UpdateRouteDatabase
+
+Admin --> UC_ManageMountainRoutes
+Admin --> UC_UploadMountainFiles
+Admin --> UC_UpdateRouteDatabase
+
+WeatherAPI --> UC_CheckWeather
+
+' Relaciones de inclusión y extensión
+UC_CreateExpedition ..> UC_PlanItinerary : <<include>>
+UC_CreateExpedition ..> UC_ConfigureEquipment : <<include>>
+UC_CreateExpedition ..> UC_CreateSafetyPlan : <<include>>
+
+UC_PlanItinerary ..> UC_SetBudget : <<include>>
+UC_PlanItinerary ..> UC_ManageLogistics : <<include>>
+
+UC_RecordDailyProgress ..> UC_RecordGPSTrack : <<include>>
+UC_RecordDailyProgress ..> UC_RecordWaypoints : <<include>>
+
+UC_HandleEmergencies ..> UC_CommunicateWithBase : <<extend>>
+UC_UpdateExpeditionStatus ..> UC_HandleEmergencies : <<extend>>
+
+UC_GenerateExpeditionReport ..> UC_AnalyzeGPSTracks : <<include>>
+UC_GenerateExpeditionReport ..> UC_EvaluateParticipants : <<include>>
+
+@enduml

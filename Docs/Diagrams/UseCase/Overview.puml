@@ -49,6 +49,21 @@ package "Sistema Embebido" as EmbeddedSys {
     usecase "Sensores y LEDs" as UC_Sensors
 }
 
+package "Montañismo y Expediciones" as MountainMgmt {
+    usecase "Gestionar Montañas" as UC_Mountains
+    usecase "Planificar Expediciones" as UC_Expeditions
+}
+
+package "Sistema de Pagos" as PaymentMgmt {
+    usecase "Gestionar Suscripciones" as UC_Subscriptions
+    usecase "Procesar Pagos" as UC_Payments
+}
+
+package "Sistema de Notificaciones" as NotificationMgmt {
+    usecase "Enviar Notificaciones" as UC_Notifications
+    usecase "Configurar Preferencias" as UC_NotifPrefs
+}
+
 ' Relaciones principales entre actores y casos de uso
 Climber --> UC_UserProfile
 Climber --> UC_Auth
@@ -57,11 +72,16 @@ Climber --> UC_Progress
 Climber --> UC_Zones
 Climber --> UC_Routes
 Climber --> UC_CreateProblems
+Climber --> UC_Mountains
+Climber --> UC_Expeditions
+Climber --> UC_Subscriptions
+Climber --> UC_NotifPrefs
 
 Coach --> UC_Sessions
 Coach --> UC_Progress
 Coach --> UC_CreateProblems
 Coach --> UC_BoardAdmin
+Coach --> UC_Expeditions
 
 Admin --> UC_UserProfile
 Admin --> UC_BoardAdmin
@@ -69,6 +89,8 @@ Admin --> UC_HWConfig
 Admin --> UC_SysConfig
 Admin --> UC_Monitor
 Admin --> UC_TrainAI
+Admin --> UC_Payments
+Admin --> UC_Notifications
 
 AISystem --> UC_AIGeneration
 AISystem --> UC_GenerateAI
@@ -85,6 +107,9 @@ UC_BoardAdmin ..> UC_HWConfig : <<include>>
 UC_HWControl ..> UC_Sensors : <<include>>
 UC_GenerateAI ..> UC_TrainAI : <<include>>
 UC_Monitor ..> UC_SysConfig : <<extend>>
+UC_Subscriptions ..> UC_Payments : <<include>>
+UC_Expeditions ..> UC_Notifications : <<include>>
+UC_Mountains ..> UC_Expeditions : <<extend>>
 
 ' Notas explicativas
 note top of UC_AIGeneration : "Utiliza modelos entrenados\npara generar problemas\nautomáticamente"
