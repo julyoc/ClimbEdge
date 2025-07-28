@@ -1,7 +1,7 @@
 @startwbs Packages Diagram
 
 * Entities
-**_> Configurations
+**_> Configuration
 **_> UserProfile
 **_> AppUser
 **_> AppRole
@@ -91,10 +91,40 @@
 ***_> NotificationQueue
 ***_> NotificationLog
 ** AI
+***_> AIModelType <<enum>>
+***_> AIGenerationStatus <<enum>>
 ***_> AIModel
 ***_> AIGenerationRequest
 ***_> AITrainingData
 ***_> AIModelLog
+***_> AIModelConfiguration
+***_> AIModelVersion
+***_> AIGenerationFeedback
+***_> AITrainingSession
+***_> AIGenerationTemplate
+***_> AIModelBenchmark
+***_> AIGenerationHistory
 ** Help
+***_> TicketStatus <<enum>>
+***_> TicketPriority <<enum>>
+***_> TicketCategory <<enum>>
+***_> ArticleStatus <<enum>>
+***_> HelpCategory
+***_> HelpArticle
+***_> HelpArticleVersion
+***_> HelpArticleAttachment
+***_> FAQ
+***_> SupportTicket
+***_> TicketMessage
+***_> TicketAttachment
+***_> HelpSearchLog
+***_> UserHelpActivity
+***_> HelpFeedback
+***_> LiveChatSession
+***_> ChatMessage
+***_> KnowledgeBase
+***_> SupportAgent
+***_> EscalationRule
+***_> SupportMetrics
 
 @endwbs

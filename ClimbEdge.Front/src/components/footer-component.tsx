@@ -69,7 +69,7 @@ export default component$(() => {
                         <h4 class="text-white font-semibold mb-4">Support</h4>
                         <ul class="space-y-2">
                             <li>
-                                <Link href="/help" class="text-slate-400 hover:text-emerald-400 transition-colors">
+                                <Link href="/help-center" class="text-slate-400 hover:text-emerald-400 transition-colors">
                                     Help Center
                                 </Link>
                             </li>

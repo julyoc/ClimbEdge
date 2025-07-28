@@ -18,16 +18,17 @@ namespace ClimbEdge.Common.Constants
         public const string Tester = "Tester";
         public const string Manager = "Manager";
         public const string Climb = "Climb";
-        public const string Mountaingeer = "";
+        public const string Mountaingeer = "Mountaingeer";
         public const string ContentCreator = "ContentCreator";
         public const string ContentEditor = "ContentEditor";
         public const string ContentViewer = "ContentViewer";
         public const string AnalyticsViewer = "AnalyticsViewer";
         public const string SystemUser = "SystemUser";
+        public const string ClimbClub = "ClimbClub";
 
         public static IReadOnlyList<string> roles = new List<string> { User, Admin, SuperAdmin, Moderator, Guest, Support,
                                                                        Developer, Tester, Manager, Climb, Mountaingeer,
                                                                        ContentCreator, ContentEditor, ContentViewer,
-                                                                       AnalyticsViewer, SystemUser };
+                                                                       AnalyticsViewer, SystemUser, ClimbClub };
     }
 }

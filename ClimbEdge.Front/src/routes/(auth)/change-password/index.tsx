@@ -1,9 +1,8 @@
 import { component$, useSignal, $ } from '@builder.io/qwik';
-import { useAuth } from '~/contexts/auth.context';
 import { authService, type ChangePasswordRequestDTO } from '~/services/auth.service';
+import { AuthComponent, Auth } from '~/components/auth-component';
 
 export default component$(() => {
-    const { isAuthenticated } = useAuth();
 
     const formData = useSignal<ChangePasswordRequestDTO>({
         currentPassword: '',
@@ -78,33 +77,9 @@ export default component$(() => {
         };
     });
 
-    // Redirigir si no está autenticado
-    if (!isAuthenticated.value) {
-        return (
-            <div class="min-h-screen bg-slate-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-                <div class="max-w-md w-full space-y-8">
-                    <div class="text-center">
-                        <h2 class="mt-6 text-3xl font-extrabold text-gray-900">
-                            Acceso Requerido
-                        </h2>
-                        <p class="mt-2 text-sm text-gray-600">
-                            Debes iniciar sesión para cambiar tu contraseña
-                        </p>
-                        <div class="mt-4">
-                            <a
-                                href="/login"
-                                class="font-medium text-blue-600 hover:text-blue-500"
-                            >
-                                Iniciar Sesión
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
     return (
+        <AuthComponent>
+        <Auth>
         <div class="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
             <div class="max-w-md mx-auto">
                 <div>
@@ -207,5 +182,7 @@ export default component$(() => {
                 </form>
             </div>
         </div>
+        </Auth>
+    </AuthComponent>
     );
 });
