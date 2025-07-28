@@ -225,6 +225,28 @@ namespace ClimbEdge.Infrastructure.DependencyInjection
                     await userManager.AddToRoleAsync(adminUser, "Admin");
                 }
             }
+
+            // Asegurar que el usuario admin tenga un perfil
+            if (adminUser != null)
+            {
+                var userProfileRepository = serviceProvider.GetRequiredService<IUserProfileRepository>();
+                var context = serviceProvider.GetRequiredService<ClimbEdgeContext>();
+                
+                var existingProfile = await context.Set<UserProfile>()
+                    .FirstOrDefaultAsync(up => up.AppUserId == adminUser.Id);
+                
+                if (existingProfile == null)
+                {
+                    var adminProfile = new UserProfile
+                    {
+                        AppUserId = adminUser.Id,
+                        FirstName = "Admin",
+                        LastName = "System",
+                    };
+                    await userProfileRepository.AddAsync(adminProfile);
+                    await userProfileRepository.SaveChangesAsync();
+                }
+            }
         }
     }
 }
