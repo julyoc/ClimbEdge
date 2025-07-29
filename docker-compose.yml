@@ -1,0 +1,75 @@
+services:
+  climbedge.api:
+    hostname: climbedge.summitexplorerjd.ec
+    image: ${DOCKER_REGISTRY-}climbedgeapi
+    build:
+      context: .
+      dockerfile: ClimbEdge.API/Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    env_file:
+      - .env
+    environment:
+      - ASPNETCORE_URLS=${ASPNETCORE_URLS}
+      - ASPNETCORE_HTTPS_PORT=${ASPNETCORE_HTTPS_PORT}
+    volumes:
+      - ./certbot/pfx:/certs:ro
+    depends_on:
+      climbedge.front:
+        condition: service_healthy
+      climbedge.db:
+        condition: service_healthy
+    networks:
+      - climbedge-network
+    restart: unless-stopped
+
+  climbedge.front:
+    hostname: front.climbedge.summitexplorerjd.ec
+    image: ${DOCKER_REGISTRY-}climbedgefront
+    build:
+      context: .
+      dockerfile: ClimbEdge.Front/Dockerfile
+    ports:
+      - "3000"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - PORT=${NODE_PORT}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "--version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - climbedge-network
+
+  climbedge.db:
+    image: postgres:alpine
+    hostname: climbedge.db
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+    ports:
+      - "5432:5432"
+    volumes:
+      - climbedge-data:/var/lib/postgresql/data
+    networks:
+      - climbedge-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+networks:
+  climbedge-network:
+    driver: bridge
+
+volumes:
+  climbedge-data:

@@ -374,3 +374,8 @@ FodyWeavers.xsd
 # Resources files
 
 # Diagrams files
+
+# Environment files
+.env
+.env.local
+.env.release
