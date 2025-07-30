@@ -40,6 +40,7 @@ services:
   climbedge.api:
     env_file:
       - .env
+      - .env.release
     environment:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
       - ASPNETCORE_URLS=${ASPNETCORE_URLS}
@@ -51,6 +52,10 @@ services:
       - climbedge.db
       - climbedge.cache
       - climbedge.certbot-init
+  climbedge.front:
+    env_file:
+      - .env
+      - .env.release
   climbedge.cache:
     image: eqalpha/keydb:latest
     ports:
