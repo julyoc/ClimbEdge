@@ -176,6 +176,36 @@ package "Boards" {
         +Difficulty: int
         +Properties: jsonb
     }
+    entity "BoardItemVolume" as BoardItemVolume {
+        'Volumen o forma tridimensional del elemento del tablero.
+        'Representa la forma 3D, el tamaño y las dimensiones físicas de una presa.
+        'Por ejemplo: micro, crimps, jugs, slopers, etc.
+        'Cada volumen puede tener diferentes propiedades y características físicas.
+        ..inherits BaseEntity..
+        +Name: string
+        +Description: string?
+        +VolumeType: string
+        ' Tipo de volumen: "Crimp", "Jug", "Sloper", "Pinch", "Pocket", "Edge", "Undercling", "Sidepull"
+        +Width: decimal?
+        ' Ancho físico en centímetros
+        +Height: decimal?
+        ' Alto físico en centímetros
+        +Depth: decimal?
+        ' Profundidad física en centímetros
+        +GridWidth: int
+        ' Ancho en número de celdas de la cuadrícula (1, 2, 3, etc.)
+        +GridHeight: int
+        ' Alto en número de celdas de la cuadrícula (1, 2, 3, etc.)
+        +HoldSize: string?
+        ' Tamaño: "Micro", "Small", "Medium", "Large", "XLarge"
+        +ModelUrl: string?
+        ' URL del modelo 3D del volumen
+        +ThumbnailUrl: string?
+        +ImageUrl: string?
+        +Difficulty: int
+        +Properties: jsonb
+        ' Propiedades específicas como ángulo de agarre, superficie, etc.
+    }
     entity "BoardItem" as BoardItem {
         'Elemento del tablero, que representa una presa o elemento específico en un tablero de escalada.
         'Cada elemento puede tener diferentes propiedades y características, como posición, tipo, textura, etc
@@ -184,10 +214,28 @@ package "Boards" {
         +PositionX: int
         +PositionY: int
         'unique(BoardConfigId, PositionX, PositionY)
+        +Orientation: string = "Normal"
+        ' Orientación del elemento, por ejemplo, "Normal", "Underclings", "Sidepulls".
         +Difficulty: int
         +BoardItemTypeId: long
-        +BoardItemTextureId: long?
+        +BoardItemVolumeId: long?
+        ' Volumen base de la presa (opcional para compatibilidad)
+    }
+    entity "BoardItemTextureCombination" as BoardItemTextureCombination {
+        'Combinación de texturas aplicadas a un elemento del tablero.
+        'Permite que una presa tenga múltiples texturas aplicadas simultáneamente.
+        ..inherits BaseEntity..
+        +BoardItemId: long
+        +BoardItemTextureId: long
         +BoardItemTextureMaterialId: long?
+        +Percentage: decimal?
+        ' Porcentaje de cobertura de esta textura en la presa (0-100)
+        +Position: string? = "Full"
+        ' Posición en la presa: "Top", "Bottom", "Left", "Right", "Center", "Full"
+        +Order: int
+        ' Orden de aplicación de las texturas (para efectos visuales)
+        +IsActive: bool
+        ' Permite activar/desactivar texturas específicas
     }
 }
 package "Boards.Problems" {
@@ -212,6 +260,8 @@ package "Boards.Problems" {
         +Description: string?
         +IsPublic: bool
         +CreatedByUserId: long? <<index>>
+        +GeneratedByAI: bool = false
+        ' Indica si el problema fue generado por IA.
     }
     entity "BoardProblemItem" as BoardProblemItem {
         'Elemento del problema del tablero, que representa una presa específica en un problema de escalada.
@@ -816,7 +866,6 @@ package "Mountains.Itinerary.Logistics" {
             ' Comodidades disponibles.
             +Notes: string?
         }
-
         entity "Transportation" as Transportation {
             'Transporte durante la expedición.
             ..inherits BaseEntity..
@@ -839,7 +888,6 @@ package "Mountains.Itinerary.Logistics" {
             +ContactInfo: string?
             +Notes: string?
         }
-
         entity "Meal" as Meal {
             'Comidas planificadas durante la expedición.
             ..inherits BaseEntity..
@@ -1032,7 +1080,6 @@ package "Payment" {
         +Disputed
         'Disputed: Pago en disputa o controversia.
     }
-
     enum "SubscriptionStatus" as SubscriptionStatus {
         +Active
         'Active: Suscripción activa y vigente.
@@ -1047,7 +1094,6 @@ package "Payment" {
         +PendingCancellation
         'PendingCancellation: Suscripción pendiente de cancelación.
     }
-
     entity "PaymentMethod" as PaymentMethod {
         'Método de pago del usuario (tarjeta de crédito, PayPal, etc.).
         ..inherits BaseEntity..
@@ -1065,7 +1111,6 @@ package "Payment" {
         +IsDefault: bool
         +IsActive: bool
     }
-
     entity "Plan" as Plan {
         'Plan de suscripción disponible.
         ..inherits BaseEntity..
@@ -1085,7 +1130,6 @@ package "Payment" {
         +AIGenerationsPerMonth: int?
         ' Generaciones de IA permitidas por mes.
     }
-
     entity "Subscription" as Subscription {
         'Suscripción del usuario a un plan.
         ..inherits BaseEntity..
@@ -1099,7 +1143,6 @@ package "Payment" {
         +CancelledAt: DateTime?
         +CancellationReason: string?
     }
-
     entity "Payment" as Payment {
         'Registro de pago realizado.
         ..inherits BaseEntity..
@@ -1118,7 +1161,6 @@ package "Payment" {
         +RefundedAt: DateTime?
         +RefundAmount: decimal?
     }
-
     entity "Invoice" as Invoice {
         'Factura generada para un pago.
         ..inherits BaseEntity..
@@ -1134,7 +1176,6 @@ package "Payment" {
         ' Estado de la factura: "Draft", "Sent", "Paid", "Overdue", "Cancelled".
         +PdfUrl: string?
     }
-
     entity "PayPerUse" as PayPerUse {
         'Pago por uso específico (rutas generadas por IA, funciones premium, etc.).
         ..inherits BaseEntity..
@@ -1168,7 +1209,6 @@ package "Notifications" {
         +Webhook
         'Webhook: Notificación a través de webhook.
     }
-
     enum "NotificationStatus" as NotificationStatus {
         +Pending
         'Pending: Notificación pendiente de envío.
@@ -1183,7 +1223,6 @@ package "Notifications" {
         +Cancelled
         'Cancelled: Notificación cancelada.
     }
-
     entity "NotificationTemplate" as NotificationTemplate {
         'Plantilla para notificaciones.
         ..inherits BaseEntity..
@@ -1198,7 +1237,6 @@ package "Notifications" {
         +Variables: jsonb
         ' Variables disponibles en la plantilla.
     }
-
     entity "NotificationPreference" as NotificationPreference {
         'Preferencias de notificación del usuario.
         ..inherits BaseEntity..
@@ -1210,7 +1248,6 @@ package "Notifications" {
         +InAppEnabled: bool
         +SMSEnabled: bool
     }
-
     entity "Notification" as Notification {
         'Notificación enviada a un usuario.
         ..inherits BaseEntity..
@@ -1229,7 +1266,6 @@ package "Notifications" {
         +Metadata: jsonb
         ' Datos adicionales específicos del tipo de notificación.
     }
-
     entity "NotificationQueue" as NotificationQueue {
         'Cola de notificaciones para procesamiento.
         ..inherits BaseEntity..
@@ -1245,7 +1281,6 @@ package "Notifications" {
         +Status: string
         ' Estado en la cola: "Queued", "Processing", "Completed", "Failed".
     }
-
     entity "NotificationLog" as NotificationLog {
         'Registro detallado de actividad de notificaciones.
         ..inherits BaseEntity..
@@ -1282,7 +1317,6 @@ package "AI" {
         +ResourceRequirements: jsonb?
         ' Requerimientos de CPU, memoria, GPU, etc.
     }
-
     entity "AIGenerationRequest" as AIGenerationRequest {
         'Solicitud para generar un problema de escalada utilizando un modelo de IA.
         ..inherits BaseEntity..
@@ -1316,7 +1350,6 @@ package "AI" {
         +CreatedAt: DateTime
         +CompletedAt: DateTime?
     }
-
     entity "AITrainingData" as AITrainingData {
         'Datos de entrenamiento utilizados para mejorar los modelos de IA.
         'En este caso, los datos provienen de los problemas de escalada existentes.
@@ -1329,7 +1362,6 @@ package "AI" {
         ' Modelo que utilizó estos datos para entrenamiento.
         +CreatedAt: DateTime
     }
-
     entity "AIModelLog" as AIModelLog {
         'Registro de actividades y resultados de los modelos de IA.
         ..inherits BaseEntity..
@@ -1348,7 +1380,6 @@ package "AI" {
         ' Mensaje de error en caso de fallo.
         +CreatedAt: DateTime
     }
-
     entity "AIModelConfiguration" as AIModelConfiguration {
         'Configuración específica de un modelo de IA.
         ..inherits BaseEntity..
@@ -1363,7 +1394,6 @@ package "AI" {
         +ValidationRules: jsonb?
         ' Reglas de validación para el valor de configuración.
     }
-
     entity "AIModelVersion" as AIModelVersion {
         'Versiones específicas de un modelo de IA.
         ..inherits BaseEntity..
@@ -1381,7 +1411,6 @@ package "AI" {
         +TrainingStartDate: DateTime?
         +TrainingEndDate: DateTime?
     }
-
     entity "AIGenerationFeedback" as AIGenerationFeedback {
         'Retroalimentación del usuario sobre las generaciones de IA.
         ..inherits BaseEntity..
@@ -1397,7 +1426,6 @@ package "AI" {
         +DifficultyAccuracy: int?
         ' Precisión de la dificultad del 1 al 5.
     }
-
     entity "AITrainingSession" as AITrainingSession {
         'Sesión de entrenamiento de un modelo de IA.
         ..inherits BaseEntity..
@@ -1425,7 +1453,6 @@ package "AI" {
         +ConfigSnapshot: jsonb
         ' Snapshot de la configuración usada.
     }
-
     entity "AIGenerationTemplate" as AIGenerationTemplate {
         'Plantillas predefinidas para generación de problemas.
         ..inherits BaseEntity..
@@ -1445,7 +1472,6 @@ package "AI" {
         +SuccessRate: decimal?
         ' Tasa de éxito de las generaciones con esta plantilla.
     }
-
     entity "AIModelBenchmark" as AIModelBenchmark {
         'Benchmarks y pruebas de rendimiento de modelos de IA.
         ..inherits BaseEntity..
@@ -1468,7 +1494,6 @@ package "AI" {
         +TestDate: DateTime
         +Notes: string?
     }
-
     entity "AIGenerationHistory" as AIGenerationHistory {
         'Historial detallado de generaciones de IA.
         ..inherits BaseEntity..
@@ -1485,7 +1510,6 @@ package "AI" {
         +Message: string?
         +Timestamp: DateTime
     }
-
     enum "AIModelType" as AIModelType {
         +NeuralNetwork
         'NeuralNetwork: Red neuronal tradicional.
@@ -1506,7 +1530,6 @@ package "AI" {
         +Ensemble
         'Ensemble: Conjunto de modelos.
     }
-
     enum "AIGenerationStatus" as AIGenerationStatus {
         +Pending
         'Pending: Solicitud pendiente de procesamiento.
@@ -1543,7 +1566,6 @@ package "Help" {
         +Escalated
         'Escalated: Ticket escalado a nivel superior.
     }
-
     enum "TicketPriority" as TicketPriority {
         +Low
         'Low: Prioridad baja.
@@ -1556,7 +1578,6 @@ package "Help" {
         +Critical
         'Critical: Prioridad crítica.
     }
-
     enum "TicketCategory" as TicketCategory {
         +Technical
         'Technical: Problema técnico.
@@ -1575,7 +1596,6 @@ package "Help" {
         +Complaint
         'Complaint: Queja o reclamo.
     }
-
     enum "ArticleStatus" as ArticleStatus {
         +Draft
         'Draft: Artículo en borrador.
@@ -1588,7 +1608,6 @@ package "Help" {
         +Deprecated
         'Deprecated: Artículo obsoleto.
     }
-
     entity "HelpCategory" as HelpCategory {
         'Categorías de artículos de ayuda.
         ..inherits BaseEntity..
@@ -1601,7 +1620,6 @@ package "Help" {
         +ArticleCount: int
         ' Número de artículos en esta categoría.
     }
-
     entity "HelpArticle" as HelpArticle {
         'Artículos de ayuda y documentación.
         ..inherits BaseEntity..
@@ -1623,7 +1641,6 @@ package "Help" {
         +EstimatedReadTime: int?
         ' Tiempo estimado de lectura en minutos.
     }
-
     entity "HelpArticleVersion" as HelpArticleVersion {
         'Versiones de artículos de ayuda para control de cambios.
         ..inherits BaseEntity..
@@ -1636,7 +1653,6 @@ package "Help" {
         +EditDate: DateTime
         +IsCurrentVersion: bool
     }
-
     entity "HelpArticleAttachment" as HelpArticleAttachment {
         'Archivos adjuntos de artículos de ayuda.
         ..inherits BaseEntity..
@@ -1649,7 +1665,6 @@ package "Help" {
         +Description: string?
         +UploadedBy: long
     }
-
     entity "FAQ" as FAQ {
         'Preguntas frecuentes.
         ..inherits BaseEntity..
@@ -1664,7 +1679,6 @@ package "Help" {
         +SearchKeywords: string?
         +LastUpdatedBy: long?
     }
-
     entity "SupportTicket" as SupportTicket {
         'Tickets de soporte técnico.
         ..inherits BaseEntity..
@@ -1687,7 +1701,6 @@ package "Help" {
         ' Calificación de satisfacción del 1 al 5.
         +ResolutionNotes: string?
     }
-
     entity "TicketMessage" as TicketMessage {
         'Mensajes dentro de un ticket de soporte.
         ..inherits BaseEntity..
@@ -1703,7 +1716,6 @@ package "Help" {
         +Attachments: jsonb?
         ' Array de archivos adjuntos.
     }
-
     entity "TicketAttachment" as TicketAttachment {
         'Archivos adjuntos de tickets de soporte.
         ..inherits BaseEntity..
@@ -1717,7 +1729,6 @@ package "Help" {
         +IsPublic: bool
         ' Indica si el archivo es visible para el cliente.
     }
-
     entity "HelpSearchLog" as HelpSearchLog {
         'Registro de búsquedas en la ayuda.
         ..inherits BaseEntity..
@@ -1732,7 +1743,6 @@ package "Help" {
         +WasHelpful: bool?
         ' Indica si la búsqueda fue útil para el usuario.
     }
-
     entity "UserHelpActivity" as UserHelpActivity {
         'Actividad del usuario en el sistema de ayuda.
         ..inherits BaseEntity..
@@ -1749,7 +1759,6 @@ package "Help" {
         +IpAddress: string?
         +UserAgent: string?
     }
-
     entity "HelpFeedback" as HelpFeedback {
         'Retroalimentación sobre artículos de ayuda.
         ..inherits BaseEntity..
@@ -1765,7 +1774,6 @@ package "Help" {
         +IsAnonymous: bool
         +IpAddress: string?
     }
-
     entity "LiveChatSession" as LiveChatSession {
         'Sesiones de chat en vivo para soporte.
         ..inherits BaseEntity..
@@ -1787,7 +1795,6 @@ package "Help" {
         +TranscriptUrl: string?
         ' URL del transcript de la conversación.
     }
-
     entity "ChatMessage" as ChatMessage {
         'Mensajes de chat en vivo.
         ..inherits BaseEntity..
@@ -1802,7 +1809,6 @@ package "Help" {
         +IsRead: bool
         +AttachmentUrl: string?
     }
-
     entity "KnowledgeBase" as KnowledgeBase {
         'Base de conocimiento para agentes de soporte.
         ..inherits BaseEntity..
@@ -1819,7 +1825,6 @@ package "Help" {
         +UseCount: int
         ' Número de veces que se ha usado en soporte.
     }
-
     entity "SupportAgent" as SupportAgent {
         'Agentes de soporte técnico.
         ..inherits BaseEntity..
@@ -1839,7 +1844,6 @@ package "Help" {
         ' Calificación promedio del agente.
         +LastActiveAt: DateTime?
     }
-
     entity "EscalationRule" as EscalationRule {
         'Reglas de escalación para tickets.
         ..inherits BaseEntity..
@@ -1856,7 +1860,6 @@ package "Help" {
         +Conditions: jsonb
         ' Condiciones adicionales para la escalación.
     }
-
     entity "SupportMetrics" as SupportMetrics {
         'Métricas de soporte y rendimiento.
         ..inherits BaseEntity..
@@ -1893,8 +1896,10 @@ Board "1" -- "0..*" BoardMember : has <
 BoardMember "0..*" -- "1" AppUser : is member of <
 BoardConfig "1" -- "0..*" Board : used by >
 BoardItemType "0..*" -- "0..*" BoardItem : is of type <
-BoardItemTextureMaterial "0..*" -- "0..*" BoardItem : is of material
-BoardItemTexture "0..*" -- "0..*" BoardItem : is of texture <
+BoardItem "1" -- "0..*" BoardItemTextureCombination : has texture combinations >
+BoardItemTexture "1" -- "0..*" BoardItemTextureCombination : used in combinations >
+BoardItemTextureMaterial "0..1" -- "0..*" BoardItemTextureCombination : material for combination >
+BoardItem "1" -- "0..1" BoardItemVolume : is volume >
 BoardItem "0..*" -- "1" BoardConfig : belongs to <
 DifficultyScaleType "0..1" -- "0..*" DifficultyScaleName : has <
 DifficultyScaleName "0..1" -- "0..*" DifficultyScale : has <

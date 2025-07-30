@@ -32,33 +32,120 @@ Las presas se clasifican según la forma y el tipo de agarre que requieren:
 
 - Superficies estrechas donde solo caben las yemas de los dedos.
 - Ideales para fuerza de dedos y precisión.
+- **Tamaño aprox:**
+   - Ancho: 8-20 cm
+   - Altura: 2-4 cm
+   - Profundidad de agarre: 0.5-1.5 cm
+- **Diseño:**
+   - Rectangulares, bordes romos o levemente redondeados.
+   - Pueden estar ligeramente inclinados (positivos o negativos).
+
+![edges ejemplo](../Resources/Images/Holds/edges.png)
 
 ### 2️⃣ **Crimps (Regletas Afiladas)**
 
 - Regletas pequeñas y cortantes.
 - Se usan con agarre en “crimp” (doblando las falanges).
 - Muy utilizadas en muros como el MoonBoard.
+- **Tamaño aprox:**
+   - Ancho: 5-15 cm
+   - Altura: 2-3 cm
+   - Profundidad de agarre: 0.3-1 cm
+- **Diseño:**
+   - Rectas o ligeramente curvadas, con cantos definidos.
+   - Algunas pueden tener un "lip" para crimp cerrado.
+- **Consejo:**
+   - Úsalas en muros con menos desplome o combínalas con inclinaciones para variar la dificultad.
+
+![crimps ejemplo](../Resources/Images/Holds/crimps.png)
 
 ### 3️⃣ **Slopers (Bolas o Presas Redondeadas)**
 
 - Presas redondeadas sin cantos definidos.
 - Requieren control corporal y buena fricción.
+- **Tamaño aprox:**
+   - Diámetro: 10–25 cm
+   - Altura desde el panel: 5–15 cm
+- **Diseño:**
+   - Semiesféricos o con forma de cúpula aplanada.
+   - Textura arenosa para fricción, superficie continua sin cantos.
+- **Consejo:**
+   - Funcionan bien en zonas centrales o de pasos técnicos.
+
+![slopers ejemplo](../Resources/Images/Holds/slopers.png)
 
 ### 4️⃣ **Pockets (Agujeros)**
 
 - Agujeros para uno, dos o tres dedos.
 - Piden fuerza puntual en dedos.
 - Menos comunes por riesgo de lesión.
+- **Tamaño aprox (diámetro del agujero):**
+   - Mono: 2–2.5 cm
+   - Dúo: 3–4 cm
+   - Trío: 4.5–5.5 cm
+   - Completo: 6–8 cm
+   - Profundidad: 2–4 cm
+- **Diseño:**
+   - Presas gruesas con bordes redondeados alrededor del agujero.
+   - Ángulo ligeramente inclinado hacia arriba para mayor seguridad.
+- **⚠️ Precaución:**
+   - No exagerar el ángulo ni el filo del borde para evitar lesiones.
+
+![pockets ejemplo](../Resources/Images/Holds/pockets.png)
 
 ### 5️⃣ **Pinches (Presas para Pinzar)**
 
 - Permiten agarrarse con toda la mano en forma de pinza.
 - Requieren fuerza de antebrazo y control de presión.
+- **Tamaño aprox:**
+   - Altura: 10–20 cm
+   - Ancho: 4–8 cm
+   - Profundidad: 3–6 cm
+- **Diseño:**
+   - Bordes paralelos o convergentes, superficies opuestas rugosas.
+   - Algunas pueden tener un lado más positivo.
+- **Consejo:**
+   - Colócalas en zonas de compresión o pasos laterales.
+
+![pinches ejemplo](../Resources/Images/Holds/pinches.png)
 
 ### 6️⃣ **Jugs (Cazos Grandes)**
 
 - Agarre fácil y cómodo, ideales para calentamiento y descansos.
 - Normalmente en partes superiores o muros muy desplomados.
+- **Tamaño aprox:**
+   - Ancho: 10–25 cm
+   - Profundidad de agarre: 3–6 cm
+   - Altura desde el panel: 5–10 cm
+- **Diseño:**
+   - Formas redondeadas con reborde profundo.
+   - Cóncavos, con hueco cómodo para dedos completos.
+- **Ideal para:**
+   - Calentamiento, iniciantes, pasos de descanso, movimientos dinámicos.
+
+![jugs ejemplo](../Resources/Images/Holds/jugs.png)
+
+### 7️⃣ **Volumes (Volúmenes)**
+- Estructuras grandes que sobresalen del muro.
+- Pueden tener diferentes formas y texturas.
+- Se usan para crear rutas más complejas y variadas.
+- Pueden incluir múltiples tipos de presas en su superficie.
+- **Tamaño aprox:**
+   - Varía ampliamente, desde 30 cm hasta más de 1 metro de altura.
+   - Profundidad y ancho también varían según el diseño.
+- **Diseño:**
+   - Pueden ser cúbicos, piramidales o con formas orgánicas.
+
+![volumes ejemplo](../Resources/Images/Holds/volumes.png)
+
+### **Notas:**
+
+- Las medidas son aproximadas y pueden variar según el fabricante.
+- La elección de presas depende del nivel de dificultad y el tipo de entrenamiento deseado.
+- La combinación de diferentes tipos de presas en un muro permite crear rutas variadas y desafiantes.
+- La textura de las presas también influye en la dificultad y el tipo de agarre requerido.
+- Las presas pueden ser de diferentes materiales como poliéster, resina, madera o fibra de vidrio, cada uno con sus propias características de fricción y durabilidad.
+- Se puede hacer una combinación de texturas y materiales en cada presa para aumentar la complejidad del agarre.
 
 ---
 
