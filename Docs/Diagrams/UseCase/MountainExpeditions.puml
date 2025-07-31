@@ -18,6 +18,7 @@ title Casos de Uso - Sistema de Montañismo y Expediciones
 actor "Montañista" as Mountaineer
 actor "Guía de Montaña" as Guide
 actor "Organizador de Expediciones" as Organizer
+actor "Organización" as Organization
 actor "Administrador" as Admin
 actor "Sistema Meteorológico" as WeatherAPI
 
@@ -39,6 +40,9 @@ package "Planificación de Expediciones" {
     usecase "Establecer Presupuesto" as UC_SetBudget
     usecase "Crear Plan de Seguridad" as UC_CreateSafetyPlan
     usecase "Gestionar Logística" as UC_ManageLogistics
+    usecase "Programar Expedición Organizacional" as UC_ScheduleOrgExpedition
+    usecase "Gestionar Inscripciones" as UC_ManageRegistrations
+    usecase "Configurar Requisitos de Participación" as UC_SetParticipationRequirements
 }
 
 package "Ejecución de Expediciones" {
@@ -97,6 +101,17 @@ Organizer --> UC_GenerateExpeditionReport
 Organizer --> UC_AnalyzeGPSTracks
 Organizer --> UC_UpdateRouteDatabase
 
+Organization --> UC_ScheduleOrgExpedition
+Organization --> UC_PlanItinerary
+Organization --> UC_ManageRegistrations
+Organization --> UC_SetParticipationRequirements
+Organization --> UC_ConfigureEquipment
+Organization --> UC_SetBudget
+Organization --> UC_CreateSafetyPlan
+Organization --> UC_ManageLogistics
+Organization --> UC_UpdateExpeditionStatus
+Organization --> UC_GenerateExpeditionReport
+
 Admin --> UC_ManageMountainRoutes
 Admin --> UC_UploadMountainFiles
 Admin --> UC_UpdateRouteDatabase
@@ -107,6 +122,12 @@ WeatherAPI --> UC_CheckWeather
 UC_CreateExpedition ..> UC_PlanItinerary : <<include>>
 UC_CreateExpedition ..> UC_ConfigureEquipment : <<include>>
 UC_CreateExpedition ..> UC_CreateSafetyPlan : <<include>>
+
+UC_ScheduleOrgExpedition ..> UC_PlanItinerary : <<include>>
+UC_ScheduleOrgExpedition ..> UC_ConfigureEquipment : <<include>>
+UC_ScheduleOrgExpedition ..> UC_CreateSafetyPlan : <<include>>
+UC_ScheduleOrgExpedition ..> UC_ManageRegistrations : <<include>>
+UC_ScheduleOrgExpedition ..> UC_SetParticipationRequirements : <<include>>
 
 UC_PlanItinerary ..> UC_SetBudget : <<include>>
 UC_PlanItinerary ..> UC_ManageLogistics : <<include>>

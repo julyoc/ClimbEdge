@@ -75,6 +75,18 @@
 ***_> ClimbRouteDescription
 ***_> ClimbRouteFile
 ***_> ClimbZoneFile
+** Organizations
+***_> OrganizationType <<enum>>
+***_> MembershipType <<enum>>
+***_> MembershipStatus <<enum>>
+***_> Organization
+***_> OrganizationMember
+***_> OrganizationFacility
+***_> OrganizationEvent
+***_> OrganizationEventParticipant
+***_> OrganizationCertification
+***_> OrganizationInstructor
+***_> OrganizationFile
 ** Sessions
 ***_> UserSession
 ***_> UserSessionProgress

@@ -99,6 +99,8 @@ package "Boards" {
         +Visibility: BoardVisibility
         +BoardConfigId: long
         ' Configuración del tablero, que define las propiedades y características del tablero.
+        +OrganizationId: long?
+        ' Organización propietaria del tablero (opcional para tableros privados)
     }
     entity "BoardMember" as BoardMember {
         'Miembro del tablero, que puede tener diferentes roles y permisos.
@@ -316,7 +318,6 @@ package "DifficultyScales" {
     entity "DifficultyScaleType" as DifficultyScaleType {
         'Tipo de escalada, por ejemplo, deportiva, boulder, trad, etc.
         'Define el tipo de escala de dificultad que se utilizará.
-        'Value Object
         ..inherits BaseEntity..
         +Name: string <<unique>>
         +Description: string?
@@ -325,7 +326,6 @@ package "DifficultyScales" {
     entity "DifficultyScaleName" as DifficultyScaleName {
         'Nombre de la escala de dificultad, por ejemplo, VScale, French, etc.
         'Asocia un nombre de escala de dificultad con un tipo de escala.
-        'Value Object
         ..inherits BaseEntity..
         +Name: string <<unique>>
         +Description: string?
@@ -334,7 +334,6 @@ package "DifficultyScales" {
     entity "DifficultyScale" as DifficultyScale {
         'Escala de dificultad, por ejemplo, V1, 5.10a, etc.
         'Asocia un nombre de escala de dificultad con un grupo de dificultad.
-        'Value Object
         'Representa una escala de dificultad específica dentro de un tipo y nombre de escala.
         ..inherits BaseEntity..
         +DifficultyScaleNameId: long
@@ -345,7 +344,6 @@ package "DifficultyScales" {
     entity "DifficultyGroup" as DifficultyGroup {
         'Grupo de dificultad, por ejemplo, principiante, intermedio, avanzado, elite, etc.
         'Agrupa escalas de dificultad bajo un mismo grupo.
-        'Value Object
         ..inherits BaseEntity..
         +Level: int
         +Name: string
@@ -653,6 +651,8 @@ package "Mountains.Itinerary" {
         ' Ubicación del campamento base.
         +OrganizedBy: long
         ' Usuario organizador.
+        +OrganizationId: long?
+        ' Organización que programa la expedición (opcional para expediciones individuales).
         +IsPublic: bool
         +RegistrationDeadline: DateTime?
     }
@@ -964,6 +964,8 @@ package "Climbing" {
         +IsPublic: bool
         +IsIndoor: bool
         +ImageUrl: string?
+        +OrganizationId: long?
+        ' Organización que gestiona la zona de escalada (opcional)
     }
     entity "ClimbRoute" as ClimbRoute {
         'PitchCount se refiere al número de tramos o largos de la ruta.
@@ -1029,6 +1031,249 @@ package "Climbing" {
         +FileResourceUrl: string[]?
         +ThumbnailUrl: string?
         +Description: string?
+    }
+}
+package "Organizations" {
+    enum "OrganizationType" as OrganizationType {
+        +Gym
+        'Gym: Gimnasio de escalada indoor.
+        +ClimbingClub
+        'ClimbingClub: Club o grupo de escalada.
+        +School
+        'School: Escuela de escalada.
+        +Federation
+        'Federation: Federación de escalada.
+        +Association
+        'Association: Asociación de escaladores.
+        +Guide_Service
+        'Guide_Service: Servicio de guías de montaña.
+        +Retailer
+        'Retailer: Tienda de equipamiento.
+    }
+    enum "MembershipType" as MembershipType {
+        +Free
+        'Free: Membresía gratuita.
+        +Basic
+        'Basic: Membresía básica.
+        +Premium
+        'Premium: Membresía premium.
+        +VIP
+        'VIP: Membresía VIP.
+        +Student
+        'Student: Membresía estudiantil.
+        +Senior
+        'Senior: Membresía para adultos mayores.
+        +Family
+        'Family: Membresía familiar.
+        +Corporate
+        'Corporate: Membresía corporativa.
+    }
+    enum "MembershipStatus" as MembershipStatus {
+        +Active
+        'Active: Membresía activa.
+        +Inactive
+        'Inactive: Membresía inactiva.
+        +Suspended
+        'Suspended: Membresía suspendida.
+        +Expired
+        'Expired: Membresía expirada.
+        +Cancelled
+        'Cancelled: Membresía cancelada.
+        +Pending
+        'Pending: Membresía pendiente de aprobación.
+    }
+    entity "Organization" as Organization {
+        'Organización de escalada (gimnasio, club, escuela, etc.).
+        ..inherits BaseEntity..
+        +Name: string <<unique>>
+        +DisplayName: string?
+        +Description: string?
+        +Type: OrganizationType
+        +Email: string?
+        +Phone: string?
+        +Website: string?
+        +Address: string?
+        +City: string?
+        +Province: string?
+        +Country: string
+        +PostalCode: string?
+        +Location: geography(POINT,4326)?
+        ' Coordenadas geográficas usando PostGIS.
+        +TimeZone: string?
+        +IsVerified: bool
+        ' Indica si la organización está verificada.
+        +IsPublic: bool
+        ' Indica si la organización es pública en listados.
+        +LogoUrl: string?
+        +BannerUrl: string?
+        +FoundedDate: DateTime?
+        +LicenseNumber: string?
+        ' Número de licencia o registro oficial.
+        +TaxId: string?
+        ' Número de identificación fiscal.
+        +BusinessHours: jsonb?
+        ' Horarios de atención en formato JSON.
+        +SocialMedia: jsonb?
+        ' Enlaces a redes sociales.
+        +Amenities: jsonb?
+        ' Servicios y comodidades disponibles.
+        +SafetyCertifications: jsonb?
+        ' Certificaciones de seguridad.
+    }
+    entity "OrganizationMember" as OrganizationMember {
+        'Miembro de una organización de escalada.
+        ..inherits BaseEntity..
+        +OrganizationId: long
+        +UserId: long
+        +MembershipType: MembershipType
+        +Status: MembershipStatus
+        +Role: string?
+        ' Rol específico: "Owner", "Admin", "Instructor", "Member", "Guest".
+        +JoinedAt: DateTime
+        +ExpiresAt: DateTime?
+        +LastPaymentAt: DateTime?
+        +MembershipNumber: string?
+        ' Número de membresía único dentro de la organización.
+        +EmergencyContact: string?
+        +EmergencyPhone: string?
+        +MedicalNotes: string?
+        +WaiverSigned: bool
+        +WaiverSignedAt: DateTime?
+        +Notes: string?
+        ' Notas administrativas sobre el miembro.
+    }
+    entity "OrganizationFacility" as OrganizationFacility {
+        'Instalación específica dentro de una organización.
+        ..inherits BaseEntity..
+        +OrganizationId: long
+        +Name: string
+        +Description: string?
+        +FacilityType: string
+        ' Tipo: "ClimbingWall", "BoulderingArea", "TrainingRoom", "Gym", "Locker", "Cafe", "Shop".
+        +Capacity: int?
+        ' Capacidad máxima de personas.
+        +Area: decimal?
+        ' Área en metros cuadrados.
+        +Height: decimal?
+        ' Altura en metros (para muros de escalada).
+        +IsActive: bool
+        +RequiresReservation: bool
+        +Equipment: jsonb?
+        ' Equipamiento disponible.
+        +SafetyFeatures: jsonb?
+        ' Características de seguridad.
+        +AccessLevel: string?
+        ' Nivel de acceso requerido: "Public", "Members", "Premium", "Staff".
+    }
+    entity "OrganizationEvent" as OrganizationEvent {
+        'Evento organizado por una organización de escalada.
+        ..inherits BaseEntity..
+        +OrganizationId: long
+        +Title: string
+        +Description: string?
+        +EventType: string
+        ' Tipo: "Competition", "Training", "Social", "Workshop", "Trip", "Meeting".
+        +StartDate: DateTime
+        +EndDate: DateTime
+        +Location: string?
+        +FacilityId: long?
+        ' Instalación específica donde se realiza el evento.
+        +MaxParticipants: int?
+        +CurrentParticipants: int
+        +RegistrationDeadline: DateTime?
+        +Cost: decimal?
+        +Currency: string?
+        +RequiresRegistration: bool
+        +IsPublic: bool
+        +SkillLevelRequired: string?
+        ' Nivel requerido: "Beginner", "Intermediate", "Advanced", "Expert".
+        +Equipment: string?
+        ' Equipamiento necesario.
+        +Instructor: string?
+        +ContactEmail: string?
+        +ContactPhone: string?
+        +CancellationPolicy: string?
+        +Status: string
+        ' Estado: "Planned", "Open", "Full", "InProgress", "Completed", "Cancelled".
+    }
+    entity "OrganizationEventParticipant" as OrganizationEventParticipant {
+        'Participante en un evento de organización.
+        ..inherits BaseEntity..
+        +EventId: long
+        +UserId: long
+        +RegistrationDate: DateTime
+        +Status: string
+        ' Estado: "Registered", "Confirmed", "Attended", "NoShow", "Cancelled".
+        +PaymentStatus: string?
+        ' Estado del pago: "Pending", "Paid", "Refunded".
+        +Notes: string?
+        +CheckInTime: DateTime?
+        +CheckOutTime: DateTime?
+    }
+    entity "OrganizationCertification" as OrganizationCertification {
+        'Certificación otorgada por una organización.
+        ..inherits BaseEntity..
+        +OrganizationId: long
+        +UserId: long
+        +CertificationType: string
+        ' Tipo: "Safety", "Instructor", "Guide", "First_Aid", "Rescue", "Belaying".
+        +CertificationName: string
+        +Level: string?
+        ' Nivel: "Basic", "Intermediate", "Advanced", "Expert", "Instructor".
+        +IssuedDate: DateTime
+        +ExpiryDate: DateTime?
+        +CertificateNumber: string <<unique>>
+        +IssuedBy: string?
+        ' Nombre del instructor o certificador.
+        +IsActive: bool
+        +RenewalRequired: bool
+        +CertificateUrl: string?
+        ' URL del certificado digital.
+        +Notes: string?
+    }
+    entity "OrganizationInstructor" as OrganizationInstructor {
+        'Instructor certificado de una organización.
+        ..inherits BaseEntity..
+        +OrganizationId: long
+        +UserId: long
+        +InstructorLevel: string
+        ' Nivel: "Assistant", "Certified", "Senior", "Master".
+        +Specialties: jsonb
+        ' Especialidades: ["Bouldering", "Sport_Climbing", "Trad", "Ice", "Alpine"].
+        +YearsExperience: int?
+        +CertificationNumber: string?
+        +CertificationExpiry: DateTime?
+        +IsActive: bool
+        +HourlyRate: decimal?
+        +Currency: string?
+        +Bio: string?
+        +Languages: jsonb?
+        ' Idiomas que habla.
+        +AvailabilitySchedule: jsonb?
+        ' Horario de disponibilidad.
+        +EmergencyTraining: bool
+        ' Indica si tiene entrenamiento en primeros auxilios.
+    }
+    entity "OrganizationFile" as OrganizationFile {
+        'Archivos asociados a una organización.
+        ..inherits BaseEntity..
+        +OrganizationId: long
+        +FileType: string
+        ' Tipo: "Photo", "Document", "Video", "Insurance", "License", "Manual", "Waiver".
+        +FileName: string
+        +FileSize: int
+        +FileUrl: string
+        +ThumbnailUrl: string?
+        +Title: string?
+        +Description: string?
+        +IsPublic: bool
+        +UploadedBy: long?
+        +Category: string?
+        ' Categoría: "Gallery", "Documents", "Safety", "Legal", "Training".
+        +RequiresLogin: bool
+        ' Indica si requiere login para acceder.
+        +ExpiryDate: DateTime?
+        ' Fecha de expiración para documentos con validez temporal.
     }
 }
 package "Sessions" {
@@ -2088,6 +2333,24 @@ LiveChatSession "1" -- "0..*" ChatMessage : contains messages >
 LiveChatSession "1" -- "0..*" UserHelpActivity : generates activity >
 TicketMessage "1" -- "0..*" TicketAttachment : has attachments >
 EscalationRule "1" -- "0..*" SupportTicket : applies to tickets >
+
+' Organizations Relations
+Organization "1" -- "0..*" OrganizationMember : has members >
+AppUser "1" -- "0..*" OrganizationMember : member of organizations >
+Organization "1" -- "0..*" OrganizationFacility : has facilities >
+Organization "1" -- "0..*" OrganizationEvent : organizes events >
+Organization "1" -- "0..*" OrganizationCertification : issues certifications >
+Organization "1" -- "0..*" OrganizationInstructor : has instructors >
+Organization "1" -- "0..*" OrganizationFile : has files >
+AppUser "1" -- "0..*" OrganizationCertification : receives certifications >
+AppUser "1" -- "0..*" OrganizationInstructor : is instructor >
+AppUser "1" -- "0..*" OrganizationEventParticipant : participates in events >
+AppUser "0..1" -- "0..*" OrganizationFile : uploads files >
+OrganizationEvent "1" -- "0..*" OrganizationEventParticipant : has participants >
+OrganizationFacility "0..1" -- "0..*" OrganizationEvent : hosts events >
+Organization "0..1" -- "0..*" ClimbZone : manages zones >
+Organization "0..1" -- "0..*" Board : owns boards >
+Organization "0..1" -- "0..*" Expedition : organizes expeditions >
 
 @enduml
 ' This file is auto-generated by PlantUML.

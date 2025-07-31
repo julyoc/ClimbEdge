@@ -1,0 +1,144 @@
+@startuml ClimbEdge.Docs.Diagrams.UseCase.OrganizationManagement
+
+!theme plain
+title Diagrama de Casos de Uso - Gestión de Organizaciones
+
+left to right direction
+
+' Actores
+actor "Usuario" as User
+actor "Administrador de Organización" as OrgAdmin
+actor "Propietario de Organización" as OrgOwner
+actor "Instructor" as Instructor
+actor "Miembro" as Member
+actor "Administrador del Sistema" as SystemAdmin
+
+rectangle "Sistema ClimbEdge - Gestión de Organizaciones" {
+    
+    ' Casos de uso principales para gestión de organizaciones
+    usecase "Registrar Organización" as UC001
+    usecase "Verificar Organización" as UC002
+    usecase "Gestionar Perfil de Organización" as UC003
+    usecase "Configurar Horarios y Servicios" as UC004
+    
+    ' Gestión de membresías
+    usecase "Solicitar Membresía" as UC005
+    usecase "Gestionar Membresías" as UC006
+    usecase "Renovar Membresía" as UC007
+    usecase "Cancelar Membresía" as UC008
+    
+    ' Gestión de instalaciones
+    usecase "Registrar Instalaciones" as UC009
+    usecase "Gestionar Reservas de Instalaciones" as UC010
+    usecase "Configurar Capacidad y Acceso" as UC011
+    
+    ' Gestión de eventos
+    usecase "Crear Evento" as UC012
+    usecase "Gestionar Participantes de Evento" as UC013
+    usecase "Configurar Inscripciones" as UC014
+    usecase "Cancelar/Reprogramar Evento" as UC015
+    
+    ' Gestión de certificaciones
+    usecase "Otorgar Certificación" as UC016
+    usecase "Renovar Certificación" as UC017
+    usecase "Validar Certificaciones" as UC018
+    
+    ' Gestión de instructores
+    usecase "Registrar Instructor" as UC019
+    usecase "Gestionar Horarios de Instructor" as UC020
+    usecase "Asignar Especialidades" as UC021
+    
+    ' Gestión de expediciones
+    usecase "Programar Expedición" as UC022
+    usecase "Gestionar Logística de Expedición" as UC023
+    usecase "Gestionar Participantes de Expedición" as UC024
+    usecase "Seguimiento de Expedición" as UC025
+    
+    ' Gestión de archivos y documentos
+    usecase "Subir Documentos Legales" as UC026
+    usecase "Gestionar Galería" as UC027
+    usecase "Configurar Waivers" as UC028
+    
+    ' Reportes y análisis
+    usecase "Generar Reportes de Membresía" as UC029
+    usecase "Analizar Utilización de Instalaciones" as UC030
+    usecase "Reportes Financieros" as UC031
+    
+    ' Relaciones de herencia
+    OrgOwner --|> OrgAdmin
+    OrgAdmin --|> User
+    Instructor --|> Member
+    Member --|> User
+    
+    ' Relaciones de usuario con casos de uso
+    User --> UC001 : registra
+    User --> UC005 : solicita
+    User --> UC014 : se inscribe
+    
+    OrgOwner --> UC002 : solicita verificación
+    OrgOwner --> UC003 : gestiona perfil
+    OrgOwner --> UC004 : configura
+    OrgOwner --> UC006 : gestiona
+    OrgOwner --> UC009 : registra
+    OrgOwner --> UC019 : registra
+    OrgOwner --> UC022 : programa
+    OrgOwner --> UC026 : sube
+    OrgOwner --> UC029 : genera
+    OrgOwner --> UC030 : analiza
+    OrgOwner --> UC031 : consulta
+    
+    OrgAdmin --> UC006 : aprueba/rechaza
+    OrgAdmin --> UC010 : gestiona
+    OrgAdmin --> UC011 : configura
+    OrgAdmin --> UC012 : crea
+    OrgAdmin --> UC013 : gestiona
+    OrgAdmin --> UC015 : modifica
+    OrgAdmin --> UC016 : otorga
+    OrgAdmin --> UC020 : gestiona
+    OrgAdmin --> UC021 : asigna
+    OrgAdmin --> UC023 : organiza
+    OrgAdmin --> UC024 : gestiona
+    OrgAdmin --> UC025 : monitorea
+    OrgAdmin --> UC027 : administra
+    OrgAdmin --> UC028 : configura
+    
+    Instructor --> UC017 : solicita renovación
+    Instructor --> UC020 : actualiza disponibilidad
+    
+    Member --> UC007 : renueva
+    Member --> UC008 : cancela
+    Member --> UC010 : reserva
+    
+    SystemAdmin --> UC002 : verifica
+    SystemAdmin --> UC018 : valida
+    
+    ' Relaciones de extensión e inclusión
+    UC003 ..> UC004 : <<include>>
+    UC006 ..> UC005 : <<include>>
+    UC012 ..> UC014 : <<include>>
+    UC016 ..> UC019 : <<extend>>
+    UC022 ..> UC023 : <<include>>
+    UC022 ..> UC024 : <<include>>
+    UC026 ..> UC028 : <<extend>>
+}
+
+note right of UC001
+Permite a cualquier usuario registrar
+una nueva organización en el sistema
+proporcionando información básica
+end note
+
+note right of UC022
+Las organizaciones verificadas pueden
+programar expediciones, gestionando
+todos los aspectos logísticos y
+de participantes
+end note
+
+note right of UC016
+Solo organizaciones verificadas
+pueden otorgar certificaciones
+oficiales reconocidas por el sistema
+end note
+
+@enduml

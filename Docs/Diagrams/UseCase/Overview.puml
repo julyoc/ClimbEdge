@@ -5,6 +5,7 @@
 actor "Escalador" as Climber
 actor "Administrador" as Admin
 actor "Entrenador" as Coach
+actor "Organización" as Organization
 actor "Sistema IA" as AISystem
 actor "Hardware Embebido" as EmbeddedHW
 
@@ -32,6 +33,12 @@ package "Sesiones y Progreso" as SessionMgmt {
 package "Rutas de Escalada" as RouteMgmt {
     usecase "Gestionar Zonas" as UC_Zones
     usecase "Documentar Rutas" as UC_Routes
+}
+
+package "Gestión de Organizaciones" as OrgMgmt {
+    usecase "Administrar Organización" as UC_OrgAdmin
+    usecase "Gestionar Membresías" as UC_Memberships
+    usecase "Programar Expediciones" as UC_Expeditions
 }
 
 package "Sistema IA" as AIMgmt {
@@ -92,6 +99,13 @@ Coach --> UC_CreateProblems
 Coach --> UC_BoardAdmin
 Coach --> UC_Expeditions
 Coach --> UC_KnowledgeBase
+
+Organization --> UC_OrgAdmin
+Organization --> UC_Memberships
+Organization --> UC_Expeditions
+Organization --> UC_BoardAdmin
+Organization --> UC_Zones
+Organization --> UC_Routes
 
 Admin --> UC_UserProfile
 Admin --> UC_BoardAdmin
