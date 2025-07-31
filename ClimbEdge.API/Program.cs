@@ -4,9 +4,13 @@ using ClimbEdge.Application.DependencyInjection;
 using ClimbEdge.Infrastructure.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using Serilog;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// permite appsettings.json
+builder.Host.UseSerilog((ctx, lc) => lc.ReadFrom.Configuration(ctx.Configuration));
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -50,6 +54,8 @@ builder.Services.AddCors(o =>
 });
 
 var app = builder.Build();
+
+app.UseSerilogRequestLogging(); // Log HTTP requests
 
 // Configure the database
 await app.Services.ConfigureDatabaseAsync();

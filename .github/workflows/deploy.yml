@@ -141,6 +141,9 @@ jobs:
                 # Copy certbot directory
                 scp -r certbot/ ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/opt/climbedge/
 
+                # Copy db-init directory
+                scp -r db-init/ ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/opt/climbedge/
+
             - name: Login to GitHub Container Registry on server
               run: |
                 ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }} "
