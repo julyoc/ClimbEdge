@@ -128,14 +128,21 @@ package "Boards" {
         ' StaggeredGridOffset: Desplazamiento de la cuadrícula escalonada
         +Difficulty: int
     }
+    enum "AngleUnit" as AngleUnit {
+        +Degrees
+        ' Degrees: Grados, la unidad más común para medir ángulos.
+        +Radians
+        ' Radians: Radianes, una unidad alternativa de medida de ángulos.
+    }
     entity "BoardAngle" as BoardAngle {
         'Ángulo de inclinación del tablero, que define la inclinación del tablero de escalada.
         'Representa un ángulo específico de inclinación del tablero, como vertical, 20 grados, etc.
         'El rango del ángulo puede variar según el tipo de tablero. Normal de 10 a 65 grados.
         'Cada ángulo puede tener diferentes propiedades y características.
+        'Los angulos se establecen de 5 en 5 grados, por ejemplo: 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65.
         ..inherits BaseEntity..
         +Angle: int <<unique>>
-        +Unit: string
+        +Unit: AngleUnit = AngleUnit.Degrees
         ' Unidad del ángulo, por ejemplo, grados, radianes, etc.
         +Description: string?
     }
@@ -185,7 +192,6 @@ package "Boards" {
         +Name: string
         +Description: string?
         +VolumeType: string
-        ' Tipo de volumen: "Crimp", "Jug", "Sloper", "Pinch", "Pocket", "Edge", "Undercling", "Sidepull"
         +Width: decimal?
         ' Ancho físico en centímetros
         +Height: decimal?
@@ -196,8 +202,6 @@ package "Boards" {
         ' Ancho en número de celdas de la cuadrícula (1, 2, 3, etc.)
         +GridHeight: int
         ' Alto en número de celdas de la cuadrícula (1, 2, 3, etc.)
-        +HoldSize: string?
-        ' Tamaño: "Micro", "Small", "Medium", "Large", "XLarge"
         +ModelUrl: string?
         ' URL del modelo 3D del volumen
         +ThumbnailUrl: string?
@@ -205,6 +209,13 @@ package "Boards" {
         +Difficulty: int
         +Properties: jsonb
         ' Propiedades específicas como ángulo de agarre, superficie, etc.
+    }
+    enum "HoldOrientation" as HoldOrientation {
+        +Normal
+        +Undercling
+        +Sidepull
+        +Pinch
+        +Sloper
     }
     entity "BoardItem" as BoardItem {
         'Elemento del tablero, que representa una presa o elemento específico en un tablero de escalada.
@@ -214,8 +225,7 @@ package "Boards" {
         +PositionX: int
         +PositionY: int
         'unique(BoardConfigId, PositionX, PositionY)
-        +Orientation: string = "Normal"
-        ' Orientación del elemento, por ejemplo, "Normal", "Underclings", "Sidepulls".
+        +Orientation: HoldOrientation = HoldOrientation.Normal
         +Difficulty: int
         +BoardItemTypeId: long
         +BoardItemVolumeId: long?
@@ -230,8 +240,6 @@ package "Boards" {
         +BoardItemTextureMaterialId: long?
         +Percentage: decimal?
         ' Porcentaje de cobertura de esta textura en la presa (0-100)
-        +Position: string? = "Full"
-        ' Posición en la presa: "Top", "Bottom", "Left", "Right", "Center", "Full"
         +Order: int
         ' Orden de aplicación de las texturas (para efectos visuales)
         +IsActive: bool
@@ -441,6 +449,16 @@ package "Mountains" {
         +FirstAscentDate: DateTime?
         +FirstAscentBy: string?
     }
+    entity "WaypointType" as WaypointType {
+        'Tipo de punto de referencia en una ruta.
+        'Define los tipos de puntos de referencia que pueden existir a lo largo de una ruta.
+        'Por ejemplo: inicio, descanso, campamento, cumbre, peligro, foto, fin, emergencia.
+        ' Tipo: "Start", "Break", "Lunch", "Camp", "Summit", "Danger", "Photo", "End", "Emergency".
+        ..inherits BaseEntity..
+        +Name: string <<unique>>
+        +Description: string?
+        +Icon: string?
+    }
     entity "RouteWaypoint" as RouteWaypoint {
         'Puntos de referencia a lo largo de una ruta.
         ..inherits BaseEntity..
@@ -453,8 +471,7 @@ package "Mountains" {
         ' Elevación del punto en metros.
         +Sequence: int
         ' Orden en la secuencia de la ruta.
-        +WaypointType: string
-        ' Tipo: "Start", "Summit", "Camp", "Water", "Danger", "Rest", "Junction", "End".
+        +WaypointTypeId: long
         +EstimatedTimeFromPrevious: int?
         ' Tiempo estimado desde el waypoint anterior en minutos.
         +Notes: string?
@@ -543,7 +560,7 @@ package "Mountains" {
     }
 }
 package "Mountains.Itinerary" {
-    enum MountaineerTickType {
+    enum "MountaineerTickType" as MountaineerTickType {
         'Summit: Cima alcanzada exitosamente.
         Summit
         'Attempted: Intentado, pero no se alcanzó la cumbre (retirada por clima, fatiga, etc.).
@@ -639,6 +656,16 @@ package "Mountains.Itinerary" {
         +IsPublic: bool
         +RegistrationDeadline: DateTime?
     }
+    enum "ParticipantStatus" as ParticipantStatus {
+        +Registered
+        'Registered: Registrado.
+        +Confirmed
+        'Confirmed: Confirmado.
+        +Cancelled
+        'Cancelled: Cancelado.
+        +Completed
+        'Completed: Completado.
+    }
     entity "ExpeditionParticipant" as ExpeditionParticipant {
         'Participantes de la expedición.
         ..inherits BaseEntity..
@@ -646,8 +673,7 @@ package "Mountains.Itinerary" {
         +UserId: long
         +Role: ParticipantRole
         +JoinedAt: DateTime
-        +Status: string
-        ' Estado: "Registered", "Confirmed", "Cancelled", "Completed".
+        +Status: ParticipantStatus
         +ExperienceLevel: string?
         +MedicalClearance: bool
         +EmergencyContact: string?
@@ -699,12 +725,19 @@ package "Mountains.Itinerary" {
         +AlternativePlan: string?
         ' Plan alternativo en caso de problemas.
     }
+    entity "EquipmentCategory" as EquipmentCategory {
+        'Categoría de equipamiento, que define las categorías de equipamiento utilizadas en expediciones.
+        ' Categoría: "Climbing", "Camping", "Safety", "Clothing", "Navigation", etc.
+        ..inherits BaseEntity..
+        +Name: string <<unique>>
+        +Description: string?
+        +Icon: string?
+    }
     entity "Equipment" as Equipment {
         'Equipamiento necesario para la expedición.
         ..inherits BaseEntity..
         +Name: string
-        +Category: string
-        ' Categoría: "Climbing", "Camping", "Safety", "Clothing", "Navigation", etc.
+        +EquipmentCategoryId: long
         +Description: string?
         +IsPersonal: bool
         ' Indica si es equipo personal o grupal.
@@ -729,12 +762,23 @@ package "Mountains.Itinerary" {
         ' Participante responsable del equipo.
         +Notes: string?
     }
+    entity "ExpeditionBudgetCategory" as ExpeditionBudgetCategory {
+        'Categoría de presupuesto de la expedición.
+        ' Categoría: "Transport", "Accommodation", "Food", "Equipment", "Permits", "Insurance", "Guide", "Emergency".
+        ..inherits BaseEntity..
+        +ExpeditionId: long
+        +Name: string
+        +Description: string?
+        +IsMandatory: bool = false
+        ' Indica si es una categoría obligatoria.
+        +BudgetLimit: decimal?
+        ' Límite presupuestario para esta categoría.
+    }
     entity "ExpeditionBudget" as ExpeditionBudget {
         'Presupuesto detallado de la expedición.
         ..inherits BaseEntity..
         +ExpeditionId: long
-        +Category: string
-        ' Categoría: "Transport", "Accommodation", "Food", "Equipment", "Permits", "Insurance", "Guide", "Emergency".
+        +ExpeditionBudgetCategoryId: long
         +Description: string
         +PlannedCost: decimal
         +ActualCost: decimal?
@@ -826,8 +870,7 @@ package "Mountains.Itinerary" {
         ' Elevación del punto en metros.
         +Timestamp: DateTime
         ' Momento exacto en que se registró el waypoint.
-        +WaypointType: string
-        ' Tipo: "Start", "Break", "Lunch", "Camp", "Summit", "Danger", "Photo", "End", "Emergency".
+        +WaypointTypeId: long
         +Duration: int?
         ' Tiempo de permanencia en el waypoint en minutos.
         +Photo: string?
@@ -1889,17 +1932,17 @@ AIModel "1" -- "0..*" AIGenerationRequest : processes >
 AIModel "1" -- "0..*" AITrainingData : trained with >
 AIModel "1" -- "0..*" AIModelLog : logs >
 BoardProblem "1" -- "0..*" AITrainingData : used as training data <
-BoardProblem "1" -- "0..*" AIGenerationRequest : generated by <
+AIGenerationRequest "0..1" -- "0..1" BoardProblem : generates >
 UserProfile "1" -- "1" AppUser : has <
 AppRole "0..*" -- "0..*" AppUser : belongs to
 Board "1" -- "0..*" BoardMember : has <
 BoardMember "0..*" -- "1" AppUser : is member of <
 BoardConfig "1" -- "0..*" Board : used by >
-BoardItemType "0..*" -- "0..*" BoardItem : is of type <
+BoardItemType "1" -- "0..*" BoardItem : is of type <
 BoardItem "1" -- "0..*" BoardItemTextureCombination : has texture combinations >
 BoardItemTexture "1" -- "0..*" BoardItemTextureCombination : used in combinations >
 BoardItemTextureMaterial "0..1" -- "0..*" BoardItemTextureCombination : material for combination >
-BoardItem "1" -- "0..1" BoardItemVolume : is volume >
+BoardItemVolume "0..1" -- "0..*" BoardItem : has volume <
 BoardItem "0..*" -- "1" BoardConfig : belongs to <
 DifficultyScaleType "0..1" -- "0..*" DifficultyScaleName : has <
 DifficultyScaleName "0..1" -- "0..*" DifficultyScale : has <
@@ -1907,7 +1950,7 @@ DifficultyScale "0..*" -- "1" DifficultyGroup : belongs to <
 BoardConfig "1" -- "0..*" BoardProblem : defines >
 BoardProblemItem "0..*" -- "1" BoardProblem : belongs to <
 BoardProblemItem "0..*" -- "1" BoardItem : is of item <
-BoardProblemItem "0..1" -- "0..*" BoardProblemItemType : has type <
+BoardProblemItemType "1" -- "0..*" BoardProblemItem : has type <
 AppUser "0..1" -- "0..*" BoardProblem : created by <
 AppUser "0..1" -- "0..*" Configuration : created by <
 ClimbZone "1" -- "0..*" ClimbRoute : has <
@@ -1927,7 +1970,6 @@ UserSessionProgress "0..*" -- "1" BoardProblem : progress on <
 BoardProblemAngle "0..*" -- "1" BoardProblem : has angle <
 BoardProblemAngle "0..*" -- "1" BoardAngle : is of angle <
 BoardProblemAngle "0..*" -- "1" DifficultyScale : has difficulty scale <
-BoardAngle "0..*" -- "0..*" BoardProblemAngle : has angles <
 Board "1" -- "0..*" BoardSessionSummary : summarized in >
 AppUser "1" -- "0..*" BoardSessionSummary : stats for user >
 BoardProblem "0..*" -- "0..*" BoardProblemTag : has tags <
@@ -1943,6 +1985,7 @@ MountainRoute "1" -- "0..*" RouteTrack : has tracks >
 MountainRoute "1" -- "0..*" RouteFile : has files >
 DifficultyScale "1" -- "0..*" MountainRoute : difficulty rated >
 AppUser "0..1" -- "0..*" RouteFile : uploads files >
+WaypointType "1" -- "0..*" RouteWaypoint : has type <
 
 ' Mountains.Itinerary Relations
 Mountain "1" -- "0..*" Expedition : has expeditions >
@@ -1964,6 +2007,9 @@ AppUser "0..1" -- "0..*" ItineraryFile : uploads files >
 AppUser "0..1" -- "0..*" ItineraryDayWaypoint : records waypoints >
 ExpeditionParticipant "0..1" -- "0..*" ExpeditionEquipment : responsible for >
 ExpeditionParticipant "0..1" -- "0..*" ItineraryDayTrack : records tracks >
+EquipmentCategory "1" -- "0..*" Equipment : categorizes >
+ExpeditionBudgetCategory "1" -- "0..*" ExpeditionBudget : has categories >
+WaypointType "1" -- "0..*" ItineraryDayWaypoint : has types >
 
 ' Mountains.Itinerary.Logistics Relations
 Expedition "1" -- "0..*" Accommodation : has accommodations >
