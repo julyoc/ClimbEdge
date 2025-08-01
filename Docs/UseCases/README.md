@@ -38,6 +38,8 @@ Este directorio contiene la documentación detallada de todos los casos de uso d
 - [UC-051: Generar Problema Automático](./AISystem/UC-051-GenerarProblemaAutomatico.md)
 - [UC-052: Gestionar Configuraciones de Modelo](./AISystem/UC-052-GestionarConfiguracionesModelo.md)
 - [UC-053: Ejecutar Benchmark de Modelo](./AISystem/UC-053-EjecutarBenchmarkModelo.md)
+- [UC-133: Generar Plan de Entrenamiento con IA](./AI/UC-133-GenerarPlanEntrenamientoAI.md)
+- [UC-134: Analizar Riesgo de Lesión](./AI/UC-134-AnalizarRiesgoLesion.md)
 
 ### 7. Sistema Embebido
 - [UC-060: Establecer Conexión Hardware](./EmbeddedSystem/UC-060-EstablecerConexionHardware.md)
@@ -49,22 +51,48 @@ Este directorio contiene la documentación detallada de todos los casos de uso d
 - [UC-071: Monitorear Sistema](./SystemAdministration/UC-071-MonitorearSistema.md)
 
 ### 9. Sistema de Montañismo y Expediciones
-- [UC-101: Crear Expedición](./MountainExpeditions/UC-101-CrearExpedicion.md)
-- [UC-102: Planificar Itinerario](./MountainExpeditions/UC-102-PlanificarItinerario.md)
-- [UC-103: Registrar Progreso con GPS](./MountainExpeditions/UC-103-RegistrarProgresoGPS.md)
+- [UC-080: Crear Expedición](./MountainExpeditions/UC-080-CrearExpedicion.md)
+- [UC-081: Planificar Itinerario](./MountainExpeditions/UC-081-PlanificarItinerario.md)
+- [UC-082: Registrar Progreso con GPS](./MountainExpeditions/UC-082-RegistrarProgresoGPS.md)
+- [UC-083: Gestionar Equipamiento de Expedición](./MountainExpeditions/UC-083-GestionarEquipamiento.md)
+- [UC-084: Gestionar Presupuesto de Expedición](./MountainExpeditions/UC-084-GestionarPresupuesto.md)
+- [UC-085: Crear Plan de Seguridad](./MountainExpeditions/UC-085-CrearPlanSeguridad.md)
 
 ### 10. Sistema de Pagos y Suscripciones
-- [UC-201: Suscribirse a Plan Premium](./PaymentSystem/UC-201-SuscribirsePlan.md)
-- [UC-202: Procesar Pago por Uso](./PaymentSystem/UC-202-PagosPorUso.md)
+- [UC-090: Suscribirse a Plan Premium](./PaymentSystem/UC-090-SuscribirsePlan.md)
+- [UC-091: Procesar Pago por Uso](./PaymentSystem/UC-091-PagosPorUso.md)
+- [UC-092: Gestionar Métodos de Pago](./PaymentSystem/UC-092-GestionarMetodosPago.md)
+- [UC-093: Generar Factura](./PaymentSystem/UC-093-GenerarFactura.md)
+- [UC-094: Procesar Reembolso](./PaymentSystem/UC-094-ProcesarReembolso.md)
 
 ### 11. Sistema de Notificaciones
-- [UC-301: Configurar Preferencias de Notificaciones](./NotificationSystem/UC-301-ConfigurarPreferencias.md)
-- [UC-302: Enviar Notificación Automática](./NotificationSystem/UC-302-EnviarNotificacionAutomatica.md)
+- [UC-100: Configurar Preferencias de Notificaciones](./NotificationSystem/UC-100-ConfigurarPreferencias.md)
+- [UC-101: Enviar Notificación Automática](./NotificationSystem/UC-101-EnviarNotificacionAutomatica.md)
+- [UC-102: Gestionar Cola de Notificaciones](./NotificationSystem/UC-102-GestionarColaNotificaciones.md)
+- [UC-103: Crear Plantilla de Notificación](./NotificationSystem/UC-103-CrearPlantillaNotificacion.md)
 
 ### 12. Sistema de Ayuda y Soporte
-- [UC-401: Gestionar Tickets de Soporte](./HelpSystem/UC-401-GestionarTicketsSoporte.md)
-- [UC-402: Sistema de Chat en Vivo](./HelpSystem/UC-402-SistemaChatVivo.md)
-- [UC-403: Gestionar Base de Conocimiento](./HelpSystem/UC-403-GestionarBaseConocimiento.md)
+- [UC-110: Gestionar Tickets de Soporte](./HelpSystem/UC-110-GestionarTicketsSoporte.md)
+- [UC-111: Sistema de Chat en Vivo](./HelpSystem/UC-111-SistemaChatVivo.md)
+- [UC-112: Gestionar Base de Conocimiento](./HelpSystem/UC-112-GestionarBaseConocimiento.md)
+- [UC-113: Crear Artículo de Ayuda](./HelpSystem/UC-113-CrearArticuloAyuda.md)
+- [UC-114: Gestionar FAQ](./HelpSystem/UC-114-GestionarFAQ.md)
+- [UC-115: Escalar Ticket de Soporte](./HelpSystem/UC-115-EscalarTicketSoporte.md)
+
+### 13. Sistema de Organizaciones
+- [UC-120: Crear Organización](./OrganizationManagement/UC-120-CrearOrganizacion.md)
+- [UC-121: Gestionar Miembros de Organización](./OrganizationManagement/UC-121-GestionarMiembros.md)
+- [UC-122: Programar Evento de Organización](./OrganizationManagement/UC-122-ProgramarEvento.md)
+- [UC-123: Gestionar Instalaciones](./OrganizationManagement/UC-123-GestionarInstalaciones.md)
+- [UC-124: Emitir Certificación](./OrganizationManagement/UC-124-EmitirCertificacion.md)
+- [UC-125: Gestionar Instructores](./OrganizationManagement/UC-125-GestionarInstructores.md)
+
+### 14. Sistema de Entrenamiento
+- [UC-130: Crear Plan de Entrenamiento](./Training/UC-130-CrearPlanEntrenamiento.md)
+- [UC-131: Realizar Sesión de Entrenamiento](./Training/UC-131-RealizarSesionEntrenamiento.md)
+- [UC-132: Vincular Sesión de Escalada a Entrenamiento](./Training/UC-132-VincularSesionEscalada.md)
+- [UC-135: Analizar Progreso de Entrenamiento](./Training/UC-135-AnalizarProgresoEntrenamiento.md)
+- [UC-136: Crear Plantilla de Entrenamiento](./Training/UC-136-CrearPlantillaEntrenamiento.md)
 
 ## Convenciones
 

@@ -12,6 +12,76 @@ entity "BaseEntity" as BaseEntity {
     +RestoredAt: DateTime?
     +LockedAt: DateTime?
 }
+package "Auditing" {
+    enum "AuditActionType" as AuditActionType {
+        +Create
+        'Create: Registro creado
+        +Update
+        'Update: Registro actualizado
+        +Delete
+        'Delete: Registro eliminado
+        +Restore
+        'Restore: Registro restaurado
+        +Lock
+        'Lock: Registro bloqueado
+        +Unlock
+        'Unlock: Registro desbloqueado
+        +Login
+        'Login: Inicio de sesión
+        +Logout
+        'Logout: Cierre de sesión
+        +View
+        'View: Registro visualizado
+        +Download
+        'Download: Archivo descargado
+        +Export
+        'Export: Datos exportados
+        +Import
+        'Import: Datos importados
+    }
+    entity "AuditTrail" as AuditTrail {
+        'Registro de auditoría granular para trazabilidad completa del sistema.
+        'Captura todos los cambios realizados en las entidades principales del sistema.
+        ..inherits BaseEntity..
+        +EntityName: string
+        ' Nombre de la entidad afectada (ej: "Board", "User", "ClimbRoute")
+        +EntityId: long
+        ' ID del registro afectado
+        +Action: AuditActionType
+        +UserId: long?
+        ' Usuario que realizó la acción (null para acciones del sistema)
+        +SessionId: string?
+        ' ID de sesión para rastrear actividades relacionadas
+        +IpAddress: string?
+        ' Dirección IP desde donde se realizó la acción
+        +UserAgent: string?
+        ' Información del navegador/aplicación
+        +OldValues: jsonb?
+        ' Valores anteriores del registro (para Updates)
+        +NewValues: jsonb?
+        ' Nuevos valores del registro (para Creates/Updates)
+        +ChangesSummary: string?
+        ' Resumen legible de los cambios realizados
+        +ReasonForChange: string?
+        ' Razón del cambio (opcional, para cambios administrativos)
+        +AffectedColumns: string[]?
+        ' Lista de columnas que fueron modificadas
+        +CorrelationId: string?
+        ' ID para correlacionar múltiples cambios relacionados
+        +RiskLevel: string?
+        ' Nivel de riesgo: "Low", "Medium", "High", "Critical"
+        +IsSystemAction: bool
+        ' Indica si la acción fue realizada por el sistema automáticamente
+        +Duration: int?
+        ' Duración de la operación en milisegundos
+        +ResultStatus: string?
+        ' Estado del resultado: "Success", "Failed", "Partial"
+        +ErrorMessage: string?
+        ' Mensaje de error si la operación falló
+        +AdditionalContext: jsonb?
+        ' Contexto adicional específico de la operación
+    }
+}
 entity "Configuration" as Configuration {
     'Configuración del sistema, que almacena configuraciones globales y personalizadas.
     'Representa una configuración específica del sistema, como preferencias de usuario, configuraciones de aplicación
@@ -114,6 +184,14 @@ package "Boards" {
     entity "BoardConfig" as BoardConfig {
         'Configuración del tablero, que define las propiedades y características del tablero.
         ..inherits BaseEntity..
+        +Name: string
+        +Description: string?
+        +Version: string
+        ' Versión de la configuración (ej: "1.0", "2.1", "3.0-beta")
+        +IsActive: bool
+        ' Indica si esta versión está actualmente activa
+        +PreviousVersionId: long?
+        ' Referencia a la versión anterior para historial
         +Content: string
         +Columns: int
         +Rows: int
@@ -129,6 +207,17 @@ package "Boards" {
         +StaggeredGridOffset: int
         ' StaggeredGridOffset: Desplazamiento de la cuadrícula escalonada
         +Difficulty: int
+        +CreatedByUserId: long
+        ' Usuario que creó esta versión de configuración
+        +ApprovedByUserId: long?
+        ' Usuario que aprobó esta versión (para control de calidad)
+        +ApprovedAt: DateTime?
+        +ChangeNotes: string?
+        ' Notas sobre los cambios realizados en esta versión
+        +IsBackwardCompatible: bool
+        ' Indica si esta versión es compatible con versiones anteriores
+        +MigrationScript: string?
+        ' Script o instrucciones para migrar desde versiones anteriores
     }
     enum "AngleUnit" as AngleUnit {
         +Degrees
@@ -349,6 +438,22 @@ package "DifficultyScales" {
         +DifficultyGroupId: long
         +Value: string
         +IRCRA: int
+        +Version: string
+        ' Versión de la escala (ej: "2024.1", "2025.0")
+        +IsActive: bool
+        ' Indica si esta versión de la escala está activa
+        +PreviousVersionId: long?
+        ' Referencia a la versión anterior de la escala
+        +EffectiveDate: DateTime
+        ' Fecha desde la cual esta versión es efectiva
+        +ExpiryDate: DateTime?
+        ' Fecha hasta la cual esta versión es válida
+        +ConversionTable: jsonb?
+        ' Tabla de conversión desde versiones anteriores
+        +ChangeReason: string?
+        ' Razón del cambio de versión
+        +ApprovedByOrganization: string?
+        ' Organización que aprobó esta versión (ej: IFSC, UIAA)
     }
     entity "DifficultyGroup" as DifficultyGroup {
         'Grupo de dificultad, por ejemplo, principiante, intermedio, avanzado, elite, etc.
@@ -1359,6 +1464,310 @@ package "Sessions" {
     }
 }
 package "Training" {
+    enum "TrainingPeriodType" as TrainingPeriodType {
+        +Transition
+        'Transition: Periodo de acondicionamiento general (6-8 semanas)
+        +Base
+        'Base: Periodo de entrenamiento base (20 semanas)
+        +Specific
+        'Specific: Periodo específico de escalada
+        +Tapering
+        'Tapering: Periodo de descanso antes del objetivo
+    }
+    enum "TrainingZone" as TrainingZone {
+        +Rest
+        'Rest: Zona de descanso (<55% FCM)
+        +Zone1
+        'Zone1: Zona aeróbica ligera (55-75% FCM)
+        +Zone2
+        'Zone2: Zona aeróbica moderada (75-80% FCM)
+        +Zone3
+        'Zone3: Zona anaeróbica (80-90% FCM)
+        +Zone4
+        'Zone4: Zona anaeróbica alta (90-95% FCM)
+        +Zone5
+        'Zone5: Zona máxima (>95% FCM)
+    }
+    enum "ActivityType" as ActivityType {
+        +Aerobic
+        'Aerobic: Actividad aeróbica en zona 1-2
+        +Anaerobic
+        'Anaerobic: Actividad anaeróbica en zona 3-4
+        +MaxStrength
+        'MaxStrength: Entrenamiento de fuerza máxima
+        +AlpineClimbing
+        'AlpineClimbing: Escalada alpina
+        +SchoolClimbing
+        'SchoolClimbing: Escalada en escuela
+        +Recovery
+        'Recovery: Actividad de recuperación
+        +Endurance
+        'Endurance: Resistencia
+        +Technical
+        'Technical: Entrenamiento técnico
+    }
+    enum "FitnessTestLevel" as FitnessTestLevel {
+        +Poor
+        'Poor: Nivel pobre (P)
+        +Regular
+        'Regular: Nivel regular (R)
+        +Good
+        'Good: Nivel bueno (B)
+        +Excellent
+        'Excellent: Nivel excelente (E)
+    }
+    entity "TrainingPlan" as TrainingPlan {
+        'Plan de entrenamiento personalizado para un usuario específico.
+        ..inherits BaseEntity..
+        +UserId: long
+        +Name: string
+        +Description: string?
+        +StartDate: DateTime
+        +EndDate: DateTime?
+        +IsActive: bool
+        +LongTermGoal: string[]?
+        +ShortTermGoal: string[]?
+        +BaselinePhysiologicalDataId: long?
+        ' Referencia a los datos fisiológicos base al crear el plan
+        +CreatedByUserId: long?
+        ' Usuario que creó el plan (puede ser un entrenador)
+        +Notes: string?
+    }
+    entity "TrainingPeriod" as TrainingPeriod {
+        'Periodos específicos dentro de un plan de entrenamiento.
+        ..inherits BaseEntity..
+        +TrainingPlanId: long
+        +PeriodType: TrainingPeriodType
+        +Name: string
+        +Description: string?
+        +StartDate: DateTime
+        +EndDate: DateTime
+        +WeekNumber: int
+        +VolumePercentage: decimal?
+        ' Porcentaje del volumen de entrenamiento
+        +IsCompleted: bool
+        +Notes: string?
+    }
+    entity "TrainingWeek" as TrainingWeek {
+        'Semana específica de entrenamiento dentro de un periodo.
+        ..inherits BaseEntity..
+        +TrainingPeriodId: long
+        +WeekNumber: int
+        +StartDate: DateTime
+        +EndDate: DateTime
+        +TrainingObjective: string?
+        +ClimbingObjective: string?
+        +NutritionObjective: string?
+        +PlannedHours: decimal
+        +CompletedHours: decimal?
+        +Zone1Hours: decimal?
+        +Zone2Hours: decimal?
+        +Zone3Hours: decimal?
+        +StrengthHours: decimal?
+        +AlpineClimbingHours: decimal?
+        +SchoolClimbingHours: decimal?
+        +ElevationGained: int?
+        +WeeklyEvaluation: string?
+        +IsCompleted: bool
+    }
+    entity "TrainingSession" as TrainingSession {
+        'Sesión individual de entrenamiento.
+        ..inherits BaseEntity..
+        +TrainingWeekId: long
+        +Date: DateTime
+        +ActivityType: ActivityType
+        +PlannedDuration: int
+        ' Duración planificada en minutos
+        +ActualDuration: int?
+        ' Duración real en minutos
+        +TrainingZone: TrainingZone?
+        +ElevationGained: int?
+        +WeightCarried: decimal?
+        ' Peso cargado en kilogramos
+        +Distance: decimal?
+        ' Distancia en kilómetros
+        +HeartRateAvg: int?
+        +HeartRateMax: int?
+        +Rating: int?
+        ' Calificación de la sesión (1-10)
+        +Notes: string?
+        +IsCompleted: bool
+        +Location: string?
+        +UserSessionId: long?
+        ' Referencia a la sesión de escalada asociada (si aplica)
+    }
+    entity "TrainingSessionClimbing" as TrainingSessionClimbing {
+        'Sesión de escalada específica dentro de un entrenamiento.
+        'Permite vincular múltiples sesiones de escalada a una sesión de entrenamiento.
+        ..inherits BaseEntity..
+        +TrainingSessionId: long
+        +UserSessionId: long
+        +PlannedObjective: string?
+        ' Objetivo planificado para esta sesión de escalada
+        +ActualPerformance: string?
+        ' Rendimiento real alcanzado
+        +TechnicalFocus: string?
+        ' Enfoque técnico específico: "Footwork", "Balance", "Crimping", etc.
+        +IntensityLevel: int?
+        ' Nivel de intensidad del 1 al 10
+        +RestTimesBetweenProblems: int?
+        ' Tiempo de descanso promedio entre problemas en segundos
+        +WarmUpDuration: int?
+        ' Duración del calentamiento en minutos
+        +CoolDownDuration: int?
+        ' Duración del enfriamiento en minutos
+        +TrainingNotes: string?
+        ' Notas específicas del entrenamiento
+        +CoachFeedback: string?
+        ' Retroalimentación del entrenador
+    }
+    entity "FitnessTest" as FitnessTest {
+        'Prueba de forma física básica.
+        ..inherits BaseEntity..
+        +UserId: long
+        +TestDate: DateTime
+        +Test300mTime: int?
+        ' Tiempo en minutos para 300m desnivel
+        +Test300mLevel: FitnessTestLevel?
+        +ParallelDips60s: int?
+        ' Fondos en paralelas en 60 segundos
+        +ParallelDipsLevel: FitnessTestLevel?
+        +Crunches60s: int?
+        ' Abdominales en 60 segundos
+        +CrunchesLevel: FitnessTestLevel?
+        +Squats60s: int?
+        ' Sentadillas en 60 segundos
+        +SquatsLevel: FitnessTestLevel?
+        +PullUps60s: int?
+        ' Dominadas en 60 segundos
+        +PullUpsLevel: FitnessTestLevel?
+        +BoxJumps60s: int?
+        ' Saltos a cajón en 60 segundos
+        +BoxJumpsLevel: FitnessTestLevel?
+        +PushUps60s: int?
+        ' Flexiones en 60 segundos
+        +PushUpsLevel: FitnessTestLevel?
+        +OverallLevel: FitnessTestLevel?
+        ' Nivel general de la prueba
+        +TotalScore: int?
+        +Notes: string?
+    }
+    entity "PhysiologicalData" as PhysiologicalData {
+        'Datos fisiológicos del usuario.
+        ..inherits BaseEntity..
+        +UserId: long
+        +MeasurementDate: DateTime
+        +MaxHeartRate: int?
+        +RestingHeartRate: int?
+        +VO2Max: decimal?
+        +VO2MaxFraction: decimal?
+        +BodyWeight: decimal?
+        +BodyFat: decimal?
+        +MuscleComposition: decimal?
+        +Notes: string?
+        +MeasuredBy: string?
+        ' Quién realizó la medición
+    }
+    entity "TrainingVolume" as TrainingVolume {
+        'Volumen de entrenamiento semanal detallado.
+        ..inherits BaseEntity..
+        +TrainingWeekId: long
+        +Zone1Hours: decimal
+        +Zone34Hours: decimal
+        +StrengthHours: decimal
+        +WeeklyTotal: decimal
+        +AccumulatedTotal: decimal
+        +PlannedVsActual: decimal?
+        ' Porcentaje de cumplimiento del plan
+    }
+    entity "TrainingTemplate" as TrainingTemplate {
+        'Plantillas predefinidas de entrenamiento.
+        ..inherits BaseEntity..
+        +Name: string <<unique>>
+        +Description: string?
+        +PeriodType: TrainingPeriodType
+        +DurationWeeks: int
+        +TargetGoal: string
+        ' Objetivo: "Mountaineering", "Alpine_Technical", "General_Climbing"
+        +Zone1Percentage: decimal
+        +Zone2Percentage: decimal
+        +Zone3Percentage: decimal
+        +StrengthPercentage: decimal
+        +AlpineClimbingPercentage: decimal?
+        +SchoolClimbingPercentage: decimal?
+        +IsPublic: bool
+        +CreatedByUserId: long
+        +UsageCount: int
+    }
+    entity "TrainingExercise" as TrainingExercise {
+        'Ejercicios específicos que se pueden realizar en una sesión.
+        ..inherits BaseEntity..
+        +Name: string
+        +Description: string?
+        +Category: string
+        ' Categoría: "Strength", "Cardio", "Technical", "Flexibility"
+        +MuscleGroups: string?
+        ' Grupos musculares trabajados
+        +Equipment: string?
+        ' Equipamiento necesario
+        +Instructions: string?
+        +VideoUrl: string?
+        +ImageUrl: string?
+        +DifficultyLevel: int
+        ' Nivel de dificultad 1-5
+        +EstimatedCalories: int?
+        ' Calorías estimadas por hora
+    }
+    entity "SessionExercise" as SessionExercise {
+        'Ejercicios realizados en una sesión específica.
+        ..inherits BaseEntity..
+        +TrainingSessionId: long
+        +TrainingExerciseId: long
+        +Sets: int?
+        +Reps: int?
+        +Weight: decimal?
+        +Duration: int?
+        ' Duración en minutos
+        +Distance: decimal?
+        +RestTime: int?
+        ' Tiempo de descanso en segundos
+        +Notes: string?
+        +Sequence: int
+        ' Orden del ejercicio en la sesión
+    }
+    entity "TrainingGoal" as TrainingGoal {
+        'Objetivos específicos del entrenamiento.
+        ..inherits BaseEntity..
+        +UserId: long
+        +TrainingPlanId: long?
+        +GoalType: string
+        ' Tipo: "Performance", "Health", "Competition", "Personal"
+        +Title: string
+        +Description: string?
+        +TargetDate: DateTime?
+        +TargetValue: decimal?
+        +TargetUnit: string?
+        +CurrentValue: decimal?
+        +IsAchieved: bool
+        +AchievedDate: DateTime?
+        +Priority: int
+        ' Prioridad 1-5
+        +IsActive: bool
+    }
+    entity "TrainingProgress" as TrainingProgress {
+        'Seguimiento del progreso del entrenamiento.
+        ..inherits BaseEntity..
+        +UserId: long
+        +TrainingPlanId: long
+        +MeasurementDate: DateTime
+        +MetricType: string
+        ' Tipo: "Strength", "Endurance", "Technical", "Weight"
+        +MetricName: string
+        +Value: decimal
+        +Unit: string
+        +Notes: string?
+        +MeasuredBy: string?
+    }
 }
 package "Payment" {
     enum "PaymentStatus" as PaymentStatus {
@@ -2179,6 +2588,98 @@ package "Help" {
         +SearchQueries: int
     }
 }
+package "Versioning" {
+    enum "ConfigurationType" as ConfigurationType {
+        +BoardConfig
+        'BoardConfig: Configuración de tablero
+        +TrainingPlan
+        'TrainingPlan: Plan de entrenamiento
+        +DifficultyScale
+        'DifficultyScale: Escala de dificultad
+        +Organization
+        'Organization: Configuración de organización
+        +System
+        'System: Configuración del sistema
+        +UserPreferences
+        'UserPreferences: Preferencias de usuario
+    }
+    enum "VersionStatus" as VersionStatus {
+        +Draft
+        'Draft: Borrador, en desarrollo
+        +Testing
+        'Testing: En pruebas
+        +Active
+        'Active: Versión activa en producción
+        +Deprecated
+        'Deprecated: Versión obsoleta pero aún funcional
+        +Archived
+        'Archived: Versión archivada, no funcional
+        +Rollback
+        'Rollback: Versión de rollback temporal
+    }
+    entity "ConfigurationVersion" as ConfigurationVersion {
+        'Historial de versiones para diferentes tipos de configuraciones del sistema.
+        'Permite mantener un control granular de cambios en configuraciones críticas.
+        ..inherits BaseEntity..
+        +ConfigurationType: ConfigurationType
+        +EntityId: long
+        ' ID de la entidad específica que está siendo versionada
+        +Version: string
+        ' Número de versión semántica (ej: "1.0.0", "2.1.3-beta")
+        +MajorVersion: int
+        +MinorVersion: int
+        +PatchVersion: int
+        +PreReleaseTag: string?
+        ' Tag de pre-release (ej: "alpha", "beta", "rc1")
+        +Status: VersionStatus
+        +PreviousVersionId: long?
+        ' Referencia a la versión anterior
+        +ConfigurationData: jsonb
+        ' Snapshot completo de la configuración en esta versión
+        +ChangesSummary: string
+        ' Resumen de cambios realizados en esta versión
+        +BreakingChanges: string[]?
+        ' Lista de cambios que rompen compatibilidad
+        +MigrationInstructions: string?
+        ' Instrucciones para migrar desde versiones anteriores
+        +CreatedByUserId: long
+        +ApprovedByUserId: long?
+        +ApprovedAt: DateTime?
+        +ActivatedAt: DateTime?
+        ' Fecha en que esta versión se activó
+        +DeactivatedAt: DateTime?
+        ' Fecha en que esta versión se desactivó
+        +IsBackwardCompatible: bool
+        +IsForwardCompatible: bool
+        +MinimumRequiredVersion: string?
+        ' Versión mínima requerida para upgrade
+        +TestResults: jsonb?
+        ' Resultados de pruebas de esta versión
+        +PerformanceMetrics: jsonb?
+        ' Métricas de rendimiento de esta versión
+        +RollbackInstructions: string?
+        ' Instrucciones para hacer rollback
+        +ExpiryDate: DateTime?
+        ' Fecha de expiración para versiones temporales
+    }
+    entity "VersionDependency" as VersionDependency {
+        'Dependencias entre diferentes versiones de configuraciones.
+        'Permite definir relaciones y dependencias entre versiones.
+        ..inherits BaseEntity..
+        +ParentVersionId: long
+        ' Versión que tiene la dependencia
+        +DependentVersionId: long
+        ' Versión de la cual depende
+        +DependencyType: string
+        ' Tipo: "Required", "Optional", "Incompatible", "Recommended"
+        +MinVersion: string?
+        ' Versión mínima requerida
+        +MaxVersion: string?
+        ' Versión máxima compatible
+        +Description: string?
+        ' Descripción de la dependencia
+    }
+}
 
 ' Relaciones
 AppUser "1" -- "0..*" AIGenerationRequest : requests >
@@ -2306,6 +2807,9 @@ AIGenerationTemplate "1" -- "0..*" AIGenerationRequest : used for generation >
 AITrainingSession "1" -- "0..*" AITrainingData : uses training data >
 AppUser "1" -- "0..*" AIGenerationFeedback : provides feedback >
 AppUser "1" -- "0..*" AIGenerationTemplate : creates templates >
+AIModelVersion "1" -- "0..*" AIGenerationRequest : uses version >
+AIModelVersion "1" -- "0..*" AITrainingSession : trained version >
+AIModelVersion "1" -- "0..*" AIModelBenchmark : benchmarked version >
 
 ' Help Relations
 AppUser "1" -- "0..*" SupportTicket : creates tickets >
@@ -2361,5 +2865,47 @@ Organization "0..1" -- "0..*" ClimbZone : manages zones >
 Organization "0..1" -- "0..*" Board : owns boards >
 Organization "0..1" -- "0..*" Expedition : organizes expeditions >
 
+' Training Relations
+AppUser "1" -- "0..*" TrainingPlan : has training plans >
+AppUser "1" -- "0..*" FitnessTest : takes fitness tests >
+AppUser "1" -- "0..*" PhysiologicalData : has physiological data >
+AppUser "1" -- "0..*" TrainingGoal : sets training goals >
+AppUser "1" -- "0..*" TrainingProgress : tracks progress >
+AppUser "0..1" -- "0..*" TrainingPlan : creates plans for others >
+AppUser "1" -- "0..*" TrainingTemplate : creates templates >
+PhysiologicalData "0..1" -- "0..*" TrainingPlan : used as baseline >
+TrainingPlan "1" -- "0..*" TrainingPeriod : divided into periods >
+TrainingPlan "0..1" -- "0..*" TrainingGoal : supports goals >
+TrainingPlan "1" -- "0..*" TrainingProgress : measured by progress >
+TrainingPeriod "1" -- "0..*" TrainingWeek : contains weeks >
+TrainingWeek "1" -- "0..*" TrainingSession : contains sessions >
+TrainingWeek "1" -- "0..1" TrainingVolume : has volume data >
+TrainingSession "1" -- "0..*" SessionExercise : includes exercises >
+TrainingExercise "1" -- "0..*" SessionExercise : performed in sessions >
+TrainingTemplate "1" -- "0..*" TrainingPlan : used to create plans >
+TrainingSession "1" -- "0..*" TrainingSessionClimbing : contains climbing sessions >
+TrainingSessionClimbing "0..*" -- "1" UserSession : linked to climbing session >
+UserSession "0..1" -- "0..*" TrainingSessionClimbing : can be part of training >
+
+' === NUEVAS RELACIONES - AUDITORÍA Y VERSIONADO ===
+
+' Relaciones de Auditoría
+AppUser "1" -- "0..*" AuditTrail : tracked by >
+BaseEntity "1" -- "0..*" AuditTrail : audited by >
+
+' Relaciones de Versionado
+AppUser "1" -- "0..*" ConfigurationVersion : creates >
+AppUser "0..1" -- "0..*" ConfigurationVersion : approves >
+ConfigurationVersion "0..1" -- "0..*" ConfigurationVersion : previous version >
+ConfigurationVersion "1" -- "0..*" VersionDependency : parent version >
+ConfigurationVersion "1" -- "0..*" VersionDependency : dependent version >
+
+' Relaciones de Board Config con Versionado
+AppUser "1" -- "0..*" BoardConfig : creates config >
+AppUser "0..1" -- "0..*" BoardConfig : approves config >
+BoardConfig "0..1" -- "0..*" BoardConfig : previous version >
+
+' Relaciones de Difficulty Scale con Versionado
+DifficultyScale "0..1" -- "0..*" DifficultyScale : previous version >
+
 @enduml
-' This file is auto-generated by PlantUML.

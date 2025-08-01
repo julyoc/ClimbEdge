@@ -16,14 +16,14 @@ actor "Administrador del Sistema" as SystemAdmin
 rectangle "Sistema ClimbEdge - Gestión de Organizaciones" {
     
     ' Casos de uso principales para gestión de organizaciones
-    usecase "Registrar Organización" as UC001
+    usecase "UC-120\nRegistrar Organización" as UC001
     usecase "Verificar Organización" as UC002
     usecase "Gestionar Perfil de Organización" as UC003
     usecase "Configurar Horarios y Servicios" as UC004
     
     ' Gestión de membresías
     usecase "Solicitar Membresía" as UC005
-    usecase "Gestionar Membresías" as UC006
+    usecase "UC-121\nGestionar Membresías" as UC006
     usecase "Renovar Membresía" as UC007
     usecase "Cancelar Membresía" as UC008
     
@@ -33,24 +33,24 @@ rectangle "Sistema ClimbEdge - Gestión de Organizaciones" {
     usecase "Configurar Capacidad y Acceso" as UC011
     
     ' Gestión de eventos
-    usecase "Crear Evento" as UC012
+    usecase "UC-122\nCrear Evento" as UC012
     usecase "Gestionar Participantes de Evento" as UC013
     usecase "Configurar Inscripciones" as UC014
     usecase "Cancelar/Reprogramar Evento" as UC015
     
     ' Gestión de certificaciones
-    usecase "Otorgar Certificación" as UC016
+    usecase "UC-124\nOtorgar Certificación" as UC016
     usecase "Renovar Certificación" as UC017
     usecase "Validar Certificaciones" as UC018
     
     ' Gestión de instructores
     usecase "Registrar Instructor" as UC019
     usecase "Gestionar Horarios de Instructor" as UC020
-    usecase "Asignar Especialidades" as UC021
+    usecase "UC-125\nAsignar Especialidades" as UC021
     
     ' Gestión de expediciones
     usecase "Programar Expedición" as UC022
-    usecase "Gestionar Logística de Expedición" as UC023
+    usecase "UC-123\nGestionar Logística de Expedición" as UC023
     usecase "Gestionar Participantes de Expedición" as UC024
     usecase "Seguimiento de Expedición" as UC025
     

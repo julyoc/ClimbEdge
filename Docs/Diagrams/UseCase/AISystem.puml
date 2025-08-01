@@ -11,14 +11,14 @@ actor "Data Scientist" as DataScientist
 ' Casos de uso principales
 package "Gestión de Modelos IA" {
     usecase "Crear Modelo IA" as UC1
-    usecase "Configurar Modelo" as UC2
+    usecase "UC-052\nConfigurar Modelo" as UC2
     usecase "Activar Modelo" as UC3
     usecase "Desactivar Modelo" as UC4
     usecase "Eliminar Modelo" as UC5
     usecase "Ver Información Modelo" as UC6
     usecase "Actualizar Parámetros" as UC7
     usecase "Versionar Modelo" as UC8
-    usecase "Gestionar Configuraciones" as UC43
+    usecase "UC-052\nGestionar Configuraciones" as UC43
     usecase "Comparar Versiones" as UC44
     usecase "Desplegar Modelo" as UC45
     usecase "Rollback Versión" as UC46
@@ -26,7 +26,7 @@ package "Gestión de Modelos IA" {
 
 package "Entrenamiento de Modelos" {
     usecase "Preparar Datos Entrenamiento" as UC9
-    usecase "Iniciar Entrenamiento" as UC10
+    usecase "UC-050\nIniciar Entrenamiento" as UC10
     usecase "Monitorear Entrenamiento" as UC11
     usecase "Pausar Entrenamiento" as UC12
     usecase "Reanudar Entrenamiento" as UC13
@@ -43,7 +43,7 @@ package "Generación de Problemas" {
     usecase "Solicitar Generación" as UC17
     usecase "Configurar Parámetros Generación" as UC18
     usecase "Procesar Solicitud" as UC19
-    usecase "Generar Problema" as UC20
+    usecase "UC-051\nGenerar Problema Automático" as UC20
     usecase "Validar Problema Generado" as UC21
     usecase "Refinar Resultado" as UC22
     usecase "Aprobar Problema IA" as UC23
@@ -78,7 +78,7 @@ package "Monitoreo y Logs" {
 }
 
 package "Benchmarking y Evaluación" {
-    usecase "Ejecutar Benchmark" as UC59
+    usecase "UC-053\nEjecutar Benchmark" as UC59
     usecase "Comparar Modelos" as UC60
     usecase "Evaluar Calidad Generación" as UC61
     usecase "Generar Reporte Benchmark" as UC62
@@ -94,6 +94,14 @@ package "Mejora Continua" {
     usecase "Optimizar Rendimiento" as UC42
     usecase "Analizar Feedback Usuarios" as UC65
     usecase "Implementar Mejoras" as UC66
+}
+
+' Agregar nuevos casos de uso de entrenamiento con IA
+package "IA para Entrenamiento" {
+    usecase "UC-133\nGenerar Plan Entrenamiento IA" as UC_GenerateTrainingPlanAI
+    usecase "UC-134\nAnalizar Riesgo Lesión" as UC_AnalyzeInjuryRisk
+    usecase "Optimizar Cargas IA" as UC_OptimizeLoadsAI
+    usecase "Predecir Rendimiento" as UC_PredictPerformance
 }
 
 ' Relaciones Usuario
@@ -171,6 +179,18 @@ TrainingSystem --> UC35 : detecta anomalías
 TrainingSystem --> UC37 : alerta problemas
 TrainingSystem --> UC47 : ejecuta sesión
 TrainingSystem --> UC50 : calcula métricas
+TrainingSystem --> UC_GenerateTrainingPlanAI : solicita plan
+TrainingSystem --> UC_AnalyzeInjuryRisk : solicita análisis
+
+' Relaciones Usuario para IA de Entrenamiento
+User --> UC_GenerateTrainingPlanAI : solicita plan IA
+User --> UC_AnalyzeInjuryRisk : solicita análisis riesgo
+
+' Relaciones Data Scientist para IA de Entrenamiento
+DataScientist --> UC_GenerateTrainingPlanAI : configura algoritmos
+DataScientist --> UC_AnalyzeInjuryRisk : entrena modelo
+DataScientist --> UC_OptimizeLoadsAI : desarrolla optimización
+DataScientist --> UC_PredictPerformance : valida predicciones
 
 ' Relaciones Modelo IA
 AIModel --> UC19 : procesa solicitud

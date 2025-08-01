@@ -1,10 +1,14 @@
 @startwbs Packages Diagram
 
 * Entities
+**_> BaseEntity
 **_> Configuration
 **_> UserProfile
 **_> AppUser
 **_> AppRole
+** Auditing
+***_> AuditActionType <<enum>>
+***_> AuditTrail
 ** Boards
 ***_> BoardVisibility <<enum>>
 ***_> BoardMemberRole <<enum>>
@@ -18,6 +22,7 @@
 ***_> BoardItemTexture
 ***_> BoardItemVolume
 ***_> HoldOrientation <<enum>>
+***_> HoldUsage <<enum>>
 ***_> BoardItem
 ***_> BoardItemTextureCombination
 *** Problems
@@ -93,6 +98,23 @@
 ***_> ClimbTickType <<enum>>
 ***_> BoardSessionSummary
 ** Training
+***_> TrainingPeriodType <<enum>>
+***_> TrainingZone <<enum>>
+***_> ActivityType <<enum>>
+***_> FitnessTestLevel <<enum>>
+***_> TrainingPlan
+***_> TrainingPeriod
+***_> TrainingWeek
+***_> TrainingSession
+***_> TrainingSessionClimbing
+***_> FitnessTest
+***_> PhysiologicalData
+***_> TrainingVolume
+***_> TrainingTemplate
+***_> TrainingExercise
+***_> SessionExercise
+***_> TrainingGoal
+***_> TrainingProgress
 ** Payment
 ***_> PaymentStatus <<enum>>
 ***_> SubscriptionStatus <<enum>>
@@ -146,5 +168,8 @@
 ***_> SupportAgent
 ***_> EscalationRule
 ***_> SupportMetrics
+** Versioning
+***_> ConfigurationVersion
+***_> VersionDependency
 
 @endwbs

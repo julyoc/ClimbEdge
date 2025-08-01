@@ -26,13 +26,13 @@ package "Gestión de Métodos de Pago" {
     usecase "Agregar Método de Pago" as UC_AddPaymentMethod
     usecase "Eliminar Método de Pago" as UC_RemovePaymentMethod
     usecase "Actualizar Método de Pago" as UC_UpdatePaymentMethod
-    usecase "Establecer Método por Defecto" as UC_SetDefaultPaymentMethod
+    usecase "UC-092\nEstablecer Método por Defecto" as UC_SetDefaultPaymentMethod
     usecase "Validar Método de Pago" as UC_ValidatePaymentMethod
 }
 
 package "Gestión de Planes y Suscripciones" {
     usecase "Consultar Planes Disponibles" as UC_ViewAvailablePlans
-    usecase "Suscribirse a Plan" as UC_SubscribeToPlan
+    usecase "UC-090\nSuscribirse a Plan" as UC_SubscribeToPlan
     usecase "Cambiar Plan de Suscripción" as UC_ChangePlan
     usecase "Cancelar Suscripción" as UC_CancelSubscription
     usecase "Renovar Suscripción" as UC_RenewSubscription
@@ -41,14 +41,14 @@ package "Gestión de Planes y Suscripciones" {
 
 package "Procesamiento de Pagos" {
     usecase "Procesar Pago de Suscripción" as UC_ProcessSubscriptionPayment
-    usecase "Procesar Pago por Uso" as UC_ProcessPayPerUse
-    usecase "Reembolsar Pago" as UC_RefundPayment
+    usecase "UC-091\nProcesar Pago por Uso" as UC_ProcessPayPerUse
+    usecase "UC-094\nReembolsar Pago" as UC_RefundPayment
     usecase "Gestionar Pago Fallido" as UC_HandleFailedPayment
     usecase "Verificar Estado de Pago" as UC_VerifyPaymentStatus
 }
 
 package "Facturación" {
-    usecase "Generar Factura" as UC_GenerateInvoice
+    usecase "UC-093\nGenerar Factura" as UC_GenerateInvoice
     usecase "Enviar Factura por Email" as UC_SendInvoiceByEmail
     usecase "Descargar Factura" as UC_DownloadInvoice
     usecase "Consultar Historial de Facturas" as UC_ViewInvoiceHistory
