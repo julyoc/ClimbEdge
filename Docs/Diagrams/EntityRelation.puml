@@ -219,6 +219,14 @@ package "Boards" {
         +Pinch
         +Sloper
     }
+    enum "HoldUsage" as HoldUsage {
+        +Both
+        'Both: Se puede usar como pie y mano
+        +HandOnly
+        'HandOnly: Solo se puede usar como mano
+        +FootOnly
+        'FootOnly: Solo se puede usar como pie
+    }
     entity "BoardItem" as BoardItem {
         'Elemento del tablero, que representa una presa o elemento específico en un tablero de escalada.
         'Cada elemento puede tener diferentes propiedades y características, como posición, tipo, textura, etc
@@ -228,6 +236,7 @@ package "Boards" {
         +PositionY: int
         'unique(BoardConfigId, PositionX, PositionY)
         +Orientation: HoldOrientation = HoldOrientation.Normal
+        +AllowedUsage: HoldUsage = HoldUsage.Both
         +Difficulty: int
         +BoardItemTypeId: long
         +BoardItemVolumeId: long?
