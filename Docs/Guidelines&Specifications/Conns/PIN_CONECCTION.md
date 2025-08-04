@@ -18,16 +18,9 @@
 
 Confirmado según documentación de Waveshare:
 
-| Función E-Ink | Pi Pin Físico | GPIO       | Confirmación                                       |
-| ------------- | ------------- | ---------- | -------------------------------------------------- |
-| VCC           | 1 o 17        | 3.3V       | ✅ Usa 3.3V, **no 5V**                              |
-| GND           | 6, 9, etc.    | -          | ✅ Correcto                                         |
-| DIN (MOSI)    | **19**        | **GPIO10** | ✅ SPI MOSI estándar                                |
-| CLK (SCK)     | **23**        | **GPIO11** | ✅ SPI Clock estándar                               |
-| CS            | **24**        | **GPIO8**  | ✅ SPI CS0 estándar                                 |
-| DC            | **22**        | **GPIO25** | ✅ Usado como pin libre (según librería oficial)    |
-| RST           | **18**        | **GPIO24** | ✅ Usado como pin libre para reset                  |
-| BUSY          | **16**        | **GPIO23** | ✅ Señal de ocupación, usado por librería Waveshare |
+![pines](../../Resources/Images/Others/conn_screen.png)
+
+[docs](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_Manual#Working_With_Raspberry_Pi)
 
 ---
 
