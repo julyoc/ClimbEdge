@@ -3,48 +3,18 @@ import type { DocumentHead } from "@builder.io/qwik-city";
 import { Link } from "@builder.io/qwik-city";
 import { ChangeThemeButton } from "~/components/change-theme-button";
 import { ThemeContext, useThemeStore } from "~/stores/theme";
-import { useAuth } from "~/contexts/auth.context";
+import { AuthComponent, AuthAnonimus, Auth } from "~/components/auth-component";
 
 export default component$(() => {
   const themeStore = useThemeStore();
-  const { isAuthenticated } = useAuth();
 
   useContextProvider(ThemeContext, themeStore);
 
-  // Si está autenticado, mostrar mensaje de bienvenida
-  if (isAuthenticated.value) {
-    return (
-      <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-900 dark:to-blue-900 transition-colors duration-300">
-        <div class="container mx-auto px-4 py-16">
-          <div class="text-center max-w-2xl mx-auto">
-            <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-6">
-              Welcome back to ClimbEdge!
-            </h1>
-            <p class="text-lg text-gray-600 dark:text-gray-300 mb-8">
-              You're already logged in. Ready to explore your climbing routes?
-            </p>
-            <div class="space-x-4">
-              <Link 
-                href="/profile" 
-                class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200"
-              >
-                Go to Profile
-              </Link>
-              <Link 
-                href="/settings" 
-                class="inline-flex items-center px-6 py-3 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white font-medium rounded-lg transition-colors duration-200"
-              >
-                Settings
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div class="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
+    <AuthComponent>
+      {/* Contenido para usuarios anónimos/no autenticados */}
+      <AuthAnonimus>
+        <div class="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
       {/* Navigation */}
       <nav class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -256,10 +226,18 @@ export default component$(() => {
             <div>
               <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Support</h3>
               <ul class="space-y-2">
-                <li class="text-gray-600 dark:text-gray-300">Help Center</li>
-                <li class="text-gray-600 dark:text-gray-300">Contact Us</li>
-                <li class="text-gray-600 dark:text-gray-300">Privacy Policy</li>
-                <li class="text-gray-600 dark:text-gray-300">Terms of Service</li>
+                <li class="text-gray-600 dark:text-gray-300">
+                  <Link href="/help-center" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Help Center</Link>
+                </li>
+                <li class="text-gray-600 dark:text-gray-300">
+                  <Link href="/contact-us" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Contact Us</Link>
+                </li>
+                <li class="text-gray-600 dark:text-gray-300">
+                  <Link href="/privacy-policy" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Privacy Policy</Link>
+                </li>
+                <li class="text-gray-600 dark:text-gray-300">
+                  <Link href="/terms-of-service" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Terms of Service</Link>
+                </li>
               </ul>
             </div>
           </div>
@@ -270,12 +248,41 @@ export default component$(() => {
             </p>
           </div>
         </div>
-      </footer>
-    </div>
+        </footer>
+      </div>
+      </AuthAnonimus>
+      {/* Contenido para usuarios autenticados */}
+      <Auth>
+        <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-900 dark:to-blue-900 transition-colors duration-300">
+          <div class="container mx-auto px-4 py-16">
+            <div class="text-center max-w-2xl mx-auto">
+              <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-6">
+                Welcome back to ClimbEdge!
+              </h1>
+              <p class="text-lg text-gray-600 dark:text-gray-300 mb-8">
+                You're already logged in. Ready to explore your climbing routes?
+              </p>
+              <div class="space-x-4">
+                <Link 
+                  href="/profile" 
+                  class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200"
+                >
+                  Go to Profile
+                </Link>
+                <Link 
+                  href="/settings" 
+                  class="inline-flex items-center px-6 py-3 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white font-medium rounded-lg transition-colors duration-200"
+                >
+                  Settings
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Auth>
+    </AuthComponent>
   );
-});
-
-export const head: DocumentHead = {
+});export const head: DocumentHead = {
   title: "ClimbEdge - Your Ultimate Climbing Companion",
   meta: [
     {

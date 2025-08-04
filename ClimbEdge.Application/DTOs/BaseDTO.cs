@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ClimbEdge.Application.DTOs
 {
-    public abstract class BaseDTO
+    public abstract record class BaseDTO
     {
         public Guid Uid { get; set; }
         public string Slug { get; set; } = string.Empty;

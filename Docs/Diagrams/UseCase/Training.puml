@@ -1,0 +1,159 @@
+@startuml ClimbEdge.UseCases.Training
+
+!theme plain
+skinparam packageStyle rectangle
+skinparam usecase {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    ArrowColor Black
+}
+skinparam actor {
+    BackgroundColor LightYellow
+    BorderColor DarkOrange
+}
+
+title Casos de Uso - Sistema de Entrenamiento
+
+' Actores
+actor "Usuario" as User
+actor "Entrenador" as Coach
+actor "Especialista en Fisiología" as PhysioSpecialist
+actor "Sistema" as System
+
+' Casos de uso principales
+package "Gestión de Planes de Entrenamiento" {
+    usecase "UC-130\nCrear Plan de Entrenamiento" as UC_CreateTrainingPlan
+    usecase "Modificar Plan Existente" as UC_ModifyTrainingPlan
+    usecase "Activar/Desactivar Plan" as UC_ActivateDeactivatePlan
+    usecase "Duplicar Plan" as UC_DuplicatePlan
+    usecase "Crear desde Plantilla" as UC_CreateFromTemplate
+    usecase "Exportar Plan" as UC_ExportPlan
+    usecase "Importar Plan" as UC_ImportPlan
+}
+
+package "Ejecución de Entrenamiento" {
+    usecase "UC-131\nRealizar Sesión de Entrenamiento" as UC_PerformTrainingSession
+    usecase "UC-132\nVincular Sesión de Escalada a Entrenamiento" as UC_LinkClimbingSession
+    usecase "Registrar Ejercicios Realizados" as UC_RecordExercises
+    usecase "Evaluar Sesión de Entrenamiento" as UC_EvaluateTrainingSession
+    usecase "Pausar/Reanudar Sesión" as UC_PauseResumeSession
+    usecase "Finalizar Sesión Anticipadamente" as UC_FinishEarly
+}
+
+package "Evaluación Fisiológica" {
+    usecase "Realizar Prueba de Forma Física" as UC_PerformFitnessTest
+    usecase "Registrar Datos Fisiológicos" as UC_RecordPhysiologicalData
+    usecase "Actualizar Métricas Base" as UC_UpdateBaseMetrics
+    usecase "Programar Evaluación Periódica" as UC_SchedulePeriodicEvaluation
+    usecase "Analizar Evolución Fisiológica" as UC_AnalyzePhysiologicalEvolution
+}
+
+package "Análisis y Progreso" {
+    usecase "UC-135\nAnalizar Progreso de Entrenamiento" as UC_AnalyzeTrainingProgress
+    usecase "Generar Reporte de Progreso" as UC_GenerateProgressReport
+    usecase "Comparar Períodos de Entrenamiento" as UC_CompareTrainingPeriods
+    usecase "Identificar Tendencias" as UC_IdentifyTrends
+    usecase "Ajustar Plan Basado en Progreso" as UC_AdjustPlanBasedOnProgress
+}
+
+package "Gestión de Objetivos" {
+    usecase "Establecer Objetivos de Entrenamiento" as UC_SetTrainingGoals
+    usecase "Monitorear Progreso de Objetivos" as UC_MonitorGoalProgress
+    usecase "Actualizar Objetivos" as UC_UpdateGoals
+    usecase "Celebrar Logros" as UC_CelebrateAchievements
+}
+
+package "Plantillas y Configuración" {
+    usecase "UC-136\nCrear Plantilla de Entrenamiento" as UC_CreateTrainingTemplate
+    usecase "Gestionar Ejercicios del Sistema" as UC_ManageSystemExercises
+    usecase "Configurar Zonas de Entrenamiento" as UC_ConfigureTrainingZones
+    usecase "Personalizar Métricas" as UC_CustomizeMetrics
+}
+
+package "Colaboración y Supervisión" {
+    usecase "Asignar Entrenador a Usuario" as UC_AssignCoachToUser
+    usecase "Supervisar Progreso de Cliente" as UC_SuperviseClientProgress
+    usecase "Proporcionar Feedback de Entrenador" as UC_ProvideCoachFeedback
+    usecase "Ajustar Plan como Entrenador" as UC_AdjustPlanAsCoach
+    usecase "Comunicar con Cliente" as UC_CommunicateWithClient
+}
+
+' Relaciones Usuario
+User --> UC_CreateTrainingPlan
+User --> UC_ModifyTrainingPlan
+User --> UC_ActivateDeactivatePlan
+User --> UC_DuplicatePlan
+User --> UC_CreateFromTemplate
+User --> UC_PerformTrainingSession
+User --> UC_LinkClimbingSession
+User --> UC_RecordExercises
+User --> UC_EvaluateTrainingSession
+User --> UC_PerformFitnessTest
+User --> UC_RecordPhysiologicalData
+User --> UC_AnalyzeTrainingProgress
+User --> UC_SetTrainingGoals
+User --> UC_MonitorGoalProgress
+User --> UC_UpdateGoals
+
+' Relaciones Entrenador
+Coach --> UC_CreateTrainingPlan
+Coach --> UC_ModifyTrainingPlan
+Coach --> UC_CreateTrainingTemplate
+Coach --> UC_AssignCoachToUser
+Coach --> UC_SuperviseClientProgress
+Coach --> UC_ProvideCoachFeedback
+Coach --> UC_AdjustPlanAsCoach
+Coach --> UC_CommunicateWithClient
+Coach --> UC_AnalyzeTrainingProgress
+Coach --> UC_GenerateProgressReport
+Coach --> UC_AdjustPlanBasedOnProgress
+
+' Relaciones Especialista en Fisiología
+PhysioSpecialist --> UC_PerformFitnessTest
+PhysioSpecialist --> UC_RecordPhysiologicalData
+PhysioSpecialist --> UC_UpdateBaseMetrics
+PhysioSpecialist --> UC_AnalyzePhysiologicalEvolution
+PhysioSpecialist --> UC_ConfigureTrainingZones
+PhysioSpecialist --> UC_CustomizeMetrics
+
+' Relaciones Sistema
+System --> UC_SchedulePeriodicEvaluation
+System --> UC_IdentifyTrends
+System --> UC_CelebrateAchievements
+System --> UC_UpdateBaseMetrics
+
+' Relaciones de inclusión y extensión
+UC_CreateTrainingPlan ..> UC_SetTrainingGoals : <<include>>
+UC_CreateTrainingPlan ..> UC_RecordPhysiologicalData : <<include>>
+UC_CreateFromTemplate ..> UC_CreateTrainingPlan : <<include>>
+
+UC_PerformTrainingSession ..> UC_RecordExercises : <<include>>
+UC_PerformTrainingSession ..> UC_EvaluateTrainingSession : <<include>>
+UC_LinkClimbingSession ..> UC_PerformTrainingSession : <<extend>>
+
+UC_PerformFitnessTest ..> UC_RecordPhysiologicalData : <<include>>
+UC_PerformFitnessTest ..> UC_UpdateBaseMetrics : <<include>>
+
+UC_AnalyzeTrainingProgress ..> UC_GenerateProgressReport : <<include>>
+UC_AnalyzeTrainingProgress ..> UC_IdentifyTrends : <<include>>
+UC_AnalyzeTrainingProgress ..> UC_CompareTrainingPeriods : <<extend>>
+
+UC_MonitorGoalProgress ..> UC_CelebrateAchievements : <<extend>>
+UC_MonitorGoalProgress ..> UC_UpdateGoals : <<extend>>
+
+UC_SuperviseClientProgress ..> UC_AnalyzeTrainingProgress : <<include>>
+UC_SuperviseClientProgress ..> UC_ProvideCoachFeedback : <<include>>
+
+UC_AdjustPlanAsCoach ..> UC_ModifyTrainingPlan : <<include>>
+UC_AdjustPlanBasedOnProgress ..> UC_ModifyTrainingPlan : <<include>>
+
+' Notas explicativas
+note top of UC_LinkClimbingSession : "Permite vincular sesiones de escalada\nreales con el plan de entrenamiento\nregistrando métricas específicas"
+
+note right of UC_AnalyzePhysiologicalEvolution : "Utiliza datos históricos para\nidentificar mejoras en capacidad\nfísica y ajustar entrenamientos"
+
+note bottom of UC_ProvideCoachFeedback : "Entrenadores pueden dar feedback\nespecífico sobre técnica, progreso\ny recomendaciones de mejora"
+
+note left of UC_CelebrateAchievements : "Sistema automático que reconoce\nlogros y motiva al usuario\na continuar entrenando"
+
+@enduml

@@ -28,9 +28,32 @@ namespace ClimbEdge.Infrastructure.Persistence
             }
         }
 
+        private void RegisterEnums(ModelBuilder builder)
+        {
+            var method = typeof(NpgsqlModelBuilderExtensions)
+                .GetMethods()
+                .First(m =>
+                    m.Name == "HasPostgresEnum"
+                    && m.IsGenericMethodDefinition
+                    && m.GetParameters().Length == 4 // (builder, schema, name, translator)
+                    && m.GetParameters()[0].ParameterType == typeof(ModelBuilder));
+            var enumTypes = Assembly.GetExecutingAssembly()
+                .GetTypes()
+                .Where(t => t.IsEnum && t.Namespace == "ClimbEdge.Domain.Enums");
+
+            foreach (var enumType in enumTypes)
+            {
+                var genericMethod = method.MakeGenericMethod(enumType);
+                genericMethod.Invoke(null, new object[] { builder, null, null, null });
+            }
+        }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            // Registrar enums de PostgreSQL
+            RegisterEnums(builder);
 
             // Registrar entidades dinámicamente
             RegisterEntities(builder);

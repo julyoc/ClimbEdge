@@ -1,21 +1,30 @@
 @startwbs Packages Diagram
 
 * Entities
-**_> Configurations
+**_> BaseEntity
+**_> Configuration
 **_> UserProfile
 **_> AppUser
 **_> AppRole
+** Auditing
+***_> AuditActionType <<enum>>
+***_> AuditTrail
 ** Boards
 ***_> BoardVisibility <<enum>>
 ***_> BoardMemberRole <<enum>>
 ***_> Board
 ***_> BoardMember
 ***_> BoardConfig
+***_> AngleUnit <<enum>>
 ***_> BoardAngle
 ***_> BoardItemType
 ***_> BoardItemTextureMaterial
 ***_> BoardItemTexture
+***_> BoardItemVolume
+***_> HoldOrientation <<enum>>
+***_> HoldUsage <<enum>>
 ***_> BoardItem
+***_> BoardItemTextureCombination
 *** Problems
 ****_> BoardProblem
 ****_> BoardProblemItem
@@ -34,6 +43,7 @@
 ***_> SeasonType <<enum>>
 ***_> Mountain
 ***_> MountainRoute
+***_> WaypointType
 ***_> RouteWaypoint
 ***_> RouteTrack
 ***_> MountainFile
@@ -43,13 +53,16 @@
 ****_> MountaineerTickType <<enum>>
 ****_> ExpeditionStatus <<enum>>
 ****_> ParticipantRole <<enum>>
+****_> ParticipantStatus <<enum>>
 ****_> DayActivityType <<enum>>
 ****_> Expedition
 ****_> ExpeditionParticipant
 ****_> ItineraryDay
 ****_> DayActivity
+****_> EquipmentCategory
 ****_> Equipment
 ****_> ExpeditionEquipment
+****_> ExpeditionBudgetCategory
 ****_> ExpeditionBudget
 ****_> SafetyPlan
 ****_> ItineraryFile
@@ -67,12 +80,41 @@
 ***_> ClimbRouteDescription
 ***_> ClimbRouteFile
 ***_> ClimbZoneFile
+** Organizations
+***_> OrganizationType <<enum>>
+***_> MembershipType <<enum>>
+***_> MembershipStatus <<enum>>
+***_> Organization
+***_> OrganizationMember
+***_> OrganizationFacility
+***_> OrganizationEvent
+***_> OrganizationEventParticipant
+***_> OrganizationCertification
+***_> OrganizationInstructor
+***_> OrganizationFile
 ** Sessions
 ***_> UserSession
 ***_> UserSessionProgress
 ***_> ClimbTickType <<enum>>
 ***_> BoardSessionSummary
 ** Training
+***_> TrainingPeriodType <<enum>>
+***_> TrainingZone <<enum>>
+***_> ActivityType <<enum>>
+***_> FitnessTestLevel <<enum>>
+***_> TrainingPlan
+***_> TrainingPeriod
+***_> TrainingWeek
+***_> TrainingSession
+***_> TrainingSessionClimbing
+***_> FitnessTest
+***_> PhysiologicalData
+***_> TrainingVolume
+***_> TrainingTemplate
+***_> TrainingExercise
+***_> SessionExercise
+***_> TrainingGoal
+***_> TrainingProgress
 ** Payment
 ***_> PaymentStatus <<enum>>
 ***_> SubscriptionStatus <<enum>>
@@ -91,10 +133,43 @@
 ***_> NotificationQueue
 ***_> NotificationLog
 ** AI
+***_> AIModelType <<enum>>
+***_> AIGenerationStatus <<enum>>
 ***_> AIModel
 ***_> AIGenerationRequest
 ***_> AITrainingData
 ***_> AIModelLog
+***_> AIModelConfiguration
+***_> AIModelVersion
+***_> AIGenerationFeedback
+***_> AITrainingSession
+***_> AIGenerationTemplate
+***_> AIModelBenchmark
+***_> AIGenerationHistory
 ** Help
+***_> TicketStatus <<enum>>
+***_> TicketPriority <<enum>>
+***_> TicketCategory <<enum>>
+***_> ArticleStatus <<enum>>
+***_> HelpCategory
+***_> HelpArticle
+***_> HelpArticleVersion
+***_> HelpArticleAttachment
+***_> FAQ
+***_> SupportTicket
+***_> TicketMessage
+***_> TicketAttachment
+***_> HelpSearchLog
+***_> UserHelpActivity
+***_> HelpFeedback
+***_> LiveChatSession
+***_> ChatMessage
+***_> KnowledgeBase
+***_> SupportAgent
+***_> EscalationRule
+***_> SupportMetrics
+** Versioning
+***_> ConfigurationVersion
+***_> VersionDependency
 
 @endwbs

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ClimbEdge.Application.DTOs
 {
-    public class CreateUserProfileDTO
+    public record class CreateUserProfileDTO
     {
         public string UserId { get; set; } = string.Empty;
         public string? FirstName { get; set; }
@@ -26,7 +26,7 @@ namespace ClimbEdge.Application.DTOs
         public bool EmailNotifications { get; set; } = true;
         public bool PushNotifications { get; set; } = true;
     }
-    public class UpdateUserProfileDTO
+    public record class UpdateUserProfileDTO
     {
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
@@ -42,7 +42,7 @@ namespace ClimbEdge.Application.DTOs
         public bool EmailNotifications { get; set; } = true;
         public bool PushNotifications { get; set; } = true;
     }
-    public class GetUserProfileDTO : BaseDTO
+    public record class GetUserProfileDTO : BaseDTO
     {
         public long UserId { get; set; }
         public string? FirstName { get; set; }

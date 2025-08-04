@@ -25,6 +25,9 @@ Cuando se aplica presión, las capas conductivas hacen contacto a través del ag
 
 ---
 
+Para una estructura más robusta, puedes usar:
+[sensor fsr detalles](./sensor_fsr_diseno_casero.md)
+
 ## 🛠 Pasos de Fabricación
 
 1. **Capas Conductoras:**

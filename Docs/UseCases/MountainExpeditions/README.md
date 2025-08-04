@@ -32,11 +32,18 @@ El sistema de montañismo y expediciones permite a los usuarios:
 **Complejidad:** Alta  
 **Prioridad:** Media  
 
+### UC-104: Programar Expedición Organizacional
+**Actor Principal:** Organización  
+**Descripción:** Permite a organizaciones verificadas programar expediciones públicas, gestionando logística completa, inscripciones, y aspectos comerciales.  
+**Complejidad:** Alta  
+**Prioridad:** Alta  
+
 ## Actores Principales
 
 - **Montañista:** Usuario que participa en expediciones y consulta información de montañas
 - **Guía de Montaña:** Profesional certificado que lidera expediciones y gestiona seguridad
 - **Organizador de Expediciones:** Usuario que planifica y coordina expediciones completas
+- **Organización:** Entidad verificada que puede programar expediciones comerciales o grupales
 - **Sistema GPS:** Sistema de posicionamiento global que registra ubicaciones y tracks
 - **Sistema Meteorológico:** API externa que proporciona datos climatológicos
 

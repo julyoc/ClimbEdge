@@ -1,0 +1,27 @@
+services:
+  climbedge.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:8081;http://+:8080
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+  climbedge.front:
+    ports:
+      - "3000:3000"  # Exponer en desarrollo
+    environment:
+      - NODE_ENV=development
+  climbedge.db:
+    ports:
+      - "5432:5432"  # Exponer en desarrollo
+
+  climbedge.cache:
+    ports:
+      - "6379:6379"  # Exponer en desarrollo

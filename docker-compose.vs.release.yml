@@ -1,0 +1,70 @@
+services:
+  climbedge.certbot-init:
+    image: certbot/certbot:latest
+    container_name: climbedge-certbot
+    volumes:
+      - ./certbot/www/:/var/www/certbot/:rw
+      - ./certbot/conf/:/etc/letsencrypt/:rw
+      - ./certbot/scripts:/scripts:ro
+    networks:
+      - climbedge-network
+    entrypoint: /scripts/start-hook.sh
+    env_file:
+      - .env
+    environment:
+      - APP_DOMAIN=${APP_DOMAIN}
+      - CERT_PASSWORD=${CERT_PASSWORD}
+      - CERT_EMAIL=${CERT_EMAIL}
+    restart: "no"
+  climbedge.certbot-renew:
+    image: certbot/certbot:latest
+    volumes:
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/pfx:/certs
+      - ./certbot/scripts:/scripts:ro
+    entrypoint: /bin/sh -c
+    env_file:
+      - .env
+    environment:
+      - APP_DOMAIN=${APP_DOMAIN}
+      - CERT_PASSWORD=${CERT_PASSWORD}
+      - CERT_EMAIL=${CERT_EMAIL}
+    command: >
+      trap exit TERM;
+      chmod +x /scripts/post_hook.sh;
+      while true; do
+        certbot renew --deploy-hook '/scripts/post_hook.sh';
+        sleep 12h;
+      done
+  climbedge.api:
+    env_file:
+      - .env
+      - .env.release
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - ASPNETCORE_URLS=${ASPNETCORE_URLS}
+      - ASPNETCORE_HTTPS_PORT=${ASPNETCORE_HTTPS_PORT}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=${ASPNETCORE_Kestrel__Certificates__Default__Path}
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${CERT_PASSWORD}
+    depends_on:
+      - climbedge.front
+      - climbedge.db
+      - climbedge.cache
+      - climbedge.certbot-init
+  climbedge.front:
+    env_file:
+      - .env
+      - .env.release
+  climbedge.cache:
+    image: eqalpha/keydb:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - climbedge-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "keydb-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

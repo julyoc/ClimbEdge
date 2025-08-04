@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ClimbEdge.Application.DTOs
 {
-    public class RegisterRequestDTO
+    public record class RegisterRequestDTO
     {
         public required string Email { get; set; }
         public required string Password { get; set; }
@@ -16,25 +16,25 @@ namespace ClimbEdge.Application.DTOs
         public RegisterRequestDTO() { }
     }
 
-    public class LoginRequestDTO
+    public record class LoginRequestDTO
     {
         public required string Email { get; set; }
         public required string Password { get; set; }
     }
 
-    public class ChangePasswordRequestDTO
+    public record class ChangePasswordRequestDTO
     {
         public required string CurrentPassword { get; set; }
         public required string NewPassword { get; set; }
         public required string ConfirmPassword { get; set; }
     }
 
-    public class ForgotPasswordRequestDTO
+    public record class ForgotPasswordRequestDTO
     {
         public required string Email { get; set; }
     }
 
-    public class ResetPasswordRequestDTO
+    public record class ResetPasswordRequestDTO
     {
         public required string Email { get; set; }
         public required string Token { get; set; }
@@ -42,19 +42,19 @@ namespace ClimbEdge.Application.DTOs
         public required string ConfirmPassword { get; set; }
     }
 
-    public class RefreshTokenRequestDTO
+    public record class RefreshTokenRequestDTO
     {
         public required string Token { get; set; }
         public required string RefreshToken { get; set; }
     }
 
-    public class AuthResponseDTO
+    public record class AuthResponseDTO
     {
         public required string Token { get; set; }
         public required string RefreshToken { get; set; }
         public required UserInfoDTO User { get; set; }
     }
-    public class UserInfoDTO : BaseDTO
+    public record class UserInfoDTO : BaseDTO
     {
         public string? Email { get; set; }
         public string? UserName { get; set; }

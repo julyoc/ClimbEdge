@@ -11,20 +11,21 @@ using System.Threading.Tasks;
 
 namespace ClimbEdge.Application.Commands.UserProfileCommand
 {
-    public record CreateUserProfileCommand(CreateUserProfileDTO entity): IRequest<UserProfile>;
+    public record CreateUserProfileCommand(CreateUserProfileDTO entity): IRequest<GetUserProfileDTO>;
 
-    public class CreateUserProfileCommandHandler : IRequestHandler<CreateUserProfileCommand, UserProfile>
+    public class CreateUserProfileCommandHandler : IRequestHandler<CreateUserProfileCommand, GetUserProfileDTO>
     {
         private readonly IUserProfileRepository _userProfileRepository;
         public CreateUserProfileCommandHandler(IUserProfileRepository userProfileRepository)
         {
             _userProfileRepository = userProfileRepository;
         }
-        public async Task<UserProfile> Handle(CreateUserProfileCommand request, CancellationToken cancellationToken)
+        public async Task<GetUserProfileDTO> Handle(CreateUserProfileCommand request, CancellationToken cancellationToken)
         {
             var entity = Mapper.Map<CreateUserProfileDTO, UserProfile>(request.entity);
             await _userProfileRepository.AddAsync(entity);
-            return entity;
+            var e = Mapper.Map<UserProfile, GetUserProfileDTO>(entity);
+            return e;
         }
     }
 }

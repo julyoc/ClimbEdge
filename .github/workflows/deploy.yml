@@ -1,0 +1,222 @@
+name: Build and Push Docker Image to GHCR
+
+on:
+    push:
+        tags:
+            - 'v*'  # Trigger on version tags like v1.0, v2.1.3, etc.
+    workflow_dispatch:  # Allow manual trigger
+
+env:
+    REGISTRY: ghcr.io
+    IMAGE_NAME_API: ${{github.actor}}/${{ github.repository }}/climbedge-api
+    IMAGE_NAME_FRONT: ${{github.actor}}/${{ github.repository }}/climbedge-front
+
+jobs:
+    build-and-push-api:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            packages: write
+    
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+
+            - name: Log in to Container Registry
+              uses: docker/login-action@v3
+              with:
+                registry: ${{ env.REGISTRY }}
+                username: ${{ github.actor }}
+                password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Extract metadata for API
+              id: meta-api
+              uses: docker/metadata-action@v5
+              with:
+                images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_API }}
+                tags: |
+                  type=ref,event=tag
+                  type=ref,event=branch
+                  type=semver,pattern={{version}}
+                  type=semver,pattern={{major}}.{{minor}}
+                  type=semver,pattern={{major}}
+                  type=sha,prefix={{branch}}-
+
+            - name: Build and push API Docker image
+              uses: docker/build-push-action@v5
+              with:
+                context: .
+                file: ./ClimbEdge.API/Dockerfile
+                push: true
+                tags: ${{ steps.meta-api.outputs.tags }}
+                labels: ${{ steps.meta-api.outputs.labels }}
+                cache-from: type=gha
+                cache-to: type=gha,mode=max
+                platforms: linux/amd64,linux/arm64
+
+    build-and-push-frontend:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            packages: write
+    
+        steps:
+          - name: Checkout repository
+            uses: actions/checkout@v4
+
+          - name: Set up Docker Buildx
+            uses: docker/setup-buildx-action@v3
+
+          - name: Log in to Container Registry
+            uses: docker/login-action@v3
+            with:
+              registry: ${{ env.REGISTRY }}
+              username: ${{ github.actor }}
+              password: ${{ secrets.GITHUB_TOKEN }}
+
+          - name: Extract metadata for Frontend
+            id: meta-front
+            uses: docker/metadata-action@v5
+            with:
+              images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONT }}
+              tags: |
+                type=ref,event=tag
+                type=ref,event=branch
+                type=semver,pattern={{version}}
+                type=semver,pattern={{major}}.{{minor}}
+                type=semver,pattern={{major}}
+                type=sha,prefix={{branch}}-
+
+          - name: Build and push Frontend Docker image
+            uses: docker/build-push-action@v5
+            with:
+              context: ./ClimbEdge.Front
+              file: ./ClimbEdge.Front/Dockerfile
+              push: true
+              tags: ${{ steps.meta-front.outputs.tags }}
+              labels: ${{ steps.meta-front.outputs.labels }}
+              cache-from: type=gha
+              cache-to: type=gha,mode=max
+              platforms: linux/amd64,linux/arm64
+
+    deploy:
+        runs-on: ubuntu-latest
+        needs: [build-and-push-api, build-and-push-frontend]
+        if: github.ref_type == 'tag'  # Solo deploy en tags de versión
+        
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup SSH key
+              uses: webfactory/ssh-agent@v0.9.0
+              with:
+                ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+            - name: Add server to known hosts
+              run: |
+                ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+
+            - name: Create deployment directory on server
+              run: |
+                ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }} "
+                  mkdir -p /opt/climbedge &&
+                  cd /opt/climbedge &&
+                  sudo chown -R ${{ secrets.USERNAME }}:${{ secrets.USERNAME }} /opt/climbedge
+                "
+
+            - name: Copy configuration files to server
+              run: |
+                # Copy environment files
+                scp .env ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/opt/climbedge/.env
+                scp .env.release ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/opt/climbedge/.env.release
+                
+                # Copy docker-compose files
+                scp docker-compose.yml ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/opt/climbedge/docker-compose.yml
+                scp docker-compose.vs.release.yml ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/opt/climbedge/docker-compose.vs.release.yml
+                
+                # Copy certbot directory
+                scp -r certbot/ ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/opt/climbedge/
+
+                # Copy db-init directory
+                scp -r db-init/ ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/opt/climbedge/
+
+            - name: Login to GitHub Container Registry on server
+              run: |
+                ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }} "
+                  echo '${{ secrets.GITHUB_TOKEN }}' | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+                "
+
+            - name: Extract version tag
+              id: version
+              run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+            - name: Deploy application
+              run: |
+                ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }} "
+                  cd /opt/climbedge &&
+                  
+                  # Create backup of current deployment
+                  if [ -f docker-compose.vs.release.yml ]; then
+                    docker-compose -f docker-compose.vs.release.yml down --remove-orphans || true
+                  fi &&
+                  
+                  # Set environment variables
+                  export API_IMAGE_TAG=${{ steps.version.outputs.VERSION }} &&
+                  export FRONT_IMAGE_TAG=${{ steps.version.outputs.VERSION }} &&
+                  
+                  # Pull latest images
+                  docker pull ghcr.io/${{ env.IMAGE_NAME_API }}:${{ steps.version.outputs.VERSION }} &&
+                  docker pull ghcr.io/${{ env.IMAGE_NAME_FRONT }}:${{ steps.version.outputs.VERSION }} &&
+                  
+                  # Start services
+                  docker-compose -f docker-compose.vs.release.yml up -d &&
+                  
+                  # Wait for services to be ready
+                  sleep 30 &&
+                  
+                  # Health check
+                  docker-compose -f docker-compose.vs.release.yml ps
+                "
+
+            - name: Verify deployment
+              run: |
+                ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }} "
+                  cd /opt/climbedge &&
+                  
+                  # Check if containers are running
+                  if ! docker-compose -f docker-compose.vs.release.yml ps | grep -q 'Up'; then
+                    echo 'Deployment failed - containers not running'
+                    docker-compose -f docker-compose.vs.release.yml logs
+                    exit 1
+                  fi &&
+                  
+                  # Test API health endpoint (adjust URL as needed)
+                  if ! curl -f http://localhost/health > /dev/null 2>&1; then
+                    echo 'API health check failed'
+                    exit 1
+                  fi &&
+                  
+                  echo 'Deployment successful!'
+                "
+
+            - name: Cleanup old images
+              run: |
+                ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }} "
+                  # Remove old unused images (keep last 3 versions)
+                  docker image prune -f &&
+                  docker images ghcr.io/${{ env.IMAGE_NAME_API }} --format 'table {{.Repository}}:{{.Tag}}' | tail -n +4 | head -n -3 | xargs -r docker rmi || true &&
+                  docker images ghcr.io/${{ env.IMAGE_NAME_FRONT }} --format 'table {{.Repository}}:{{.Tag}}' | tail -n +4 | head -n -3 | xargs -r docker rmi || true
+                "
+
+            - name: Notify deployment status
+              if: always()
+              run: |
+                if [ "${{ job.status }}" == "success" ]; then
+                  echo "✅ Deployment of version ${{ steps.version.outputs.VERSION }} completed successfully"
+                else
+                  echo "❌ Deployment of version ${{ steps.version.outputs.VERSION }} failed"
+                fi
