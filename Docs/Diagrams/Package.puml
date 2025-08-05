@@ -8,6 +8,8 @@
 **_> AppRole
 ** Auditing
 ***_> AuditActionType <<enum>>
+***_> AuditRiskLevel <<enum>>
+***_> ResultStatus <<enum>>
 ***_> AuditTrail
 ** Boards
 ***_> BoardVisibility <<enum>>

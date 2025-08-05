@@ -76,6 +76,7 @@ namespace ClimbEdge.Infrastructure.Persistence.Configurations
                      builder.Ignore(e => e.Age);
                      builder.Ignore(e => e.Initials);
 
+                     // Relations
                      builder.HasOne(e => e.AppUser)
                             .WithOne(e => e.UserProfile)
                             .HasForeignKey<UserProfile>(e => e.AppUserId)

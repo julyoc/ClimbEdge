@@ -39,6 +39,24 @@ package "Auditing" {
         +Import
         'Import: Datos importados
     }
+    enum "AuditRiskLevel" as AuditRiskLevel {
+        +Low
+        'Low: Riesgo bajo, cambios menores o rutinarios.
+        +Medium
+        'Medium: Riesgo moderado, cambios que pueden afectar la integridad de los datos.
+        +High
+        'High: Riesgo alto, cambios significativos que pueden comprometer la seguridad.
+        +Critical
+        'Critical: Riesgo crítico, cambios que pueden causar fallos graves en el sistema.
+    }
+    enum "ResultStatus" as ResultStatus {
+        +Success
+        'Success: La operación se completó con éxito.
+        +Failed
+        'Failed: La operación falló.
+        +Partial
+        'Partial: La operación se completó parcialmente.
+    }
     entity "AuditTrail" as AuditTrail {
         'Registro de auditoría granular para trazabilidad completa del sistema.
         'Captura todos los cambios realizados en las entidades principales del sistema.
@@ -47,7 +65,7 @@ package "Auditing" {
         ' Nombre de la entidad afectada (ej: "Board", "User", "ClimbRoute")
         +EntityId: long
         ' ID del registro afectado
-        +Action: AuditActionType
+        +AuditActionType: AuditActionType
         +UserId: long?
         ' Usuario que realizó la acción (null para acciones del sistema)
         +SessionId: string?
@@ -68,13 +86,13 @@ package "Auditing" {
         ' Lista de columnas que fueron modificadas
         +CorrelationId: string?
         ' ID para correlacionar múltiples cambios relacionados
-        +RiskLevel: string?
+        +RiskLevel: AuditRiskLevel?
         ' Nivel de riesgo: "Low", "Medium", "High", "Critical"
         +IsSystemAction: bool
         ' Indica si la acción fue realizada por el sistema automáticamente
         +Duration: int?
         ' Duración de la operación en milisegundos
-        +ResultStatus: string?
+        +ResultStatus: ResultStatus?
         ' Estado del resultado: "Success", "Failed", "Partial"
         +ErrorMessage: string?
         ' Mensaje de error si la operación falló
@@ -82,15 +100,43 @@ package "Auditing" {
         ' Contexto adicional específico de la operación
     }
 }
+enum "ConfigurationKey" as ConfigurationKey {
+    System_Language
+    System_MaintenanceMode
+
+    User_DefaultBoard
+    User_ShowTips
+
+    Training_DefaultDifficultyScaleName
+    Training_DefaultDifficultyRange
+    Training_ShowBetaVideos
+    Training_AutoLoadSession
+
+    Notification_EmailEnabled
+    Notification_PushEnabled
+    Notification_QuietHoursStart
+    Notification_QuietHoursEnd
+
+
+    Units_Length
+    Units_Weight
+    Units_Temperature
+}
+'
+'
+' Estoy hasta aqui con las entidades db config y repositories
+'
+'
 entity "Configuration" as Configuration {
     'Configuración del sistema, que almacena configuraciones globales y personalizadas.
     'Representa una configuración específica del sistema, como preferencias de usuario, configuraciones de aplicación
     ..inherits BaseEntity..
-    +Key: string <<unique>>
+    +Key: ConfigurationKey
+    +UserId: long
+    ' unique(UserId, Key)
     +Value: string
     +Description: string?
     +IsSensitive: bool
-    +UserId: long
 }
 entity "UserProfile" as UserProfile {
     ..inherits BaseEntity..
