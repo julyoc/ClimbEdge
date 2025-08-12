@@ -135,3 +135,13 @@ export default component$(() => {
         </AuthComponent>
     );
 });
+
+export const head = {
+    title: "Perfil",
+    meta: [
+        {
+            name: "description",
+            content: "Gestiona tu perfil y preferencias de ClimbEdge"
+        }
+    ]
+};

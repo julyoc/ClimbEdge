@@ -1,5 +1,5 @@
 import { component$, Slot, useSignal, $ } from '@builder.io/qwik';
-import { Link, useLocation } from '@builder.io/qwik-city';
+import { DocumentHead, Link, useLocation } from '@builder.io/qwik-city';
 
 export default component$(() => {
     const location = useLocation();
@@ -126,3 +126,13 @@ export default component$(() => {
         </div>
     );
 });
+
+export const head: DocumentHead = {
+    title: "Configuración",
+    meta: [
+        {
+            name: "description",
+            content: "Gestiona tu cuenta y preferencias de ClimbEdge"
+        }
+    ]
+};

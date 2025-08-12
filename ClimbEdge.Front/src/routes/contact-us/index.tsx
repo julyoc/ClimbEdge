@@ -159,7 +159,7 @@ export default component$(() => {
 });
 
 export const head: DocumentHead = {
-  title: "Contact Us - ClimbEdge",
+  title: "Contact Us",
   meta: [
     {
       name: "description",

@@ -1,4 +1,5 @@
 import { component$, Slot } from '@builder.io/qwik';
+import { DocumentHead } from '@builder.io/qwik-city';
 
 export default component$(() => {
     return (
@@ -7,3 +8,12 @@ export default component$(() => {
         </div>
     );
 });
+export const head: DocumentHead = {
+    title: "Auth",
+    meta: [
+        {
+            name: "description",
+            content: "Authentication pages for ClimbEdge"
+        }
+    ]
+};

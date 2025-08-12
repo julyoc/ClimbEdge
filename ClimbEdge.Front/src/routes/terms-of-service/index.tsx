@@ -235,7 +235,7 @@ export default component$(() => {
 });
 
 export const head: DocumentHead = {
-  title: "Terms of Service - ClimbEdge",
+  title: "Terms of Service",
   meta: [
     {
       name: "description",

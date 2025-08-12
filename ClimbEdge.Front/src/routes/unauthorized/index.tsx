@@ -1,5 +1,5 @@
 import { component$ } from "@builder.io/qwik";
-import { Link } from "@builder.io/qwik-city";
+import { DocumentHead, Link } from "@builder.io/qwik-city";
 import { useTheme } from "~/stores/theme";
 
 export default component$(() => {
@@ -131,3 +131,17 @@ export default component$(() => {
         </div>
     );
 });
+
+export const head: DocumentHead = {
+    title: "Acceso Denegado",
+    meta: [
+        {
+            name: "description",
+            content: "No tienes los permisos necesarios para acceder a esta página."
+        },
+        {
+            name: "robots",
+            content: "noindex, nofollow"
+        }
+    ]
+}

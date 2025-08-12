@@ -282,8 +282,10 @@ export default component$(() => {
       </Auth>
     </AuthComponent>
   );
-});export const head: DocumentHead = {
-  title: "ClimbEdge - Your Ultimate Climbing Companion",
+});
+
+export const head: DocumentHead = {
+  title: "Your Ultimate Climbing Companion",
   meta: [
     {
       name: "description",

@@ -183,7 +183,7 @@ export default component$(() => {
 });
 
 export const head: DocumentHead = {
-  title: "Privacy Policy - ClimbEdge",
+  title: "Privacy Policy",
   meta: [
     {
       name: "description",

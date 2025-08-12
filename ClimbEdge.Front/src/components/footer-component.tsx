@@ -47,8 +47,8 @@ export default component$(() => {
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/board" class="text-slate-400 hover:text-emerald-400 transition-colors">
-                                    Board
+                                <Link href="/climbing" class="text-slate-400 hover:text-emerald-400 transition-colors">
+                                    Climbing
                                 </Link>
                             </li>
                             <li>
@@ -79,14 +79,14 @@ export default component$(() => {
                                 </Link>
                             </li>
                             <li>
-                                <a href="mailto:support@climbedge.com" class="text-slate-400 hover:text-emerald-400 transition-colors">
-                                    Contact
-                                </a>
+                                <Link href="/contact-us" class="text-slate-400 hover:text-emerald-400 transition-colors">
+                                    Contact Us
+                                </Link>
                             </li>
                             <li>
-                                <a href="#" class="text-slate-400 hover:text-emerald-400 transition-colors">
+                                <Link href="/documentation" class="text-slate-400 hover:text-emerald-400 transition-colors">
                                     Documentation
-                                </a>
+                                </Link>
                             </li>
                         </ul>
                     </div>
