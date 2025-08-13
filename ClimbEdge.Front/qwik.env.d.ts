@@ -6,4 +6,5 @@
 interface ImportMetaEnv {
     VITE_APP_NAME: string;
     VITE_API_BASE_URL_PATH: string;
+    VITE_API_KEY_HEADER: string; // Añadido para la clave de API
 }

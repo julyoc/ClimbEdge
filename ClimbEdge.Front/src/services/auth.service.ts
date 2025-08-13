@@ -59,6 +59,8 @@ export interface ApiResponse<T> {
 }
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL_PATH + '/account';
+const API_KEY_HEADER_NAME = "X-API-Key"; // Nombre del header para la clave de API
+const API_KEY_HEADER = import.meta.env.VITE_API_KEY_HEADER; // Valor de la clave de API
 
 export const authService = {
   register: $(async (data: RegisterRequestDTO): Promise<ApiResponse<AuthResponseDTO>> => {
@@ -67,6 +69,7 @@ export const authService = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          [API_KEY_HEADER_NAME]: API_KEY_HEADER,
         },
         body: JSON.stringify(data),
         credentials: 'include', // Para incluir cookies
@@ -99,6 +102,7 @@ export const authService = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          [API_KEY_HEADER_NAME]: API_KEY_HEADER,
         },
         body: JSON.stringify(data),
         credentials: 'include', // Para incluir cookies
@@ -128,6 +132,9 @@ export const authService = {
   logout: $(async (): Promise<ApiResponse<void>> => {
     try {
       const response = await fetch(`${API_BASE_URL}/logout`, {
+        headers: {
+          [API_KEY_HEADER_NAME]: API_KEY_HEADER,
+        },
         method: 'POST',
         credentials: 'include',
       });
@@ -153,6 +160,9 @@ export const authService = {
   getCurrentUser: $(async (): Promise<ApiResponse<UserInfoDTO>> => {
     try {
       const response = await fetch(`${API_BASE_URL}/me`, {
+        headers: {
+          [API_KEY_HEADER_NAME]: API_KEY_HEADER,
+        },
         method: 'GET',
         credentials: 'include',
       });
@@ -183,6 +193,7 @@ export const authService = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          [API_KEY_HEADER_NAME]: API_KEY_HEADER,
         },
         body: JSON.stringify(data),
         credentials: 'include',
@@ -213,6 +224,7 @@ export const authService = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          [API_KEY_HEADER_NAME]: API_KEY_HEADER,
         },
         body: JSON.stringify(data),
       });
@@ -242,6 +254,7 @@ export const authService = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          [API_KEY_HEADER_NAME]: API_KEY_HEADER,
         },
         body: JSON.stringify(data),
       });
@@ -271,6 +284,7 @@ export const authService = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          [API_KEY_HEADER_NAME]: API_KEY_HEADER,
         },
         body: JSON.stringify(data),
         credentials: 'include',

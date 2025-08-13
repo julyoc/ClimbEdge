@@ -1,5 +1,6 @@
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
+using ClimbEdge.API.Middlewares;
 using ClimbEdge.Application.DependencyInjection;
 using ClimbEdge.Infrastructure.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -82,6 +83,8 @@ app.UseCors("AllowFrontend"); // Use the CORS policy defined above
 // Add Authentication & Authorization middleware
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.AddMiddlewares(); // Custom middlewares (e.g., API Key Middleware)
 
 app.MapControllers();
 app.MapReverseProxy();
