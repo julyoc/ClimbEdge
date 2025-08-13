@@ -1,5 +1,6 @@
 import { component$, useSignal, $ } from '@builder.io/qwik';
-import { authService, type ForgotPasswordRequestDTO } from '~/services/auth.service';
+import { type ForgotPasswordRequestDTO } from '~/services/auth.service';
+import { authStrategy } from '~/strategies/auth.strategy';
 import { AuthComponent, AuthAnonimus } from '~/components/auth-component';
 
 export default component$(() => {
@@ -30,7 +31,7 @@ export default component$(() => {
     success.value = '';
 
     try {
-      const response = await authService.forgotPassword(formData.value);
+      const response = await authStrategy.forgotPassword(formData.value);
 
       if (response.success) {
         success.value = 'Se ha enviado un email con instrucciones para restablecer tu contraseña';

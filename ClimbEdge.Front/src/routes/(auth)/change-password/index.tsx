@@ -1,5 +1,6 @@
 import { component$, useSignal, $ } from '@builder.io/qwik';
-import { authService, type ChangePasswordRequestDTO } from '~/services/auth.service';
+import { type ChangePasswordRequestDTO } from '~/services/auth.service';
+import { authStrategy } from '~/strategies/auth.strategy'
 import { AuthComponent, Auth } from '~/components/auth-component';
 
 export default component$(() => {
@@ -50,7 +51,7 @@ export default component$(() => {
         success.value = '';
 
         try {
-            const response = await authService.changePassword(formData.value);
+            const response = await authStrategy.changePassword(formData.value);
 
             if (response.success) {
                 success.value = 'Contraseña cambiada exitosamente';

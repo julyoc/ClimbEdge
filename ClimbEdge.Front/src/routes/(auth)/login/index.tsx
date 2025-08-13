@@ -1,6 +1,7 @@
 import { component$, useSignal, $ } from '@builder.io/qwik';
 import { useNavigate } from '@builder.io/qwik-city';
-import { authService, type LoginRequestDTO } from '~/services/auth.service';
+import { type LoginRequestDTO } from '~/services/auth.service';
+import { authStrategy } from '~/strategies/auth.strategy';
 import { useAuth } from '~/contexts/auth.context';
 import { AuthComponent, AuthAnonimus } from '~/components/auth-component';
 
@@ -33,7 +34,7 @@ export default component$(() => {
     success.value = '';
 
     try {
-      const response = await authService.login(formData.value);
+      const response = await authStrategy.login(formData.value);
 
       if (response.success && response.data) {
         setUser(response.data.user);

@@ -9,7 +9,7 @@ export default component$(() => {
     );
 });
 export const head: DocumentHead = {
-    title: "Auth",
+    title: "Accounts",
     meta: [
         {
             name: "description",

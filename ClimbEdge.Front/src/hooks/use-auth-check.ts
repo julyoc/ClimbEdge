@@ -1,6 +1,6 @@
 import { $, useTask$, useVisibleTask$ } from '@builder.io/qwik';
 import { useAuth } from '~/contexts/auth.context';
-import { authService } from '~/services/auth.service';
+import { authStrategy } from '~/strategies/auth.strategy';
 
 export const useAuthCheck = () => {
   const { setUser, setLoading, clearAuth } = useAuth();
@@ -10,7 +10,7 @@ export const useAuthCheck = () => {
     setLoading(true);
     
     try {
-      const response = await authService.getCurrentUser();
+      const response = await authStrategy.getCurrentUser();
       console.log('🔍 Auth response:', response);
       
       if (response.success && response.data) {

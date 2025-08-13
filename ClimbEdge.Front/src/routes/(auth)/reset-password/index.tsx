@@ -1,6 +1,7 @@
 import { component$, useSignal, $ } from '@builder.io/qwik';
 import { useNavigate, useLocation } from '@builder.io/qwik-city';
-import { authService, type ResetPasswordRequestDTO } from '~/services/auth.service';
+import { type ResetPasswordRequestDTO } from '~/services/auth.service';
+import { authStrategy } from '~/strategies/auth.strategy';
 import { AuthComponent, AuthAnonimus } from '~/components/auth-component';
 
 export default component$(() => {
@@ -55,7 +56,7 @@ export default component$(() => {
     success.value = '';
 
     try {
-      const response = await authService.resetPassword(formData.value);
+      const response = await authStrategy.resetPassword(formData.value);
 
       if (response.success) {
         success.value = 'Contraseña restablecida exitosamente. Redirigiendo al login...';

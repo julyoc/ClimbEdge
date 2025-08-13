@@ -58,7 +58,7 @@ export interface ApiResponse<T> {
   success: boolean;
 }
 
-const API_BASE_URL = '/api/account';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL_PATH + '/account';
 
 export const authService = {
   register: $(async (data: RegisterRequestDTO): Promise<ApiResponse<AuthResponseDTO>> => {
