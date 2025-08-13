@@ -13,6 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 // permite appsettings.json
 builder.Host.UseSerilog((ctx, lc) => lc.ReadFrom.Configuration(ctx.Configuration));
 
+builder.Services.RegisterMiddlewares(); // Custom middlewares (e.g., API Key Middleware)
+
 // Add services to the container.
 builder.Services.AddControllers();
 

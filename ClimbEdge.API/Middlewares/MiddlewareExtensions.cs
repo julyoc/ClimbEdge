@@ -2,9 +2,15 @@
 {
     public static class MiddlewareExtensions
     {
+        public static IServiceCollection RegisterMiddlewares(this IServiceCollection services)
+        {
+            services.AddTransient<ApiKeyMiddleware>();
+            return services;
+        }
         public static IApplicationBuilder AddMiddlewares(this IApplicationBuilder builder)
         {
-            return builder.UseMiddleware<ApiKeyMiddleware>();
+            builder.UseMiddleware<ApiKeyMiddleware>();
+            return builder;
         }
     }
 }
