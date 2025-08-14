@@ -36,7 +36,7 @@ namespace ClimbEdge.Domain.Entities.Auditing
         public Dictionary<string, Object>? AdditionalContext { get; set; }
         public override void InitializeSlug()
         {
-            Slug = $"{EntityName}/{AuditActionType}/{IpAddress}/{CreatedAt.Ticks}";
+            Slug = $"{EntityName}/{AuditActionType}/{IpAddress}";
             AddDomainEvent(new EntityDomainEvent<UserProfile>(Slug, EntityDomainEventType.Created));
         }
     }
