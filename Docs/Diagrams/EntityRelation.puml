@@ -182,6 +182,11 @@ entity "AppRole" as AppRole {
     +NormalizedName: string? <<unique>>
     +ConcurrencyStamp: string?
 }
+'
+'
+' Estoy hasta aqui con las entidades db config y repositories
+'
+'
 package "Boards" {
     enum "BoardVisibility" as BoardVisibility {
         +Public

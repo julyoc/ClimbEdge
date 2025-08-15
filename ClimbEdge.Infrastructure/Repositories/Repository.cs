@@ -39,22 +39,21 @@ namespace ClimbEdge.Infrastructure.Repositories
                 await _cacheService.SetAsync($"{typeof(TEntity).Name}_{entity.Uid}", entity);
             }
         }
-        public async Task<int> CountAsync()
+        public async Task<int> CountAsync(Expression<Func<TEntity, bool>>? criteria = null)
         {
             int? count = null;
-            if (activeCache) count = await _cacheService.GetAsync<int?>($"{typeof(TEntity).Name}_Count");
-            if (count != null) return count.Value;
-            count = await _climbEdgeContext.Set<TEntity>().AsNoTracking().CountAsync();
-            if (activeCache) await _cacheService.SetAsync($"{typeof(TEntity).Name}_Count", count);
-            return (int)count;
-        }
-        public async Task<int> CountAsync(Expression<Func<TEntity, bool>> criteria)
-        {
-            int? count = null;
-            if (activeCache) count = await _cacheService.GetAsync<int?>($"{typeof(TEntity).Name}_Count_Criteria");
+            if (criteria == null)
+            {
+                if (activeCache) count = await _cacheService.GetAsync<int?>($"{typeof(TEntity).Name}_Count");
+                if (count != null) return count.Value;
+                count = await _climbEdgeContext.Set<TEntity>().AsNoTracking().CountAsync();
+                if (activeCache) await _cacheService.SetAsync($"{typeof(TEntity).Name}_Count", count);
+                return (int)count;
+            }
+            if (activeCache) count = await _cacheService.GetAsync<int?>($"{typeof(TEntity).Name}_Count_Criteria_{CriteriaCacheKey.For(criteria)}");
             if (count != null) return count.Value;
             count = _climbEdgeContext.Set<TEntity>().AsNoTracking().Count(criteria);
-            if (activeCache) await _cacheService.SetAsync($"{typeof(TEntity).Name}_Count_Criteria", count);
+            if (activeCache) await _cacheService.SetAsync($"{typeof(TEntity).Name}_Count_Criteria_{CriteriaCacheKey.For(criteria)}", count);
             return (int)count;
         }
         public async Task DeleteAsync(Guid id)
@@ -415,16 +414,7 @@ namespace ClimbEdge.Infrastructure.Repositories
             await _climbEdgeContext.SaveChangesAsync();
         }
         public Task LockAsync(string id, bool isLocked) => LockAsync(Guid.Parse(id), isLocked);
-        public async Task<int> PagesNumberAsync(int pageSize = Constants.DefaultPageSize)
-        {
-            if (pageSize > Constants.MaxPageSize)
-            {
-                throw new ArgumentOutOfRangeException("Page and pageSize must be greater than 0.");
-            }
-            var count = await CountAsync();
-            return count / pageSize + (count % pageSize > 0 ? 1 : 0);
-        }
-        public async Task<int> PagesNumberAsync(Expression<Func<TEntity, bool>> criteria, int pageSize = Constants.DefaultPageSize)
+        public async Task<int> PagesNumberAsync(Expression<Func<TEntity, bool>>? criteria = null, int pageSize = Constants.DefaultPageSize)
         {
             if (pageSize > Constants.MaxPageSize)
             {
