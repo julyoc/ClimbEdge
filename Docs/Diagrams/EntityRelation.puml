@@ -122,11 +122,6 @@ enum "ConfigurationKey" as ConfigurationKey {
     Units_Weight
     Units_Temperature
 }
-'
-'
-' Estoy hasta aqui con las entidades db config y repositories
-'
-'
 entity "Configuration" as Configuration {
     'Configuración del sistema, que almacena configuraciones globales y personalizadas.
     'Representa una configuración específica del sistema, como preferencias de usuario, configuraciones de aplicación
