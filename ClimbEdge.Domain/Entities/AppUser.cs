@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace ClimbEdge.Domain.Entities
 {
-    public class AppUser : IdentityUser<long>, IBaseEntity
+    public sealed class AppUser : IdentityUser<long>, IBaseEntity
     {
         public AppUser() : base() { }
         public Guid Uid { get; set; } = Guid.NewGuid();

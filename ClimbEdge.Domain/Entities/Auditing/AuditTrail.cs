@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace ClimbEdge.Domain.Entities.Auditing
 {
-    public class AuditTrail : BaseModel
+    public sealed class AuditTrail : BaseModel
     {
         public AuditTrail() : base() { }
         public string EntityName { get; set; }
@@ -37,7 +37,32 @@ namespace ClimbEdge.Domain.Entities.Auditing
         public override void InitializeSlug()
         {
             Slug = $"{EntityName}/{AuditActionType}/{IpAddress}";
-            AddDomainEvent(new EntityDomainEvent<UserProfile>(Slug, EntityDomainEventType.Created));
+            AddDomainEvent(new EntityDomainEvent<AuditTrail>(Slug, EntityDomainEventType.Created));
+        }
+        public override void UpdateTimestamps()
+        {
+            base.UpdateTimestamps();
+            AddDomainEvent(new EntityDomainEvent<AuditTrail>(Slug, EntityDomainEventType.Updated));
+        }
+        public override void MarkAsDeleted()
+        {
+            base.MarkAsDeleted();
+            AddDomainEvent(new EntityDomainEvent<AuditTrail>(Slug, EntityDomainEventType.Deleted, new Dictionary<string, Object>() { { "deleted", true } }));
+        }
+        public override void MarkAsRestored()
+        {
+            base.MarkAsRestored();
+            AddDomainEvent(new EntityDomainEvent<AuditTrail>(Slug, EntityDomainEventType.Restored, new Dictionary<string, Object>() { { "Restored", true } }));
+        }
+        public override void Lock()
+        {
+            base.Lock();
+            AddDomainEvent(new EntityDomainEvent<AuditTrail>(Slug, EntityDomainEventType.Locked, new Dictionary<string, Object>() { { "Locked", true } }));
+        }
+        public override void Unlock()
+        {
+            base.Unlock();
+            AddDomainEvent(new EntityDomainEvent<AuditTrail>(Slug, EntityDomainEventType.Locked, new Dictionary<string, Object>() { { "Locked", false } }));
         }
     }
 }

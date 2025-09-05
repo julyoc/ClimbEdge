@@ -10,7 +10,7 @@ namespace ClimbEdge.Domain.Entities
     /// <summary>
     /// Perfil de usuario con información adicional
     /// </summary>
-    public class UserProfile : BaseModel
+    public sealed class UserProfile : BaseModel
     {
         /// <summary>
         /// Identificador del usuario asociado
@@ -42,13 +42,9 @@ namespace ClimbEdge.Domain.Entities
         /// </summary>
         public string? Website { get; set; }
         /// <summary>
-        /// Ubicación del usuario
+        /// Dirección del usuario
         /// </summary>
-        public string? Location { get; set; }
-        /// <summary>
-        /// País del usuario
-        /// </summary>
-        public string Country { get; set; } = Constants.DefaultCountry;
+        public AddressData Address { get; set; }
         /// <summary>
         /// Zona horaria del usuario
         /// </summary>

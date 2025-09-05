@@ -142,8 +142,11 @@ entity "UserProfile" as UserProfile {
     +Bio: string?
     +ProfilePictureUrl: string?
     +Website: string?
-    +Location: string?
+    +Street: string?
+    +City: string?
+    +State: string?
     +Country: string
+    +PostalCode: string?
     +TimeZone: string
     +PreferredLanguage: string
     +IsPublic: bool
@@ -177,11 +180,6 @@ entity "AppRole" as AppRole {
     +NormalizedName: string? <<unique>>
     +ConcurrencyStamp: string?
 }
-'
-'
-' Estoy hasta aqui con las entidades db config y repositories
-'
-'
 package "Boards" {
     enum "BoardVisibility" as BoardVisibility {
         +Public
@@ -205,6 +203,11 @@ package "Boards" {
         +Viewer
         'Viewer: Solo puede ver el tablero, sin permisos de edición.
     }
+'
+'
+' Estoy hasta aqui con las entidades db config y repositories
+'
+'
     entity "Board" as Board {
         'Tablero de escalada, que puede contener problemas, configuraciones y miembros.
         'Representa un espacio de trabajo para organizar y gestionar problemas de escalada.
@@ -571,7 +574,7 @@ package "Mountains" {
         ' Coordenadas geográficas usando PostGIS (latitud, longitud).
         +Country: string
         +Region: string?
-        +Province: string?
+        +State: string?
         +FirstAscentDate: DateTime?
         +FirstAscentBy: string?
         ' Nombre de quien realizó la primera ascensión.
@@ -715,6 +718,40 @@ package "Mountains" {
         ' Profundidad de nieve en centímetros.
         +DataSource: string?
         ' Fuente de datos: "Manual", "WeatherAPI", "Station", etc.
+    }
+    entity "MountainExpeditionLog" as MountainExpeditionLog {
+        'Registro detallado de una salida de montaña.
+        ..inherits BaseEntity..
+        +ExpeditionId: long
+        ' Referencia a la expedición asociada.
+        +UserId: long
+        ' Usuario que realizó la salida.
+        +StartDate: DateTime
+        ' Fecha y hora de inicio de la salida.
+        +EndDate: DateTime?
+        ' Fecha y hora de finalización de la salida.
+        +Duration: int?
+        ' Duración total de la salida en minutos.
+        +MaxElevationReached: int?
+        ' Máxima elevación alcanzada en metros.
+        +WeatherConditions: string?
+        ' Condiciones climáticas durante la salida.
+        +Notes: string?
+        ' Notas adicionales sobre la salida.
+        +IsSuccessful: bool
+        ' Indica si la salida fue exitosa (cima alcanzada, etc.).
+        +TickType: MountaineerTickType
+        ' Tipo de tick: "Summit", "Attempted", "Failed", etc.
+        +GroupSize: int?
+        ' Tamaño del grupo durante la salida.
+        +GuideId: long?
+        ' Referencia al guía (si aplica).
+        +SafetyIncidents: jsonb?
+        ' Incidentes de seguridad reportados (en formato JSON).
+        +EquipmentUsed: jsonb?
+        ' Equipamiento utilizado durante la salida (en formato JSON).
+        +MountainRouteId: long?
+        ' Ruta específica utilizada durante la salida.
     }
 }
 package "Mountains.Itinerary" {
@@ -1254,7 +1291,7 @@ package "Organizations" {
         +Website: string?
         +Address: string?
         +City: string?
-        +Province: string?
+        +State: string?
         +Country: string
         +PostalCode: string?
         +Location: geography(POINT,4326)?
@@ -2787,6 +2824,9 @@ MountainRoute "1" -- "0..*" RouteFile : has files >
 DifficultyScale "1" -- "0..*" MountainRoute : difficulty rated >
 AppUser "0..1" -- "0..*" RouteFile : uploads files >
 WaypointType "1" -- "0..*" RouteWaypoint : has type <
+Expedition "1" -- "0..*" MountainExpeditionLog : logs >
+AppUser "1" -- "0..*" MountainExpeditionLog : records >
+MountainRoute "1" -- "0..*" MountainExpeditionLog : used route >
 
 ' Mountains.Itinerary Relations
 Mountain "1" -- "0..*" Expedition : has expeditions >

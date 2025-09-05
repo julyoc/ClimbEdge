@@ -14,7 +14,7 @@ namespace ClimbEdge.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<Configuration> builder)
         {
             builder.ConfigureBaseModel();
-            builder.HasKey(e => new { e.Key, e.UserId });
+            builder.HasIndex(e => new { e.Key, e.UserId }).IsUnique();
             builder.Property(e => e.Value).IsRequired();
         }
     }
