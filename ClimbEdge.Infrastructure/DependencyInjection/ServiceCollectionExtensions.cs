@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using ClimbEdge.Common.Constants;
+using ClimbEdge.Infrastructure.ExternalServices;
 
 namespace ClimbEdge.Infrastructure.DependencyInjection
 {
@@ -64,9 +65,17 @@ namespace ClimbEdge.Infrastructure.DependencyInjection
                 services.AddScoped<ICacheService, CacheService>();
             }
 
+            // Configurar Repositorios
             //services.AddScoped<IUserProfileRepository, UserProfileRepository>();
             services.Scan(scan => scan.FromAssemblyOf<UserProfileRepository>()
                     .AddClasses(classes => classes.Where(type => type.Name.EndsWith("Repository")))
+                    .AsImplementedInterfaces()
+                    .WithScopedLifetime());
+
+            // Configurar Servicios externos
+            //services.AddScoped<ICountryService, CountryService>();
+            services.Scan(scan => scan.FromAssemblyOf<CountryService>()
+                    .AddClasses(classes => classes.Where(type => type.Name.EndsWith("Service")))
                     .AsImplementedInterfaces()
                     .WithScopedLifetime());
 

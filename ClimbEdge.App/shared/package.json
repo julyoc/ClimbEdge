@@ -1,0 +1,16 @@
+{
+  "name": "climbedge-shared",
+  "version": "1.0.0",
+  "files": [ "dist" ],
+  "exports" : {
+    "./*": "./dist/*.js"
+  },
+  "types": "./dist/*.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.1",
+    "typescript": "^5.9.2"
+  }
+}

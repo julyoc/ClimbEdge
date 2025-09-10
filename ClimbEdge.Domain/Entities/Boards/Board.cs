@@ -16,9 +16,9 @@ namespace ClimbEdge.Domain.Entities.Boards
         public string? Description { get; set; }
         public BoardVisibility Visibility { get; set; } = BoardVisibility.Private;
         public long BoardConfigId { get; set; }
-        public BoardConfig? BoardConfig { get; set; }
+        //public BoardConfig? BoardConfig { get; set; }
         public long OrganizationId { get; set; }
-        public Organization? Organization { get; set; }
+        //public Organization? Organization { get; set; }
         public Board() : base() { }
         public override void InitializeSlug()
         {

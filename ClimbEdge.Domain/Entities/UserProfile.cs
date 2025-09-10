@@ -124,7 +124,7 @@ namespace ClimbEdge.Domain.Entities
 
         public override void InitializeSlug()
         {
-            Slug = $"{Country}/{Initials}";
+            Slug = $"{FullName}/{Initials}";
             AddDomainEvent(new EntityDomainEvent<UserProfile>(Slug, EntityDomainEventType.Created));
         }
     }

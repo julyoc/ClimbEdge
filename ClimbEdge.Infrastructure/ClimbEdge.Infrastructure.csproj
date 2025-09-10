@@ -25,10 +25,10 @@
   <ItemGroup>
     <ProjectReference Include="..\ClimbEdge.Domain\ClimbEdge.Domain.csproj" />
     <ProjectReference Include="..\ClimbEdge.Common\ClimbEdge.Common.csproj" />
+    <ProjectReference Include="..\ClimbEdge.Application\ClimbEdge.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ExternalServices\" />
     <Folder Include="Persistence\Migrations\" />
   </ItemGroup>
 
