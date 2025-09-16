@@ -1,6 +1,7 @@
 ﻿using ClimbEdge.Domain.DomainEvents;
 using ClimbEdge.Domain.Entities.Auditing;
-using ClimbEdge.Domain.Enums;
+using ClimbEdge.Domain.Entities.Organizations;
+using ClimbEdge.Domain.Enums.Boards;
 using ClimbEdge.Domain.Shared;
 using System;
 using System.Collections.Generic;
@@ -16,14 +17,13 @@ namespace ClimbEdge.Domain.Entities.Boards
         public string? Description { get; set; }
         public BoardVisibility Visibility { get; set; } = BoardVisibility.Private;
         public long BoardConfigId { get; set; }
-        //public BoardConfig? BoardConfig { get; set; }
-        public long OrganizationId { get; set; }
-        //public Organization? Organization { get; set; }
+        public BoardConfig? BoardConfig { get; set; }
+        public long? OrganizationId { get; set; }
+        public Organization? Organization { get; set; }
         public Board() : base() { }
         public override void InitializeSlug()
         {
             Slug = $"{Name}/{Visibility}";
-            throw new NotImplementedException();
         }
         public override void UpdateTimestamps()
         {
@@ -50,5 +50,6 @@ namespace ClimbEdge.Domain.Entities.Boards
             base.Unlock();
             AddDomainEvent(new EntityDomainEvent<Board>(Slug, EntityDomainEventType.Locked, new Dictionary<string, Object>() { { "Locked", false } }));
         }
+        public IEnumerable<BoardMember>? Members { get; set; }
     }
 }

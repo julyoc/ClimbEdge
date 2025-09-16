@@ -1,5 +1,5 @@
 ﻿using ClimbEdge.Domain.Entities.Boards;
-using ClimbEdge.Domain.Enums;
+using ClimbEdge.Domain.Enums.Boards;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
@@ -21,10 +21,19 @@ namespace ClimbEdge.Infrastructure.Persistence.Configurations.Boards
                    .HasMaxLength(200);
             builder.HasIndex(b => b.Name).IsUnique();
             builder.Property(b => b.Description)
-                   .HasColumnType("text");
+                   .HasColumnType("TEXT");
             builder.Property(b => b.Visibility)
                    .IsRequired()
                    .HasDefaultValue(BoardVisibility.Private);
+
+            // Relaciones
+            builder.HasOne(b => b.BoardConfig)
+                   .WithMany(b => b.Boards)
+                   .HasForeignKey(b => b.BoardConfigId)
+                   .IsRequired();
+            builder.HasOne(b => b.Organization)
+                   .WithMany(b => b.Boards)
+                   .HasForeignKey(b => b.OrganizationId);
         }
     }
 }

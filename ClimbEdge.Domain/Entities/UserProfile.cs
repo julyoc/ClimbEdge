@@ -1,5 +1,6 @@
 using ClimbEdge.Common.Constants;
 using ClimbEdge.Domain.DomainEvents;
+using ClimbEdge.Domain.Entities.Boards;
 using ClimbEdge.Domain.Shared;
 using ClimbEdge.Domain.ValueObjects;
 using System.Collections.Generic;
@@ -127,5 +128,9 @@ namespace ClimbEdge.Domain.Entities
             Slug = $"{FullName}/{Initials}";
             AddDomainEvent(new EntityDomainEvent<UserProfile>(Slug, EntityDomainEventType.Created));
         }
-    }
+
+        public IEnumerable<BoardMember>? Members { get; set; }
+        public IEnumerable<BoardConfig>? CreatedBoardConfigs { get; set; }
+        public IEnumerable<BoardConfig>? ApprovedBoardConfigs { get; set; }
+        }
 }

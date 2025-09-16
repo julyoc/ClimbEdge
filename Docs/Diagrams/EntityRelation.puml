@@ -203,11 +203,6 @@ package "Boards" {
         +Viewer
         'Viewer: Solo puede ver el tablero, sin permisos de edición.
     }
-'
-'
-' Estoy hasta aqui con las entidades db config y repositories
-'
-'
     entity "Board" as Board {
         'Tablero de escalada, que puede contener problemas, configuraciones y miembros.
         'Representa un espacio de trabajo para organizar y gestionar problemas de escalada.
@@ -242,20 +237,20 @@ package "Boards" {
         +PreviousVersionId: long?
         ' Referencia a la versión anterior para historial
         +Content: string
-        +Columns: int
+        +Cols: int
         +Rows: int
-        +Width: int
-        +Height: int
-        +InterItemSpacingVertical: int
-        +InterItemSpacingHorizontal: int
+        +Width: float
+        +Height: float
+        +InterItemSpacingVertical: float
+        +InterItemSpacingHorizontal: float
         ' Espacio entre elementos del tablero, que define la separación media entre las presas.
         +IsStaggeredGrid: bool
         ' StaggeredGrid: Indica si el tablero utiliza un diseño de cuadrícula escalonada.
         '   true: El tablero utiliza un diseño de cuadrícula escalonada.
         '   false: El tablero utiliza un diseño de cuadrícula regular.
-        +StaggeredGridOffset: int
+        +StaggeredGridOffset: float
         ' StaggeredGridOffset: Desplazamiento de la cuadrícula escalonada
-        +Difficulty: int
+        +Difficulty: int?
         +CreatedByUserId: long
         ' Usuario que creó esta versión de configuración
         +ApprovedByUserId: long?
@@ -286,6 +281,11 @@ package "Boards" {
         ' Unidad del ángulo, por ejemplo, grados, radianes, etc.
         +Description: string?
     }
+'
+'
+' Estoy hasta aqui con las entidades db config y repositories
+'
+'
     entity "BoardItemType" as BoardItemType {
         'Tipo de elemento del tablero, que define las características y propiedades de un elemento (presa).
         'Representa un tipo de presa o elemento que se puede usar en un tablero de escalada.
@@ -404,7 +404,7 @@ package "Boards.Problems" {
         +DifficultyScaleId: long
         +Rating: float?
     }
-    entity "BoardProblemTag" {
+    entity "BoardProblemTag" as BoardProblemTag {
         +Id: long
         +Name: string
         +Description: string?
@@ -436,10 +436,8 @@ package "Boards.Problems" {
         +ColorBlue: short
         +ColorName: string?
         +ColorCode: int
-        +IsFoot: bool
-        ' Foot: Presa que se usa como pie.
-        +IsHand: bool
-        ' Hand: Presa que se usa como mano.
+        +Usage: HoldUsage = HoldUsage.Both
+        ' Uso permitido del elemento en el problema.
         +IsStart: bool
         ' Start: Presa(s) que se usa como inicio del problema.
         +IsEnd: bool
@@ -484,7 +482,6 @@ package "DifficultyScales" {
         'Representa una escala de dificultad específica dentro de un tipo y nombre de escala.
         ..inherits BaseEntity..
         +DifficultyScaleNameId: long
-        +DifficultyGroupId: long
         +Value: string
         +IRCRA: int
         +Version: string
@@ -549,6 +546,12 @@ package "Mountains" {
         'Snowboarding: Snowboard.
         +Via_Ferrata
         'Via_Ferrata: Vía ferrata.
+        +TrailRunning
+        'TrailRunning: Carrera de montaña.
+        +Cycling
+        'Cycling: Ciclismo de montaña.
+        +Other
+        'Other: Otro tipo de ruta.
     }
     enum "SeasonType" as SeasonType {
         +Spring
@@ -738,6 +741,18 @@ package "Mountains" {
         ' Condiciones climáticas durante la salida.
         +Notes: string?
         ' Notas adicionales sobre la salida.
+        +Description: string?
+        ' Descripción detallada de la salida.
+        +RouteTaken: geography(LINESTRING,4326)?
+        ' Ruta específica tomada durante la salida.
+        +Photos: jsonb?
+        ' Fotos asociadas a la salida (en formato JSON).
+        +ChallengesFaced: string?
+        ' Desafíos o problemas enfrentados durante la salida.
+        +EquipmentUsed: jsonb?
+        ' Equipamiento utilizado durante la salida (en formato JSON).
+        +WeatherAtSummit: string?
+        ' Condiciones climáticas en la cima (si se alcanzó).
         +IsSuccessful: bool
         ' Indica si la salida fue exitosa (cima alcanzada, etc.).
         +TickType: MountaineerTickType
@@ -871,6 +886,7 @@ package "Mountains.Itinerary" {
         +Role: ParticipantRole
         +JoinedAt: DateTime
         +Status: ParticipantStatus
+        +StatusChangedAt: DateTime?
         +ExperienceLevel: string?
         +MedicalClearance: bool
         +EmergencyContact: string?
@@ -1502,7 +1518,7 @@ package "Sessions" {
         +FootRuleId: long? <<index>>
         +MountainRouteId: long? <<index>>
         'index(BoardProblemId, BoardAngleId)
-        +ClimbTickType: ClimbTickType
+        +ClimbTickType: ClimbTickType?
         +MountaineerTickType: MountaineerTickType?
         +IsCompleted: bool
         +Duration: int?
@@ -1782,13 +1798,41 @@ package "Training" {
         +CreatedByUserId: long
         +UsageCount: int
     }
+    enum "TrainingExerciseCategory" as TrainingExerciseCategory {
+        +Strength
+        'Strength: Ejercicio de fuerza
+        +Cardio
+        'Cardio: Ejercicio cardiovascular
+        +Technical
+        'Technical: Ejercicio técnico
+        +Flexibility
+        'Flexibility: Ejercicio de flexibilidad
+        +Balance
+        'Balance: Ejercicio de equilibrio
+        +Endurance
+        'Endurance: Ejercicio de resistencia
+        +Plyometrics
+        'Plyometrics: Ejercicio pliométrico
+        +Core
+        'Core: Ejercicio de core/abdominales
+    }
+    enum "TrainingExerciseSubCategory" as TrainingExerciseSubCategory {
+        +Bodyweight
+        'Bodyweight: Ejercicio con peso corporal
+        +Weighted
+        'Weighted: Ejercicio con peso adicional
+        +Plyometric
+        'Plyometric: Ejercicio pliométrico
+        +Isometric
+        'Isometric: Ejercicio isométrico
+    }
     entity "TrainingExercise" as TrainingExercise {
         'Ejercicios específicos que se pueden realizar en una sesión.
         ..inherits BaseEntity..
         +Name: string
         +Description: string?
-        +Category: string
-        ' Categoría: "Strength", "Cardio", "Technical", "Flexibility"
+        +Category: TrainingExerciseCategory
+        +SubCategory: TrainingExerciseSubCategory
         +MuscleGroups: string?
         ' Grupos musculares trabajados
         +Equipment: string?
@@ -1953,7 +1997,6 @@ package "Payment" {
     entity "Invoice" as Invoice {
         'Factura generada para un pago.
         ..inherits BaseEntity..
-        +PaymentId: long
         +InvoiceNumber: string <<unique>>
         +IssueDate: DateTime
         +DueDate: DateTime
@@ -1964,6 +2007,16 @@ package "Payment" {
         +Status: string
         ' Estado de la factura: "Draft", "Sent", "Paid", "Overdue", "Cancelled".
         +PdfUrl: string?
+    }
+    entity "InvoiceItem" as InvoiceItem {
+        'Ítem individual en una factura.
+        ..inherits BaseEntity..
+        +InvoiceId: long
+        +paymentId: long?
+        +Description: string
+        +Quantity: int
+        +UnitPrice: decimal
+        +TotalPrice: decimal
     }
     entity "PayPerUse" as PayPerUse {
         'Pago por uso específico (rutas generadas por IA, funciones premium, etc.).
@@ -2784,7 +2837,7 @@ BoardItemVolume "0..1" -- "0..*" BoardItem : has volume <
 BoardItem "0..*" -- "1" BoardConfig : belongs to <
 DifficultyScaleType "0..1" -- "0..*" DifficultyScaleName : has <
 DifficultyScaleName "0..1" -- "0..*" DifficultyScale : has <
-DifficultyScale "0..*" -- "1" DifficultyGroup : belongs to <
+DifficultyScale "0..*" -- "0..*" DifficultyGroup : has <
 BoardConfig "1" -- "0..*" BoardProblem : defines >
 BoardProblemItem "0..*" -- "1" BoardProblem : belongs to <
 BoardProblemItem "0..*" -- "1" BoardItem : is of item <
@@ -2869,7 +2922,11 @@ Plan "1" -- "0..*" Subscription : subscribed to >
 Subscription "1" -- "0..*" Payment : payments for >
 PayPerUse "1" -- "0..*" Payment : payments for >
 PaymentMethod "1" -- "0..*" Payment : used for payment >
-Payment "1" -- "0..1" Invoice : generates invoice >
+' Relación principal (obligatoria)
+Invoice "1" -- "1..*" InvoiceItem : contains items >
+' Relación con Payment (opcional - para vincular items específicos)
+Payment "0..1" -- "0..*" InvoiceItem : itemized in >
+
 AIGenerationRequest "1" -- "0..1" PayPerUse : may require payment >
 
 ' Notifications Relations

@@ -39,7 +39,7 @@ namespace ClimbEdge.Infrastructure.Persistence
                     && m.GetParameters()[0].ParameterType == typeof(ModelBuilder));
             var enumTypes = Assembly.GetExecutingAssembly()
                 .GetTypes()
-                .Where(t => t.IsEnum && t.Namespace == "ClimbEdge.Domain.Enums");
+                .Where(t => t.IsEnum && t.Namespace != null && t.Namespace.StartsWith("ClimbEdge.Domain.Enums"));
 
             foreach (var enumType in enumTypes)
             {

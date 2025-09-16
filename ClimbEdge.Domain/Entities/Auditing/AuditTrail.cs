@@ -1,5 +1,5 @@
 ﻿using ClimbEdge.Domain.DomainEvents;
-using ClimbEdge.Domain.Enums;
+using ClimbEdge.Domain.Enums.Auditing;
 using ClimbEdge.Domain.Shared;
 using System;
 using System.Collections.Generic;

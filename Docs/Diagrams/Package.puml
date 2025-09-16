@@ -95,6 +95,7 @@
 ***_> OrganizationInstructor
 ***_> OrganizationFile
 ** Sessions
+***_> ExpeditionUserSession
 ***_> UserSession
 ***_> UserSessionProgress
 ***_> ClimbTickType <<enum>>
