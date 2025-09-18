@@ -281,11 +281,6 @@ package "Boards" {
         ' Unidad del ángulo, por ejemplo, grados, radianes, etc.
         +Description: string?
     }
-'
-'
-' Estoy hasta aqui con las entidades db config y repositories
-'
-'
     entity "BoardItemType" as BoardItemType {
         'Tipo de elemento del tablero, que define las características y propiedades de un elemento (presa).
         'Representa un tipo de presa o elemento que se puede usar en un tablero de escalada.
@@ -305,7 +300,7 @@ package "Boards" {
         ..inherits BaseEntity..
         +Name: string
         +Description: string?
-        +ImageUrl: string
+        +ImageUrl: string?
         +ThumbnailUrl: string?
         +Difficulty: int
         +Properties: jsonb
@@ -323,6 +318,11 @@ package "Boards" {
         +Difficulty: int
         +Properties: jsonb
     }
+'
+'
+' Estoy hasta aqui con las entidades db config y repositories
+'
+'
     entity "BoardItemVolume" as BoardItemVolume {
         'Volumen o forma tridimensional del elemento del tablero.
         'Representa la forma 3D, el tamaño y las dimensiones físicas de una presa.
@@ -338,10 +338,6 @@ package "Boards" {
         ' Alto físico en centímetros
         +Depth: decimal?
         ' Profundidad física en centímetros
-        +GridWidth: int
-        ' Ancho en número de celdas de la cuadrícula (1, 2, 3, etc.)
-        +GridHeight: int
-        ' Alto en número de celdas de la cuadrícula (1, 2, 3, etc.)
         +ModelUrl: string?
         ' URL del modelo 3D del volumen
         +ThumbnailUrl: string?
@@ -2816,8 +2812,130 @@ package "Versioning" {
         ' Descripción de la dependencia
     }
 }
+package "Comments" {
+    enum "CommentableType" as CommentableType {
+        +BoardProblem
+        +MountainRoute
+        +ClimbRoute
+        +Expedition
+        +ItineraryDay
+        +HelpArticle
+        +TrainingPlan
+        +Organization
+        +UserSession
+        +AIGenerationRequest
+    }
+    
+    enum "CommentStatus" as CommentStatus {
+        +Active
+        +Hidden
+        +Deleted
+        +Pending
+        +Approved
+        +Flagged
+        +Spam
+    }
+    
+    entity "Comment" as Comment {
+        'Sistema de comentarios polimórfico para múltiples entidades.
+        ..inherits BaseEntity..
+        +CommentableType: CommentableType
+        +CommentableId: long
+        ' ID de la entidad a la que pertenece el comentario
+        +UserId: long
+        +ParentCommentId: long?
+        ' Para respuestas/hilos de comentarios (self-reference)
+        +Content: string
+        +Status: CommentStatus
+        +IsEdited: bool
+        +EditedAt: DateTime?
+        +LikeCount: int
+        +DislikeCount: int
+        +ReplyCount: int
+        +IsPinned: bool
+        ' Para comentarios importantes
+        +IsOfficial: bool
+        ' Comentarios oficiales de administradores/organizaciones
+        +IpAddress: string?
+        +UserAgent: string?
+        +ModerationNotes: string?
+        ' Notas de moderación
+        +ModeratedBy: long?
+        +ModeratedAt: DateTime?
+    }
+    enum "CommentReactionType" as CommentReactionType {
+        +Like
+        +Dislike
+        +Love
+        +Laugh
+        +Angry
+        +Helpful
+        +NotHelpful
+    }
+    entity "CommentReaction" as CommentReaction {
+        'Reacciones a comentarios (like, dislike, etc.).
+        ..inherits BaseEntity..
+        +CommentId: long
+        +UserId: long
+        +ReactionType: CommentReactionType
+        +IsActive: bool
+    }
+    
+    entity "CommentAttachment" as CommentAttachment {
+        'Archivos adjuntos en comentarios.
+        ..inherits BaseEntity..
+        +CommentId: long
+        +FileName: string
+        +FileType: string
+        +FileSize: int
+        +FileUrl: string
+        +ThumbnailUrl: string?
+        +Description: string?
+    }
+    
+    entity "CommentMention" as CommentMention {
+        'Menciones de usuarios en comentarios.
+        ..inherits BaseEntity..
+        +CommentId: long
+        +MentionedUserId: long
+        +MentionText: string
+        ' Texto de la mención (ej: "@username")
+        +IsNotified: bool
+        +NotifiedAt: DateTime?
+    }
+    
+    entity "CommentReport" as CommentReport {
+        'Reportes de comentarios inapropiados.
+        ..inherits BaseEntity..
+        +CommentId: long
+        +ReportedBy: long
+        +ReportReason: ReportReason
+        ' Razón: "Spam", "Inappropriate", "Harassment", "Copyright", "Other"
+        +Description: string?
+        +Status: ReportStatus
+        ' Estado: "Pending", "Reviewed", "Resolved", "Dismissed"
+        +ReviewedBy: long?
+        +ReviewedAt: DateTime?
+        +ActionTaken: string?
+    }
+    enum "ReportReason" as ReportReason {
+        +Spam
+        +Inappropriate
+        +Harassment
+        +HateSpeech
+        +Copyright
+        +Other
+    }
+    enum "ReportStatus" as ReportStatus {
+        +Pending
+        +Reviewed
+        +Resolved
+        +Dismissed
+    }
+}
 
 ' Relaciones
+' las relaciones que van a appuser las estoy haciendo hacia UserProfile 
 AppUser "1" -- "0..*" AIGenerationRequest : requests >
 AIModel "1" -- "0..*" AIGenerationRequest : processes >
 AIModel "1" -- "0..*" AITrainingData : trained with >
@@ -3050,5 +3168,23 @@ BoardConfig "0..1" -- "0..*" BoardConfig : previous version >
 
 ' Relaciones de Difficulty Scale con Versionado
 DifficultyScale "0..1" -- "0..*" DifficultyScale : previous version >
+
+' === RELACIONES DE COMENTARIOS ===
+
+' Relación principal
+AppUser "1" -- "0..*" Comment : writes comments >
+Comment "0..1" -- "0..*" Comment : replies to >
+
+' Relaciones de funcionalidades
+Comment "1" -- "0..*" CommentReaction : receives reactions >
+Comment "1" -- "0..*" CommentAttachment : has attachments >
+Comment "1" -- "0..*" CommentMention : contains mentions >
+Comment "1" -- "0..*" CommentReport : reported as >
+
+AppUser "1" -- "0..*" CommentReaction : reacts to comments >
+AppUser "1" -- "0..*" CommentMention : mentioned in comments >
+AppUser "1" -- "0..*" CommentReport : reports comments >
+AppUser "0..1" -- "0..*" CommentReport : reviews reports >
+AppUser "0..1" -- "0..*" Comment : moderates comments >
 
 @enduml
