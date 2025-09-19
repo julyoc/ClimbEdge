@@ -318,11 +318,6 @@ package "Boards" {
         +Difficulty: int
         +Properties: jsonb
     }
-'
-'
-' Estoy hasta aqui con las entidades db config y repositories
-'
-'
     entity "BoardItemVolume" as BoardItemVolume {
         'Volumen o forma tridimensional del elemento del tablero.
         'Representa la forma 3D, el tamaño y las dimensiones físicas de una presa.
@@ -332,11 +327,11 @@ package "Boards" {
         +Name: string
         +Description: string?
         +VolumeType: string
-        +Width: decimal?
+        +Width: decimal
         ' Ancho físico en centímetros
-        +Height: decimal?
+        +Height: decimal
         ' Alto físico en centímetros
-        +Depth: decimal?
+        +Depth: decimal
         ' Profundidad física en centímetros
         +ModelUrl: string?
         ' URL del modelo 3D del volumen
@@ -382,11 +377,12 @@ package "Boards" {
         ..inherits BaseEntity..
         +BoardItemId: long
         +BoardItemTextureId: long
-        +BoardItemTextureMaterialId: long?
-        +Percentage: decimal?
+        +BoardItemTextureMaterialId: long
+        +Percentage: decimal = 100
         ' Porcentaje de cobertura de esta textura en la presa (0-100)
         +Order: int
-        ' Orden de aplicación de las texturas (para efectos visuales)
+        ' Orden de aplicación de las texturas en sentido horario (para efectos visuales)
+        +IsPrimary: bool
         +IsActive: bool
         ' Permite activar/desactivar texturas específicas
     }
@@ -394,6 +390,7 @@ package "Boards" {
 package "Boards.Problems" {
     entity "BoardProblemAngle" as BoardProblemAngle {
         'Ángulo del problema del tablero, que define la inclinación del problema de escalada.
+        ..inherits BaseEntity..
         +BoardProblemId: long
         +BoardAngleId: long
         'unique(BoardProblemId, BoardAngleId)
@@ -401,7 +398,7 @@ package "Boards.Problems" {
         +Rating: float?
     }
     entity "BoardProblemTag" as BoardProblemTag {
-        +Id: long
+        ..inherits BaseEntity..
         +Name: string
         +Description: string?
     }
@@ -424,14 +421,15 @@ package "Boards.Problems" {
         +BoardItemId: long
         +BoardProblemItemTypeId: long
     }
+'
+'
+' Estoy hasta aqui con las entidades db config y repositories
+'
+'
     entity "BoardProblemItemType" as BoardProblemItemType {
         'Tipo de elemento del problema del tablero, que define las características y propiedades de un elemento (presa) en un problema de escalada.
         ..inherits BaseEntity..
-        +ColorRed: short
-        +ColorGreen: short
-        +ColorBlue: short
-        +ColorName: string?
-        +ColorCode: int
+        +ColorId: long
         +Usage: HoldUsage = HoldUsage.Both
         ' Uso permitido del elemento en el problema.
         +IsStart: bool
@@ -446,6 +444,24 @@ package "Boards.Problems" {
         'TouchOnly: Solo se toca, no se debe mantener
         +Difficulty: int
         ' Dificultad del elemento, que debe ser un valor numérico.
+    }
+    entity "Color" as Color {
+        'Colores estándar utilizados en el sistema de escalada.
+        'Define una paleta de colores consistente para presas y elementos.
+        ..inherits BaseEntity..
+        +Name: string <<unique>>
+        ' Nombre del color: "Red", "Blue", "Green", "Yellow", "Black", "White", etc.
+        +DisplayName: string
+        ' Nombre para mostrar: "Rojo", "Azul", "Verde", "Amarillo", "Negro", "Blanco"
+        +HexCode: string <<unique>>
+        ' Código hexadecimal: "#FF0000", "#0000FF", "#00FF00", etc.
+        +RgbRed: short
+        +RgbGreen: short
+        +RgbBlue: short
+        +HslHue: decimal?
+        +HslSaturation: decimal?
+        +HslLightness: decimal?
+        +IsStandard: bool
     }
     entity "FootRule" as FootRule {
         ..inherits BaseEntity..
@@ -3187,4 +3203,7 @@ AppUser "1" -- "0..*" CommentReport : reports comments >
 AppUser "0..1" -- "0..*" CommentReport : reviews reports >
 AppUser "0..1" -- "0..*" Comment : moderates comments >
 
+
+
+Color "1" -- "0..*" BoardProblemItemType : defines color >
 @enduml

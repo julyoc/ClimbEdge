@@ -20,6 +20,14 @@ namespace ClimbEdge.Infrastructure.Persistence.Configurations.Boards
             builder.HasIndex(b => b.Name).IsUnique();
             builder.Property(b => b.Description)
                    .HasColumnType("TEXT");
+            builder.Property(b => b.VolumeType);
+            builder.Property(b => b.Width)
+                   .IsRequired();
+            builder.Property(b => b.Height)
+                   .IsRequired();
+            builder.Property(b => b.Depth)
+                   .IsRequired();
+            builder.Property(b => b.ModelUrl);
             builder.Property(b => b.ImageUrl);
             builder.Property(b => b.ThumbnailUrl);
             builder.Property(b => b.Difficulty)

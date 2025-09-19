@@ -1,4 +1,5 @@
 ﻿using ClimbEdge.Domain.DomainEvents;
+using ClimbEdge.Domain.Entities.Boards.Problems;
 using ClimbEdge.Domain.Enums.Boards;
 using ClimbEdge.Domain.Shared;
 using System;
@@ -44,5 +45,6 @@ namespace ClimbEdge.Domain.Entities.Boards
             base.Unlock();
             AddDomainEvent(new EntityDomainEvent<BoardAngle>(Slug, EntityDomainEventType.Locked, new Dictionary<string, Object>() { { "Locked", false } }));
         }
+        public IEnumerable<BoardProblemAngle>? BoardProblemAngles { get; set; }
     }
 }

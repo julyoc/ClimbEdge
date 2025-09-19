@@ -70,6 +70,10 @@ namespace ClimbEdge.Domain.Enums
         /// <summary>
         /// Unidades de temperatura (por ejemplo, Celsius, Fahrenheit)
         /// </summary>
-        Units_Temperature
+        Units_Temperature,
+        /// <summary>
+        /// Color de el problema cuando es start, end, zone, Mandatory,TouchOnly o  sus convinaciones
+        /// </summary>
+        ColorBoardProblemItem
     }
 }

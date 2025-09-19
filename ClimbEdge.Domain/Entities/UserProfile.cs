@@ -1,6 +1,7 @@
 using ClimbEdge.Common.Constants;
 using ClimbEdge.Domain.DomainEvents;
 using ClimbEdge.Domain.Entities.Boards;
+using ClimbEdge.Domain.Entities.Boards.Problems;
 using ClimbEdge.Domain.Shared;
 using ClimbEdge.Domain.ValueObjects;
 using System.Collections.Generic;
@@ -132,5 +133,6 @@ namespace ClimbEdge.Domain.Entities
         public IEnumerable<BoardMember>? Members { get; set; }
         public IEnumerable<BoardConfig>? CreatedBoardConfigs { get; set; }
         public IEnumerable<BoardConfig>? ApprovedBoardConfigs { get; set; }
-        }
+        public IEnumerable<BoardProblem>? CreatedBoardProblems { get; set; }
+    }
 }

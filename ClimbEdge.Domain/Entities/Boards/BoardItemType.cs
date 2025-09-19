@@ -44,5 +44,6 @@ namespace ClimbEdge.Domain.Entities.Boards
             base.Unlock();
             AddDomainEvent(new EntityDomainEvent<BoardItemType>(Slug, EntityDomainEventType.Locked, new Dictionary<string, Object>() { { "Locked", false } }));
         }
-    }
+        public IEnumerable<BoardItem>? BoardItems { get; set; }
+        }
 }

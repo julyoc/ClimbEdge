@@ -46,5 +46,6 @@ namespace ClimbEdge.Domain.Entities.Boards
             base.Unlock();
             AddDomainEvent(new EntityDomainEvent<BoardItemTextureMaterial>(Slug, EntityDomainEventType.Locked, new Dictionary<string, Object>() { { "Locked", false } }));
         }
+        public IEnumerable<BoardItemTextureCombination>? TextureCombinations { get; set; }
     }
 }

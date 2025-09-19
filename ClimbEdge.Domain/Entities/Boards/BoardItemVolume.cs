@@ -21,6 +21,7 @@ namespace ClimbEdge.Domain.Entities.Boards
         public string? ThumbnailUrl { get; set; }
         public int Difficulty { get; set; }
         public IDictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
+        public BoardItemVolume() { }
         public override void InitializeSlug()
         {
             Slug = Name.ToLower().Replace(" ", "-");
@@ -50,5 +51,6 @@ namespace ClimbEdge.Domain.Entities.Boards
             base.Unlock();
             AddDomainEvent(new EntityDomainEvent<BoardItemVolume>(Slug, EntityDomainEventType.Locked, new Dictionary<string, Object>() { { "Locked", false } }));
         }
+        public IEnumerable<BoardItem>? BoardItems { get; set; }
     }
 }

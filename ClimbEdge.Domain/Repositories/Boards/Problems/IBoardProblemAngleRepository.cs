@@ -1,14 +1,14 @@
 ﻿using ClimbEdge.Domain.Entities.Boards.Problems;
+using ClimbEdge.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ClimbEdge.Domain.Entities.DifficultyScales
+namespace ClimbEdge.Domain.Repositories.Boards.Problems
 {
-    public sealed class DifficultyScale
+    public interface IBoardProblemAngleRepository : IRepository<BoardProblemAngle>
     {
-        public IEnumerable<BoardProblemAngle>? BoardProblemAngles { get; set; }
     }
 }

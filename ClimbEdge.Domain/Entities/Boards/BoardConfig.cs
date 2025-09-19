@@ -1,4 +1,5 @@
 ﻿using ClimbEdge.Domain.DomainEvents;
+using ClimbEdge.Domain.Entities.Boards.Problems;
 using ClimbEdge.Domain.Shared;
 using System;
 using System.Collections.Generic;
@@ -79,5 +80,7 @@ namespace ClimbEdge.Domain.Entities.Boards
             AddDomainEvent(new EntityDomainEvent<BoardConfig>(Slug, EntityDomainEventType.Locked, new Dictionary<string, Object>() { { "Locked", false } }));
         }
         public IEnumerable<Board>? Boards { get; set; }
-    }
+        public IEnumerable<BoardItem>? BoardItems { get; set; }
+        public IEnumerable<BoardProblem>? BoardProblems { get; set; }
+        }
 }

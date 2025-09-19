@@ -23,13 +23,12 @@ namespace ClimbEdge.Domain.Enums.Boards
         Sidepull,
 
         /// <summary>
-        /// Presa de pinza (pinch)
+        /// Presa en diagonal (diagonal)
         /// </summary>
-        Pinch,
-
+        Diagonal,
         /// <summary>
-        /// Presa redondeada (sloper)
+        /// Presa en diagonal invertida (diagonal undercling)
         /// </summary>
-        Sloper
+        DiagonalUndercling
     }
 }
