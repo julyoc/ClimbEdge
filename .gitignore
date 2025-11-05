@@ -379,3 +379,11 @@ FodyWeavers.xsd
 .env
 .env.local
 .env.release
+
+# SSH keys
+/sshkeys/climbedge
+/sshkeys/climbedge.pub
+
+# Rust
+
+ClimbEdge.[Aa]pp/.cargo-target/

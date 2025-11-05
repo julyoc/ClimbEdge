@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace ClimbEdge.Domain.Entities
 {
-    public class AppUser : IdentityUser<long>, IBaseEntity
+    public sealed class AppUser : IdentityUser<long>, IBaseEntity
     {
         public AppUser() : base() { }
         public Guid Uid { get; set; } = Guid.NewGuid();
@@ -82,7 +82,7 @@ namespace ClimbEdge.Domain.Entities
         private readonly List<IDomainEvent> _domainEvents = new();
         public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
-        protected void AddDomainEvent(IDomainEvent domainEvent)
+        public void AddDomainEvent(IDomainEvent domainEvent)
         {
             _domainEvents.Add(domainEvent);
         }

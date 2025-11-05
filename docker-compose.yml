@@ -29,7 +29,7 @@ services:
     image: ${DOCKER_REGISTRY-}climbedgefront
     build:
       context: .
-      dockerfile: ClimbEdge.Front/Dockerfile
+      dockerfile: ClimbEdge.App/qwik-app/Dockerfile
     ports:
       - "3000"
     env_file:

@@ -39,6 +39,24 @@ package "Auditing" {
         +Import
         'Import: Datos importados
     }
+    enum "AuditRiskLevel" as AuditRiskLevel {
+        +Low
+        'Low: Riesgo bajo, cambios menores o rutinarios.
+        +Medium
+        'Medium: Riesgo moderado, cambios que pueden afectar la integridad de los datos.
+        +High
+        'High: Riesgo alto, cambios significativos que pueden comprometer la seguridad.
+        +Critical
+        'Critical: Riesgo crítico, cambios que pueden causar fallos graves en el sistema.
+    }
+    enum "ResultStatus" as ResultStatus {
+        +Success
+        'Success: La operación se completó con éxito.
+        +Failed
+        'Failed: La operación falló.
+        +Partial
+        'Partial: La operación se completó parcialmente.
+    }
     entity "AuditTrail" as AuditTrail {
         'Registro de auditoría granular para trazabilidad completa del sistema.
         'Captura todos los cambios realizados en las entidades principales del sistema.
@@ -47,7 +65,7 @@ package "Auditing" {
         ' Nombre de la entidad afectada (ej: "Board", "User", "ClimbRoute")
         +EntityId: long
         ' ID del registro afectado
-        +Action: AuditActionType
+        +AuditActionType: AuditActionType
         +UserId: long?
         ' Usuario que realizó la acción (null para acciones del sistema)
         +SessionId: string?
@@ -68,13 +86,13 @@ package "Auditing" {
         ' Lista de columnas que fueron modificadas
         +CorrelationId: string?
         ' ID para correlacionar múltiples cambios relacionados
-        +RiskLevel: string?
+        +RiskLevel: AuditRiskLevel?
         ' Nivel de riesgo: "Low", "Medium", "High", "Critical"
         +IsSystemAction: bool
         ' Indica si la acción fue realizada por el sistema automáticamente
         +Duration: int?
         ' Duración de la operación en milisegundos
-        +ResultStatus: string?
+        +ResultStatus: ResultStatus?
         ' Estado del resultado: "Success", "Failed", "Partial"
         +ErrorMessage: string?
         ' Mensaje de error si la operación falló
@@ -82,15 +100,38 @@ package "Auditing" {
         ' Contexto adicional específico de la operación
     }
 }
+enum "ConfigurationKey" as ConfigurationKey {
+    System_Language
+    System_MaintenanceMode
+
+    User_DefaultBoard
+    User_ShowTips
+
+    Training_DefaultDifficultyScaleName
+    Training_DefaultDifficultyRange
+    Training_ShowBetaVideos
+    Training_AutoLoadSession
+
+    Notification_EmailEnabled
+    Notification_PushEnabled
+    Notification_QuietHoursStart
+    Notification_QuietHoursEnd
+
+
+    Units_Length
+    Units_Weight
+    Units_Temperature
+}
 entity "Configuration" as Configuration {
     'Configuración del sistema, que almacena configuraciones globales y personalizadas.
     'Representa una configuración específica del sistema, como preferencias de usuario, configuraciones de aplicación
     ..inherits BaseEntity..
-    +Key: string <<unique>>
+    +Key: ConfigurationKey
+    +UserId: long
+    ' unique(UserId, Key)
     +Value: string
     +Description: string?
     +IsSensitive: bool
-    +UserId: long
 }
 entity "UserProfile" as UserProfile {
     ..inherits BaseEntity..
@@ -101,8 +142,11 @@ entity "UserProfile" as UserProfile {
     +Bio: string?
     +ProfilePictureUrl: string?
     +Website: string?
-    +Location: string?
+    +Street: string?
+    +City: string?
+    +State: string?
     +Country: string
+    +PostalCode: string?
     +TimeZone: string
     +PreferredLanguage: string
     +IsPublic: bool
@@ -193,20 +237,20 @@ package "Boards" {
         +PreviousVersionId: long?
         ' Referencia a la versión anterior para historial
         +Content: string
-        +Columns: int
+        +Cols: int
         +Rows: int
-        +Width: int
-        +Height: int
-        +InterItemSpacingVertical: int
-        +InterItemSpacingHorizontal: int
+        +Width: float
+        +Height: float
+        +InterItemSpacingVertical: float
+        +InterItemSpacingHorizontal: float
         ' Espacio entre elementos del tablero, que define la separación media entre las presas.
         +IsStaggeredGrid: bool
         ' StaggeredGrid: Indica si el tablero utiliza un diseño de cuadrícula escalonada.
         '   true: El tablero utiliza un diseño de cuadrícula escalonada.
         '   false: El tablero utiliza un diseño de cuadrícula regular.
-        +StaggeredGridOffset: int
+        +StaggeredGridOffset: float
         ' StaggeredGridOffset: Desplazamiento de la cuadrícula escalonada
-        +Difficulty: int
+        +Difficulty: int?
         +CreatedByUserId: long
         ' Usuario que creó esta versión de configuración
         +ApprovedByUserId: long?
@@ -256,7 +300,7 @@ package "Boards" {
         ..inherits BaseEntity..
         +Name: string
         +Description: string?
-        +ImageUrl: string
+        +ImageUrl: string?
         +ThumbnailUrl: string?
         +Difficulty: int
         +Properties: jsonb
@@ -283,16 +327,12 @@ package "Boards" {
         +Name: string
         +Description: string?
         +VolumeType: string
-        +Width: decimal?
+        +Width: decimal
         ' Ancho físico en centímetros
-        +Height: decimal?
+        +Height: decimal
         ' Alto físico en centímetros
-        +Depth: decimal?
+        +Depth: decimal
         ' Profundidad física en centímetros
-        +GridWidth: int
-        ' Ancho en número de celdas de la cuadrícula (1, 2, 3, etc.)
-        +GridHeight: int
-        ' Alto en número de celdas de la cuadrícula (1, 2, 3, etc.)
         +ModelUrl: string?
         ' URL del modelo 3D del volumen
         +ThumbnailUrl: string?
@@ -337,11 +377,12 @@ package "Boards" {
         ..inherits BaseEntity..
         +BoardItemId: long
         +BoardItemTextureId: long
-        +BoardItemTextureMaterialId: long?
-        +Percentage: decimal?
+        +BoardItemTextureMaterialId: long
+        +Percentage: decimal = 100
         ' Porcentaje de cobertura de esta textura en la presa (0-100)
         +Order: int
-        ' Orden de aplicación de las texturas (para efectos visuales)
+        ' Orden de aplicación de las texturas en sentido horario (para efectos visuales)
+        +IsPrimary: bool
         +IsActive: bool
         ' Permite activar/desactivar texturas específicas
     }
@@ -349,14 +390,15 @@ package "Boards" {
 package "Boards.Problems" {
     entity "BoardProblemAngle" as BoardProblemAngle {
         'Ángulo del problema del tablero, que define la inclinación del problema de escalada.
+        ..inherits BaseEntity..
         +BoardProblemId: long
         +BoardAngleId: long
         'unique(BoardProblemId, BoardAngleId)
         +DifficultyScaleId: long
         +Rating: float?
     }
-    entity "BoardProblemTag" {
-        +Id: long
+    entity "BoardProblemTag" as BoardProblemTag {
+        ..inherits BaseEntity..
         +Name: string
         +Description: string?
     }
@@ -379,18 +421,17 @@ package "Boards.Problems" {
         +BoardItemId: long
         +BoardProblemItemTypeId: long
     }
+'
+'
+' Estoy hasta aqui con las entidades db config y repositories
+'
+'
     entity "BoardProblemItemType" as BoardProblemItemType {
         'Tipo de elemento del problema del tablero, que define las características y propiedades de un elemento (presa) en un problema de escalada.
         ..inherits BaseEntity..
-        +ColorRed: short
-        +ColorGreen: short
-        +ColorBlue: short
-        +ColorName: string?
-        +ColorCode: int
-        +IsFoot: bool
-        ' Foot: Presa que se usa como pie.
-        +IsHand: bool
-        ' Hand: Presa que se usa como mano.
+        +ColorId: long
+        +Usage: HoldUsage = HoldUsage.Both
+        ' Uso permitido del elemento en el problema.
         +IsStart: bool
         ' Start: Presa(s) que se usa como inicio del problema.
         +IsEnd: bool
@@ -403,6 +444,24 @@ package "Boards.Problems" {
         'TouchOnly: Solo se toca, no se debe mantener
         +Difficulty: int
         ' Dificultad del elemento, que debe ser un valor numérico.
+    }
+    entity "Color" as Color {
+        'Colores estándar utilizados en el sistema de escalada.
+        'Define una paleta de colores consistente para presas y elementos.
+        ..inherits BaseEntity..
+        +Name: string <<unique>>
+        ' Nombre del color: "Red", "Blue", "Green", "Yellow", "Black", "White", etc.
+        +DisplayName: string
+        ' Nombre para mostrar: "Rojo", "Azul", "Verde", "Amarillo", "Negro", "Blanco"
+        +HexCode: string <<unique>>
+        ' Código hexadecimal: "#FF0000", "#0000FF", "#00FF00", etc.
+        +RgbRed: short
+        +RgbGreen: short
+        +RgbBlue: short
+        +HslHue: decimal?
+        +HslSaturation: decimal?
+        +HslLightness: decimal?
+        +IsStandard: bool
     }
     entity "FootRule" as FootRule {
         ..inherits BaseEntity..
@@ -435,7 +494,6 @@ package "DifficultyScales" {
         'Representa una escala de dificultad específica dentro de un tipo y nombre de escala.
         ..inherits BaseEntity..
         +DifficultyScaleNameId: long
-        +DifficultyGroupId: long
         +Value: string
         +IRCRA: int
         +Version: string
@@ -500,6 +558,12 @@ package "Mountains" {
         'Snowboarding: Snowboard.
         +Via_Ferrata
         'Via_Ferrata: Vía ferrata.
+        +TrailRunning
+        'TrailRunning: Carrera de montaña.
+        +Cycling
+        'Cycling: Ciclismo de montaña.
+        +Other
+        'Other: Otro tipo de ruta.
     }
     enum "SeasonType" as SeasonType {
         +Spring
@@ -525,7 +589,7 @@ package "Mountains" {
         ' Coordenadas geográficas usando PostGIS (latitud, longitud).
         +Country: string
         +Region: string?
-        +Province: string?
+        +State: string?
         +FirstAscentDate: DateTime?
         +FirstAscentBy: string?
         ' Nombre de quien realizó la primera ascensión.
@@ -670,6 +734,52 @@ package "Mountains" {
         +DataSource: string?
         ' Fuente de datos: "Manual", "WeatherAPI", "Station", etc.
     }
+    entity "MountainExpeditionLog" as MountainExpeditionLog {
+        'Registro detallado de una salida de montaña.
+        ..inherits BaseEntity..
+        +ExpeditionId: long
+        ' Referencia a la expedición asociada.
+        +UserId: long
+        ' Usuario que realizó la salida.
+        +StartDate: DateTime
+        ' Fecha y hora de inicio de la salida.
+        +EndDate: DateTime?
+        ' Fecha y hora de finalización de la salida.
+        +Duration: int?
+        ' Duración total de la salida en minutos.
+        +MaxElevationReached: int?
+        ' Máxima elevación alcanzada en metros.
+        +WeatherConditions: string?
+        ' Condiciones climáticas durante la salida.
+        +Notes: string?
+        ' Notas adicionales sobre la salida.
+        +Description: string?
+        ' Descripción detallada de la salida.
+        +RouteTaken: geography(LINESTRING,4326)?
+        ' Ruta específica tomada durante la salida.
+        +Photos: jsonb?
+        ' Fotos asociadas a la salida (en formato JSON).
+        +ChallengesFaced: string?
+        ' Desafíos o problemas enfrentados durante la salida.
+        +EquipmentUsed: jsonb?
+        ' Equipamiento utilizado durante la salida (en formato JSON).
+        +WeatherAtSummit: string?
+        ' Condiciones climáticas en la cima (si se alcanzó).
+        +IsSuccessful: bool
+        ' Indica si la salida fue exitosa (cima alcanzada, etc.).
+        +TickType: MountaineerTickType
+        ' Tipo de tick: "Summit", "Attempted", "Failed", etc.
+        +GroupSize: int?
+        ' Tamaño del grupo durante la salida.
+        +GuideId: long?
+        ' Referencia al guía (si aplica).
+        +SafetyIncidents: jsonb?
+        ' Incidentes de seguridad reportados (en formato JSON).
+        +EquipmentUsed: jsonb?
+        ' Equipamiento utilizado durante la salida (en formato JSON).
+        +MountainRouteId: long?
+        ' Ruta específica utilizada durante la salida.
+    }
 }
 package "Mountains.Itinerary" {
     enum "MountaineerTickType" as MountaineerTickType {
@@ -788,6 +898,7 @@ package "Mountains.Itinerary" {
         +Role: ParticipantRole
         +JoinedAt: DateTime
         +Status: ParticipantStatus
+        +StatusChangedAt: DateTime?
         +ExperienceLevel: string?
         +MedicalClearance: bool
         +EmergencyContact: string?
@@ -1208,7 +1319,7 @@ package "Organizations" {
         +Website: string?
         +Address: string?
         +City: string?
-        +Province: string?
+        +State: string?
         +Country: string
         +PostalCode: string?
         +Location: geography(POINT,4326)?
@@ -1419,7 +1530,7 @@ package "Sessions" {
         +FootRuleId: long? <<index>>
         +MountainRouteId: long? <<index>>
         'index(BoardProblemId, BoardAngleId)
-        +ClimbTickType: ClimbTickType
+        +ClimbTickType: ClimbTickType?
         +MountaineerTickType: MountaineerTickType?
         +IsCompleted: bool
         +Duration: int?
@@ -1699,13 +1810,41 @@ package "Training" {
         +CreatedByUserId: long
         +UsageCount: int
     }
+    enum "TrainingExerciseCategory" as TrainingExerciseCategory {
+        +Strength
+        'Strength: Ejercicio de fuerza
+        +Cardio
+        'Cardio: Ejercicio cardiovascular
+        +Technical
+        'Technical: Ejercicio técnico
+        +Flexibility
+        'Flexibility: Ejercicio de flexibilidad
+        +Balance
+        'Balance: Ejercicio de equilibrio
+        +Endurance
+        'Endurance: Ejercicio de resistencia
+        +Plyometrics
+        'Plyometrics: Ejercicio pliométrico
+        +Core
+        'Core: Ejercicio de core/abdominales
+    }
+    enum "TrainingExerciseSubCategory" as TrainingExerciseSubCategory {
+        +Bodyweight
+        'Bodyweight: Ejercicio con peso corporal
+        +Weighted
+        'Weighted: Ejercicio con peso adicional
+        +Plyometric
+        'Plyometric: Ejercicio pliométrico
+        +Isometric
+        'Isometric: Ejercicio isométrico
+    }
     entity "TrainingExercise" as TrainingExercise {
         'Ejercicios específicos que se pueden realizar en una sesión.
         ..inherits BaseEntity..
         +Name: string
         +Description: string?
-        +Category: string
-        ' Categoría: "Strength", "Cardio", "Technical", "Flexibility"
+        +Category: TrainingExerciseCategory
+        +SubCategory: TrainingExerciseSubCategory
         +MuscleGroups: string?
         ' Grupos musculares trabajados
         +Equipment: string?
@@ -1870,7 +2009,6 @@ package "Payment" {
     entity "Invoice" as Invoice {
         'Factura generada para un pago.
         ..inherits BaseEntity..
-        +PaymentId: long
         +InvoiceNumber: string <<unique>>
         +IssueDate: DateTime
         +DueDate: DateTime
@@ -1881,6 +2019,16 @@ package "Payment" {
         +Status: string
         ' Estado de la factura: "Draft", "Sent", "Paid", "Overdue", "Cancelled".
         +PdfUrl: string?
+    }
+    entity "InvoiceItem" as InvoiceItem {
+        'Ítem individual en una factura.
+        ..inherits BaseEntity..
+        +InvoiceId: long
+        +paymentId: long?
+        +Description: string
+        +Quantity: int
+        +UnitPrice: decimal
+        +TotalPrice: decimal
     }
     entity "PayPerUse" as PayPerUse {
         'Pago por uso específico (rutas generadas por IA, funciones premium, etc.).
@@ -2680,8 +2828,130 @@ package "Versioning" {
         ' Descripción de la dependencia
     }
 }
+package "Comments" {
+    enum "CommentableType" as CommentableType {
+        +BoardProblem
+        +MountainRoute
+        +ClimbRoute
+        +Expedition
+        +ItineraryDay
+        +HelpArticle
+        +TrainingPlan
+        +Organization
+        +UserSession
+        +AIGenerationRequest
+    }
+    
+    enum "CommentStatus" as CommentStatus {
+        +Active
+        +Hidden
+        +Deleted
+        +Pending
+        +Approved
+        +Flagged
+        +Spam
+    }
+    
+    entity "Comment" as Comment {
+        'Sistema de comentarios polimórfico para múltiples entidades.
+        ..inherits BaseEntity..
+        +CommentableType: CommentableType
+        +CommentableId: long
+        ' ID de la entidad a la que pertenece el comentario
+        +UserId: long
+        +ParentCommentId: long?
+        ' Para respuestas/hilos de comentarios (self-reference)
+        +Content: string
+        +Status: CommentStatus
+        +IsEdited: bool
+        +EditedAt: DateTime?
+        +LikeCount: int
+        +DislikeCount: int
+        +ReplyCount: int
+        +IsPinned: bool
+        ' Para comentarios importantes
+        +IsOfficial: bool
+        ' Comentarios oficiales de administradores/organizaciones
+        +IpAddress: string?
+        +UserAgent: string?
+        +ModerationNotes: string?
+        ' Notas de moderación
+        +ModeratedBy: long?
+        +ModeratedAt: DateTime?
+    }
+    enum "CommentReactionType" as CommentReactionType {
+        +Like
+        +Dislike
+        +Love
+        +Laugh
+        +Angry
+        +Helpful
+        +NotHelpful
+    }
+    entity "CommentReaction" as CommentReaction {
+        'Reacciones a comentarios (like, dislike, etc.).
+        ..inherits BaseEntity..
+        +CommentId: long
+        +UserId: long
+        +ReactionType: CommentReactionType
+        +IsActive: bool
+    }
+    
+    entity "CommentAttachment" as CommentAttachment {
+        'Archivos adjuntos en comentarios.
+        ..inherits BaseEntity..
+        +CommentId: long
+        +FileName: string
+        +FileType: string
+        +FileSize: int
+        +FileUrl: string
+        +ThumbnailUrl: string?
+        +Description: string?
+    }
+    
+    entity "CommentMention" as CommentMention {
+        'Menciones de usuarios en comentarios.
+        ..inherits BaseEntity..
+        +CommentId: long
+        +MentionedUserId: long
+        +MentionText: string
+        ' Texto de la mención (ej: "@username")
+        +IsNotified: bool
+        +NotifiedAt: DateTime?
+    }
+    
+    entity "CommentReport" as CommentReport {
+        'Reportes de comentarios inapropiados.
+        ..inherits BaseEntity..
+        +CommentId: long
+        +ReportedBy: long
+        +ReportReason: ReportReason
+        ' Razón: "Spam", "Inappropriate", "Harassment", "Copyright", "Other"
+        +Description: string?
+        +Status: ReportStatus
+        ' Estado: "Pending", "Reviewed", "Resolved", "Dismissed"
+        +ReviewedBy: long?
+        +ReviewedAt: DateTime?
+        +ActionTaken: string?
+    }
+    enum "ReportReason" as ReportReason {
+        +Spam
+        +Inappropriate
+        +Harassment
+        +HateSpeech
+        +Copyright
+        +Other
+    }
+    enum "ReportStatus" as ReportStatus {
+        +Pending
+        +Reviewed
+        +Resolved
+        +Dismissed
+    }
+}
 
 ' Relaciones
+' las relaciones que van a appuser las estoy haciendo hacia UserProfile 
 AppUser "1" -- "0..*" AIGenerationRequest : requests >
 AIModel "1" -- "0..*" AIGenerationRequest : processes >
 AIModel "1" -- "0..*" AITrainingData : trained with >
@@ -2701,7 +2971,7 @@ BoardItemVolume "0..1" -- "0..*" BoardItem : has volume <
 BoardItem "0..*" -- "1" BoardConfig : belongs to <
 DifficultyScaleType "0..1" -- "0..*" DifficultyScaleName : has <
 DifficultyScaleName "0..1" -- "0..*" DifficultyScale : has <
-DifficultyScale "0..*" -- "1" DifficultyGroup : belongs to <
+DifficultyScale "0..*" -- "0..*" DifficultyGroup : has <
 BoardConfig "1" -- "0..*" BoardProblem : defines >
 BoardProblemItem "0..*" -- "1" BoardProblem : belongs to <
 BoardProblemItem "0..*" -- "1" BoardItem : is of item <
@@ -2741,6 +3011,9 @@ MountainRoute "1" -- "0..*" RouteFile : has files >
 DifficultyScale "1" -- "0..*" MountainRoute : difficulty rated >
 AppUser "0..1" -- "0..*" RouteFile : uploads files >
 WaypointType "1" -- "0..*" RouteWaypoint : has type <
+Expedition "1" -- "0..*" MountainExpeditionLog : logs >
+AppUser "1" -- "0..*" MountainExpeditionLog : records >
+MountainRoute "1" -- "0..*" MountainExpeditionLog : used route >
 
 ' Mountains.Itinerary Relations
 Mountain "1" -- "0..*" Expedition : has expeditions >
@@ -2783,7 +3056,11 @@ Plan "1" -- "0..*" Subscription : subscribed to >
 Subscription "1" -- "0..*" Payment : payments for >
 PayPerUse "1" -- "0..*" Payment : payments for >
 PaymentMethod "1" -- "0..*" Payment : used for payment >
-Payment "1" -- "0..1" Invoice : generates invoice >
+' Relación principal (obligatoria)
+Invoice "1" -- "1..*" InvoiceItem : contains items >
+' Relación con Payment (opcional - para vincular items específicos)
+Payment "0..1" -- "0..*" InvoiceItem : itemized in >
+
 AIGenerationRequest "1" -- "0..1" PayPerUse : may require payment >
 
 ' Notifications Relations
@@ -2908,4 +3185,25 @@ BoardConfig "0..1" -- "0..*" BoardConfig : previous version >
 ' Relaciones de Difficulty Scale con Versionado
 DifficultyScale "0..1" -- "0..*" DifficultyScale : previous version >
 
+' === RELACIONES DE COMENTARIOS ===
+
+' Relación principal
+AppUser "1" -- "0..*" Comment : writes comments >
+Comment "0..1" -- "0..*" Comment : replies to >
+
+' Relaciones de funcionalidades
+Comment "1" -- "0..*" CommentReaction : receives reactions >
+Comment "1" -- "0..*" CommentAttachment : has attachments >
+Comment "1" -- "0..*" CommentMention : contains mentions >
+Comment "1" -- "0..*" CommentReport : reported as >
+
+AppUser "1" -- "0..*" CommentReaction : reacts to comments >
+AppUser "1" -- "0..*" CommentMention : mentioned in comments >
+AppUser "1" -- "0..*" CommentReport : reports comments >
+AppUser "0..1" -- "0..*" CommentReport : reviews reports >
+AppUser "0..1" -- "0..*" Comment : moderates comments >
+
+
+
+Color "1" -- "0..*" BoardProblemItemType : defines color >
 @enduml

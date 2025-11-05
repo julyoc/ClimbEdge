@@ -1,5 +1,6 @@
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
+using ClimbEdge.API.Middlewares;
 using ClimbEdge.Application.DependencyInjection;
 using ClimbEdge.Infrastructure.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -11,6 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // permite appsettings.json
 builder.Host.UseSerilog((ctx, lc) => lc.ReadFrom.Configuration(ctx.Configuration));
+
+builder.Services.RegisterMiddlewares(); // Custom middlewares (e.g., API Key Middleware)
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -82,6 +85,8 @@ app.UseCors("AllowFrontend"); // Use the CORS policy defined above
 // Add Authentication & Authorization middleware
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.AddMiddlewares(); // Custom middlewares (e.g., API Key Middleware)
 
 app.MapControllers();
 app.MapReverseProxy();

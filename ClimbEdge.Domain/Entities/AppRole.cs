@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ClimbEdge.Domain.Entities
 {
-    public class AppRole : IdentityRole<long>
+    public sealed class AppRole : IdentityRole<long>
     {
         public AppRole() : base() { }
 

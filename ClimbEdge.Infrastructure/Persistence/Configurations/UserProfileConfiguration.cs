@@ -34,11 +34,15 @@ namespace ClimbEdge.Infrastructure.Persistence.Configurations
                      builder.Property(e => e.Website)
                             .HasMaxLength(500);
 
-                     builder.Property(e => e.Location)
-                            .HasMaxLength(200);
-
-                     builder.Property(e => e.Country)
-                            .HasMaxLength(100);
+                     builder.OwnsOne(e => e.Address, e =>
+                     {
+                            e.Property(e => e.Reference).HasMaxLength(200);
+                            e.Property(e => e.Street);
+                            e.Property(e => e.City).HasMaxLength(100);
+                            e.Property(e => e.State).HasMaxLength(100);
+                            e.Property(e => e.Country).HasMaxLength(100);
+                            e.Property(e => e.ZipCode).HasMaxLength(20);
+                     });
 
                      builder.Property(e => e.TimeZone)
                             .HasMaxLength(100);
@@ -69,13 +73,13 @@ namespace ClimbEdge.Infrastructure.Persistence.Configurations
                      builder.HasIndex(e => e.AppUserId).IsUnique();
                      builder.HasIndex(e => e.FirstName);
                      builder.HasIndex(e => e.LastName);
-                     builder.HasIndex(e => e.Country);
 
                      // Propiedades calculadas ignoradas
                      builder.Ignore(e => e.FullName);
                      builder.Ignore(e => e.Age);
                      builder.Ignore(e => e.Initials);
 
+                     // Relations
                      builder.HasOne(e => e.AppUser)
                             .WithOne(e => e.UserProfile)
                             .HasForeignKey<UserProfile>(e => e.AppUserId)

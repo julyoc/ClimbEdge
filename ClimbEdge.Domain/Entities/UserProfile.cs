@@ -1,5 +1,7 @@
 using ClimbEdge.Common.Constants;
 using ClimbEdge.Domain.DomainEvents;
+using ClimbEdge.Domain.Entities.Boards;
+using ClimbEdge.Domain.Entities.Boards.Problems;
 using ClimbEdge.Domain.Shared;
 using ClimbEdge.Domain.ValueObjects;
 using System.Collections.Generic;
@@ -10,7 +12,7 @@ namespace ClimbEdge.Domain.Entities
     /// <summary>
     /// Perfil de usuario con información adicional
     /// </summary>
-    public class UserProfile : BaseModel
+    public sealed class UserProfile : BaseModel
     {
         /// <summary>
         /// Identificador del usuario asociado
@@ -42,13 +44,9 @@ namespace ClimbEdge.Domain.Entities
         /// </summary>
         public string? Website { get; set; }
         /// <summary>
-        /// Ubicación del usuario
+        /// Dirección del usuario
         /// </summary>
-        public string? Location { get; set; }
-        /// <summary>
-        /// País del usuario
-        /// </summary>
-        public string Country { get; set; } = Constants.DefaultCountry;
+        public AddressData Address { get; set; }
         /// <summary>
         /// Zona horaria del usuario
         /// </summary>
@@ -128,8 +126,13 @@ namespace ClimbEdge.Domain.Entities
 
         public override void InitializeSlug()
         {
-            Slug = $"{Country}/{Initials}/{CreatedAt.Ticks}";
+            Slug = $"{FullName}/{Initials}";
             AddDomainEvent(new EntityDomainEvent<UserProfile>(Slug, EntityDomainEventType.Created));
         }
+
+        public IEnumerable<BoardMember>? Members { get; set; }
+        public IEnumerable<BoardConfig>? CreatedBoardConfigs { get; set; }
+        public IEnumerable<BoardConfig>? ApprovedBoardConfigs { get; set; }
+        public IEnumerable<BoardProblem>? CreatedBoardProblems { get; set; }
     }
 }

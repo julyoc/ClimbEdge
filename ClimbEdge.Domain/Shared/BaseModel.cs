@@ -30,7 +30,7 @@ namespace ClimbEdge.Domain.Shared
         public string Slug
         {
             get => _slug;
-            set => _slug = GetType().Name + "/" + value?.ToLowerInvariant().Replace(" ", "-") ?? string.Empty;
+            set => _slug = GetType().Name + "/" + value?.ToLowerInvariant().Replace(" ", "-") ?? string.Empty + "/" + CreatedAt.Ticks;
         }
         /// <summary>
         /// Metadatos adicionales en formato JSON

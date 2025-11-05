@@ -18,16 +18,17 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.18" />
     <PackageReference Include="Scrutor" Version="6.1.0" />
     <PackageReference Include="StackExchange.Redis" Version="2.8.41" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.6.7" />
     <PackageReference Include="Yarp.ReverseProxy" Version="2.3.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ClimbEdge.Domain\ClimbEdge.Domain.csproj" />
     <ProjectReference Include="..\ClimbEdge.Common\ClimbEdge.Common.csproj" />
+    <ProjectReference Include="..\ClimbEdge.Application\ClimbEdge.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ExternalServices\" />
     <Folder Include="Persistence\Migrations\" />
   </ItemGroup>
 
