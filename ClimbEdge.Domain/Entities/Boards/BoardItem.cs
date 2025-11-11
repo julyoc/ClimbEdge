@@ -23,6 +23,7 @@ namespace ClimbEdge.Domain.Entities.Boards
         public BoardItemType? BoardItemType { get; set; }
         public long? BoardItemVolumeId { get; set; }
         public BoardItemVolume? BoardItemVolume { get; set; }
+        public bool IsDryTooling { get; set; } = false;
         public BoardItem() { }
         public override void InitializeSlug()
         {

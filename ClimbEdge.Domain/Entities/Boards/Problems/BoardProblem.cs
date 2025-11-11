@@ -14,7 +14,10 @@ namespace ClimbEdge.Domain.Entities.Boards.Problems
         public BoardConfig? BoardConfig { get; set; }
         public string Name { get; set; }
         public string? Description { get; set; }
-        public bool IsPublic { get; set; } = true;  
+        public bool IsPublic { get; set; } = true;
+        public bool IsFeatured { get; set; } = false;
+        public bool IsArchived { get; set; } = false;
+        public bool IsDryTooling { get; set; } = false;
         public long? CreatedByUserId { get; set; }
         public UserProfile? CreatedByUser { get; set; }
         public bool GeneratedByAI { get; set; } = false;
@@ -50,5 +53,7 @@ namespace ClimbEdge.Domain.Entities.Boards.Problems
         }
         public IEnumerable<BoardProblemAngle>? BoardProblemAngles { get; set; }
         public IEnumerable<BoardProblemItem>? BoardProblemItems { get; set; }
+        public IEnumerable<BoardProblemTag>? BoardProblemTags { get; set; }
+        public IEnumerable<FootRule>? FootRules { get; set; }
     }
 }

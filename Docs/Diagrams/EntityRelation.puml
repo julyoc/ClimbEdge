@@ -369,6 +369,7 @@ package "Boards" {
         +Difficulty: int
         +BoardItemTypeId: long
         +BoardItemVolumeId: long?
+        +IsDryTooling: bool = false
         ' Volumen base de la presa (opcional para compatibilidad)
     }
     entity "BoardItemTextureCombination" as BoardItemTextureCombination {
@@ -408,7 +409,11 @@ package "Boards.Problems" {
         +BoardConfigId: long
         +Name: string <<unique>>
         +Description: string?
-        +IsPublic: bool
+        +IsPublic: bool = true
+        +IsFeatured: bool = false
+        +IsAchieved: bool = false
+        +IsDryTooling: bool = false
+        +IsDraft: bool = false
         +CreatedByUserId: long? <<index>>
         +GeneratedByAI: bool = false
         ' Indica si el problema fue generado por IA.
@@ -421,11 +426,6 @@ package "Boards.Problems" {
         +BoardItemId: long
         +BoardProblemItemTypeId: long
     }
-'
-'
-' Estoy hasta aqui con las entidades db config y repositories
-'
-'
     entity "BoardProblemItemType" as BoardProblemItemType {
         'Tipo de elemento del problema del tablero, que define las características y propiedades de un elemento (presa) en un problema de escalada.
         ..inherits BaseEntity..
@@ -469,7 +469,7 @@ package "Boards.Problems" {
         ..inherits BaseEntity..
         'Regla de uso de pies en el problema de escalada.
         +Name: string
-        +Code: string
+        +Code: string <<unique>>
         +Description: string
     }
 }
@@ -481,6 +481,7 @@ package "DifficultyScales" {
         +Name: string <<unique>>
         +Description: string?
         +Icon: string?
+        +IsDryTooling: bool = false
     }
     entity "DifficultyScaleName" as DifficultyScaleName {
         'Nombre de la escala de dificultad, por ejemplo, VScale, French, etc.
@@ -498,15 +499,16 @@ package "DifficultyScales" {
         +DifficultyScaleNameId: long
         +Value: string
         +IRCRA: int
-        +Version: string
+        +DifficultyGroupId: long
+        +Version: string?
         ' Versión de la escala (ej: "2024.1", "2025.0")
-        +IsActive: bool
+        +IsActive: bool = true
         ' Indica si esta versión de la escala está activa
         +PreviousVersionId: long?
         ' Referencia a la versión anterior de la escala
-        +EffectiveDate: DateTime
+        +EffectiveDate: Date?
         ' Fecha desde la cual esta versión es efectiva
-        +ExpiryDate: DateTime?
+        +ExpirationDate: Date?
         ' Fecha hasta la cual esta versión es válida
         +ConversionTable: jsonb?
         ' Tabla de conversión desde versiones anteriores
@@ -519,14 +521,19 @@ package "DifficultyScales" {
         'Grupo de dificultad, por ejemplo, principiante, intermedio, avanzado, elite, etc.
         'Agrupa escalas de dificultad bajo un mismo grupo.
         ..inherits BaseEntity..
-        +Level: int
-        +Name: string
+        +Level: int <<unique>>
+        +Name: string <<unique>>
         +Description: string?
-        +IsFemale: bool
+        +IsFemale: bool = false
         ' IsFemale: Indica si el grupo de dificultad es específico para escaladoras mujeres.
     }
 }
 package "Mountains" {
+'
+'
+' Estoy hasta aqui con las entidades db config y repositories
+'
+'
     enum "MountainType" as MountainType {
         +Peak
         'Peak: Pico o cumbre montañosa.
@@ -2973,7 +2980,7 @@ BoardItemVolume "0..1" -- "0..*" BoardItem : has volume <
 BoardItem "0..*" -- "1" BoardConfig : belongs to <
 DifficultyScaleType "0..1" -- "0..*" DifficultyScaleName : has <
 DifficultyScaleName "0..1" -- "0..*" DifficultyScale : has <
-DifficultyScale "0..*" -- "0..*" DifficultyGroup : has <
+DifficultyScale "0..*" -- "1" DifficultyGroup : has <
 BoardConfig "1" -- "0..*" BoardProblem : defines >
 BoardProblemItem "0..*" -- "1" BoardProblem : belongs to <
 BoardProblemItem "0..*" -- "1" BoardItem : is of item <

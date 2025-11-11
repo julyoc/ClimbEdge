@@ -23,6 +23,9 @@ namespace ClimbEdge.Infrastructure.Persistence.Configurations.Boards.Problems
                    .HasColumnType("TEXT");
             builder.Property(b => b.IsPublic)
                    .IsRequired();
+            builder.Property(b => b.IsFeatured).IsRequired();
+            builder.Property(b => b.IsArchived).IsRequired();
+            builder.Property(b => b.IsDryTooling).IsRequired();
             builder.Property(b => b.GeneratedByAI)
                    .IsRequired();
             builder.HasIndex(b => new { b.BoardConfigId, b.Name }).IsUnique();
@@ -37,6 +40,8 @@ namespace ClimbEdge.Infrastructure.Persistence.Configurations.Boards.Problems
                    .WithMany(u => u.CreatedBoardProblems)
                    .HasForeignKey(b => b.CreatedByUserId)
                    .OnDelete(DeleteBehavior.SetNull);
+            builder.HasMany(e => e.BoardProblemTags).WithMany(pt => pt.BoardProblems);
+            builder.HasMany(e => e.FootRules).WithMany(fr => fr.BoardProblems);
         }
     }
 }

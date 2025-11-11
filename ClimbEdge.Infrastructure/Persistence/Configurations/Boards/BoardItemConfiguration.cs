@@ -25,6 +25,9 @@ namespace ClimbEdge.Infrastructure.Persistence.Configurations.Boards
             builder.HasIndex(b => new { b.BoardConfigId, b.PositionX, b.PositionY })
                    .IsUnique();
 
+            builder.Property(b => b.IsDryTooling)
+                   .IsRequired();
+
             // Relaciones
             builder.HasOne(b => b.BoardConfig)
                    .WithMany(b => b.BoardItems)
