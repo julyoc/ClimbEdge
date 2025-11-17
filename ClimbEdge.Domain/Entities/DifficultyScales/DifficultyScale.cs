@@ -57,5 +57,6 @@ namespace ClimbEdge.Domain.Entities.DifficultyScales
             AddDomainEvent(new EntityDomainEvent<DifficultyScale>(Slug, EntityDomainEventType.Locked, new Dictionary<string, Object>() { { "Locked", false } }));
         }
         public IEnumerable<BoardProblemAngle>? BoardProblemAngles { get; set; }
+        public IEnumerable<Mountains.MountainRoute>? MountainRoutes { get; set; }
     }
 }

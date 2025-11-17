@@ -18,6 +18,7 @@ namespace ClimbEdge.Common.Constants
         public const string DefaultLanguage = "es-LA"; // Español de América Latina
         public const string DefaultCountry = "EC"; // Estados Unidos
         public const string DefaultApiVersion = "0.1";
+        public const int SridWgs84 = 4326; // SRID para WGS 84
         public static IReadOnlyList<string> AllowedApiVersions => new[] { "0.1" };
 
         public const string ApiName = "ClimbEdge API";

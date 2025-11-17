@@ -1,17 +1,18 @@
+using ClimbEdge.Common.Constants;
+using ClimbEdge.Domain.Entities;
+using ClimbEdge.Domain.Repositories;
+using ClimbEdge.Infrastructure.Caching;
+using ClimbEdge.Infrastructure.ExternalServices;
+using ClimbEdge.Infrastructure.Persistence;
+using ClimbEdge.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using ClimbEdge.Domain.Entities;
-using ClimbEdge.Infrastructure.Persistence;
-using ClimbEdge.Infrastructure.Repositories;
-using ClimbEdge.Domain.Repositories;
-using ClimbEdge.Infrastructure.Caching;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using NetTopologySuite;
 using System.Text;
-using ClimbEdge.Common.Constants;
-using ClimbEdge.Infrastructure.ExternalServices;
 
 namespace ClimbEdge.Infrastructure.DependencyInjection
 {
@@ -42,12 +43,18 @@ namespace ClimbEdge.Infrastructure.DependencyInjection
                         maxRetryCount: 3,
                         maxRetryDelay: TimeSpan.FromSeconds(5),
                         errorCodesToAdd: null);
+                    npgsqlOptions.UseNetTopologySuite();
                 });
 
                 // Configuraciones adicionales para desarrollo
                 options.EnableSensitiveDataLogging(false);
                 options.EnableDetailedErrors(false);
             });
+
+            // Service para gestionar localizacion (GeometryFactory)
+            services.AddSingleton(
+                NtsGeometryServices.Instance.CreateGeometryFactory(srid: ClimbEdge.Common.Constants.Constants.SridWgs84)
+            );
 
             // Configurar servicios de caché
             services.AddMemoryCache();

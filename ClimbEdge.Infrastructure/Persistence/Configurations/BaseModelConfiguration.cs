@@ -1,6 +1,7 @@
 ﻿using ClimbEdge.Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using NetTopologySuite.Geometries;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,5 +55,21 @@ namespace ClimbEdge.Infrastructure.Persistence.Configurations
 
 			return builder;
 		}
-	}
+        public static PropertyBuilder<TProperty> HasGeoZ<TProperty>(this PropertyBuilder<TProperty> propertyBuilder)
+         => propertyBuilder.HasGeo<TProperty>(useZ: true);
+        public static PropertyBuilder<TProperty> HasGeo<TProperty>(this PropertyBuilder<TProperty> propertyBuilder, bool useZ = false)
+        {
+            var type = Nullable.GetUnderlyingType(typeof(TProperty)) ?? typeof(TProperty);
+
+            var columnType = type == typeof(Point) ? "POINT" :
+                             type == typeof(LineString) ? "LINESTRING" :
+                             type == typeof(Polygon) ? "POLYGON" :
+                             type == typeof(MultiPoint) ? "MULTIPOINT" :
+                             type == typeof(MultiLineString) ? "MULTILINESTRING" :
+                             type == typeof(MultiPolygon) ? "MULTIPOLYGON" :
+                             throw new NotSupportedException($"Tipo geométrico {type.Name} no es compatible.");
+			if (useZ) columnType += "Z";
+            return propertyBuilder.HasColumnType($"geography({columnType},4326)");
+        }
+    }
 }

@@ -18,9 +18,6 @@ namespace ClimbEdge.Infrastructure.Persistence.Configurations.DifficultyScales
             builder.Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(150);
-            builder.Property(e => e.IsDryTooling)
-                .IsRequired()
-                .HasDefaultValue(false);
 
             builder.HasIndex(e => e.Name).IsUnique();
         }

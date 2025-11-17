@@ -180,6 +180,42 @@ entity "AppRole" as AppRole {
     +NormalizedName: string? <<unique>>
     +ConcurrencyStamp: string?
 }
+enum "FileType" as FileType {
+    +Unknown
+    '📄 Documentos y archivos generales
+    +Document        
+    ' PDF, DOCX, TXT, etc.
+    +Spreadsheet        
+    ' Excel, CSV, etc.
+    +Presentation        
+    ' PPTX, etc.
+
+    ' 🗺️ Mapas y rutas
+    +Map            
+    ' Mapas topográficos o satelitales (imágenes o PDF)
+    +GpsTrack        
+    ' Archivos GPX, KML, KMZ, GeoJSON, etc.
+    +Guide           
+    ' Guías de ruta o descripción de itinerarios (PDF, DOCX)
+
+    ' 📷 Multimedia
+    +Image            
+    ' Fotos (JPEG, PNG)
+    +Video            
+    ' Videos (MP4, MOV, etc.)
+    +Audio            
+    ' Notas de voz, audios
+
+    ' 📁 Archivos comprimidos
+    +Archive            
+    ' ZIP, RAR, 7z
+
+    ' 🧾 Otros
+    +Permission            
+    ' Permisos o licencias (PDF, imagen escaneada)
+    +Other            
+    ' Cualquier otro tipo no clasificado
+}
 package "Boards" {
     enum "BoardVisibility" as BoardVisibility {
         +Public
@@ -481,7 +517,6 @@ package "DifficultyScales" {
         +Name: string <<unique>>
         +Description: string?
         +Icon: string?
-        +IsDryTooling: bool = false
     }
     entity "DifficultyScaleName" as DifficultyScaleName {
         'Nombre de la escala de dificultad, por ejemplo, VScale, French, etc.
@@ -529,11 +564,6 @@ package "DifficultyScales" {
     }
 }
 package "Mountains" {
-'
-'
-' Estoy hasta aqui con las entidades db config y repositories
-'
-'
     enum "MountainType" as MountainType {
         +Peak
         'Peak: Pico o cumbre montañosa.
@@ -599,16 +629,14 @@ package "Mountains" {
         +Country: string
         +Region: string?
         +State: string?
-        +FirstAscentDate: DateTime?
+        +FirstAscentDate: DateOnly?
         +FirstAscentBy: string?
         ' Nombre de quien realizó la primera ascensión.
-        +IsActive: bool
+        +IsActive: bool = true
         ' Indica si la montaña está disponible para actividades.
-        +DangerLevel: int
-        ' Nivel de peligro del 1 al 5.
-        +ImageUrl: string?
-        +WeatherStationId: string?
-        ' ID de estación meteorológica cercana.
+        +DifficultyRating: int
+        ' Nivel de peligro del 1 al 10.
+        +ImageUrl: string[]?
     }
     entity "MountainRoute" as MountainRoute {
         'Ruta específica en una montaña.
@@ -620,18 +648,20 @@ package "Mountains" {
         +DifficultyScaleId: long
         +Distance: decimal
         ' Distancia total de la ruta en kilómetros.
-        +ElevationGain: int
+        +ElevationGain: int?
         ' Ganancia de elevación en metros.
+        +ElevationLoss: int?
+        ' Pérdida de elevación en metros.
         +EstimatedDuration: int
-        ' Duración estimada en minutos.
+        ' Duración estimada en segundos.
         +BestSeason: SeasonType
-        +RequiresPermit: bool
-        +MaxGroupSize: int?
-        +IsGuided: bool
+        +RequiresPermit: bool = false
+        +MaxParticipants: int?
+        +IsGuided: bool = false
         ' Indica si requiere guía obligatorio.
         +DangerLevel: int
         ' Nivel de peligro específico de la ruta.
-        +FirstAscentDate: DateTime?
+        +FirstAscentDate: DateOnly?
         +FirstAscentBy: string?
     }
     entity "WaypointType" as WaypointType {
@@ -660,13 +690,13 @@ package "Mountains" {
         +EstimatedTimeFromPrevious: int?
         ' Tiempo estimado desde el waypoint anterior en minutos.
         +Notes: string?
-        +ImageUrl: string?
+        +ImageUrl: string[]?
     }
     entity "RouteTrack" as RouteTrack {
         'Track GPS completo de la ruta.
         ..inherits BaseEntity..
         +MountainRouteId: long
-        +Name: string?
+        +Name: string
         +TrackData: geography(LINESTRING,4326)
         ' Línea GPS completa usando PostGIS.
         +TotalDistance: decimal
@@ -675,7 +705,7 @@ package "Mountains" {
         +MaxElevation: int
         +RecordedBy: string?
         ' Quien registró el track.
-        +RecordedDate: DateTime?
+        +RecordedAt: DateTime?
         +GpsDevice: string?
         ' Dispositivo GPS utilizado.
         +Accuracy: decimal?
@@ -685,7 +715,7 @@ package "Mountains" {
         'Archivos asociados a montañas (fotos, mapas, documentos).
         ..inherits BaseEntity..
         +MountainId: long
-        +FileType: string
+        +FileType: FileType
         ' Tipo: "Photo", "Map", "Topo", "Document", "Video", "3DModel".
         +FileName: string
         +FileSize: int
@@ -706,7 +736,7 @@ package "Mountains" {
         'Archivos específicos de rutas (croquis, fotos, GPX).
         ..inherits BaseEntity..
         +MountainRouteId: long
-        +FileType: string
+        +FileType: FileType
         ' Tipo: "Topo", "Photo", "GPX", "KML", "Croquis", "Document".
         +FileName: string
         +FileSize: int
@@ -719,6 +749,11 @@ package "Mountains" {
         +UploadedBy: long?
         ' Usuario que subió el archivo.
     }
+'
+'
+' Estoy hasta aqui con las entidades db config y repositories
+' (agregar en expedicion los files que faltan)
+'
     entity "WeatherCondition" as WeatherCondition {
         'Condiciones meteorológicas históricas y actuales.
         ..inherits BaseEntity..
@@ -788,6 +823,8 @@ package "Mountains" {
         ' Equipamiento utilizado durante la salida (en formato JSON).
         +MountainRouteId: long?
         ' Ruta específica utilizada durante la salida.
+        +ItineraryTrackId: long?
+        ' Track del itinerario seguido durante la salida.
     }
 }
 package "Mountains.Itinerary" {
@@ -856,6 +893,16 @@ package "Mountains.Itinerary" {
         'Recovery: Recuperación.
         +Weather_Wait
         'Weather_Wait: Espera por clima.
+    }
+    enum "TrackType" as TrackType {
+        +Complete_Expedition
+        'Complete_Expedition: Expedición completa.
+        +Summit_Attempt
+        'Summit_Attempt: Intento de cumbre.
+        +Acclimatization_Loop
+        'Acclimatization_Loop: Bucle de aclimatación.
+        +Approach_Section
+        'Approach_Section: Sección de aproximación.
     }
     entity "Expedition" as Expedition {
         'Expedición completa a una montaña con itinerario detallado.
@@ -1055,10 +1102,67 @@ package "Mountains.Itinerary" {
         +RequiresSignature: bool
         ' Indica si el documento requiere firma.
     }
+    entity "ItineraryTrack" as ItineraryTrack {
+        'Track GPS completo de toda la expedición o sección multi-día.
+        'Incluye tanto la ruta planificada como la ruta real registrada.
+        ..inherits BaseEntity..
+        +ExpeditionId: long?
+        +Name: string
+        +Description: string?
+        +TrackType: TrackType
+        ' Tipo: "Complete_Expedition", "Summit_Attempt", "Acclimatization_Loop", "Approach_Section"
+        +StartDayNumber: int
+        ' Número del primer día incluido en este track
+        +EndDayNumber: int
+        ' Número del último día incluido en este track
+        +StartDate: DateTime
+        +EndDate: DateTime?
+        +PlannedRoute: geography(LINESTRING,4326)?
+        ' Ruta planificada completa del track multi-día
+        +ActualRoute: geography(LINESTRING,4326)?
+        ' Ruta real registrada (puede construirse desde ItineraryDayTrack)
+        +PlannedDistance: decimal?
+        ' Distancia planificada total en kilómetros
+        +ActualDistance: decimal?
+        ' Distancia real total en kilómetros
+        +PlannedDuration: int?
+        ' Duración planificada en minutos
+        +ActualDuration: int?
+        ' Duración real en minutos
+        +MinElevation: int?
+        ' Elevación mínima en metros
+        +MaxElevation: int?
+        ' Elevación máxima en metros
+        +CumulativeElevationGain: int?
+        ' Ganancia acumulada de elevación en metros
+        +CumulativeElevationLoss: int?
+        ' Pérdida acumulada de elevación en metros
+        +RecordedBy: long?
+        ' Usuario que registró el track
+        +GpsDevice: string?
+        ' Dispositivo GPS utilizado
+        +Accuracy: decimal?
+        ' Precisión promedio del GPS en metros
+        +Notes: string?
+        +IsOfficial: bool
+        ' Indica si es el track oficial de esta sección
+        +BasedOnRouteTrackId: long?
+        ' Referencia al RouteTrack de MountainRoute usado como base
+        +RouteDeviation: decimal?
+        ' Desviación promedio de la ruta planificada en metros
+        +CompletionPercentage: decimal?
+        ' Porcentaje de la ruta completada (0-100)
+        +WeatherSummary: string?
+        ' Resumen de condiciones climáticas durante el track
+        +DifficultySummary: string?
+        ' Resumen de dificultades encontradas
+    }
     entity "ItineraryDayTrack" as ItineraryDayTrack {
         'Track GPS completo de un día específico de la expedición.
         ..inherits BaseEntity..
         +ItineraryDayId: long
+        +ItineraryTrackId: long?
+        ' Referencia al track multi-día del que forma parte
         +ParticipantId: long?
         ' Participante que registró el track (opcional, puede ser el guía).
         +Name: string?
@@ -3047,7 +3151,11 @@ ExpeditionParticipant "0..1" -- "0..*" ItineraryDayTrack : records tracks >
 EquipmentCategory "1" -- "0..*" Equipment : categorizes >
 ExpeditionBudgetCategory "1" -- "0..*" ExpeditionBudget : has categories >
 WaypointType "1" -- "0..*" ItineraryDayWaypoint : has types >
-
+' Track multi-día contiene tracks diarios
+Expedition "1" -- "0..*" ItineraryTrack : has multi-day tracks >
+ItineraryTrack "1" -- "0..*" ItineraryDayTrack : composed of daily tracks >
+AppUser "0..1" -- "0..*" ItineraryTrack : records track >
+RouteTrack "0..1" -- "0..*" ItineraryTrack : used as base >
 ' Mountains.Itinerary.Logistics Relations
 Expedition "1" -- "0..*" Accommodation : has accommodations >
 Expedition "1" -- "0..*" Transportation : has transport >

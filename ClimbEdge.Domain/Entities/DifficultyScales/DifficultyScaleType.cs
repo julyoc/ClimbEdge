@@ -14,7 +14,6 @@ namespace ClimbEdge.Domain.Entities.DifficultyScales
         public string Name { get; set; }
         public string Description { get; set; }
         public string? Icon { get; set; }
-        public bool IsDryTooling { get; set; } = false;
         public override void InitializeSlug()
         {
             Slug = Name;
