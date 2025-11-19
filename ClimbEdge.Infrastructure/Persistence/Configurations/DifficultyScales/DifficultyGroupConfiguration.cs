@@ -25,6 +25,13 @@ namespace ClimbEdge.Infrastructure.Persistence.Configurations.DifficultyScales
                 .IsUnique();
             builder.HasIndex(e => e.Name)
                 .IsUnique();
+            builder.HasData(
+                new DifficultyGroup { Id = 1, Level = 1, Name = "Beginner", Description = "Suitable for beginners.", Slug = "beginner"},
+                new DifficultyGroup { Id = 2, Level = 2, Name = "Intermediate", Description = "Suitable for intermediate climbers." , Slug = "intermediate"},
+                new DifficultyGroup { Id = 3, Level = 3, Name = "Advanced", Description = "Suitable for advanced climbers." , Slug = "advanced"},
+                new DifficultyGroup { Id = 4, Level = 4, Name = "Expert", Description = "Suitable for expert climbers." , Slug = "expert"},
+                new DifficultyGroup { Id = 5, Level = 5, Name = "Elite", Description = "Suitable for elite climbers." , Slug = "elite"}
+            );
         }
     }
 }

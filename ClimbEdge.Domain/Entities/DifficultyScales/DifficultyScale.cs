@@ -14,22 +14,17 @@ namespace ClimbEdge.Domain.Entities.DifficultyScales
         public long DifficultyScaleNameId { get; set; }
         public DifficultyScaleName? DifficultyScaleName { get; set; }
         public string Value { get; set; }
+        /// <summary>
+        /// en roca La escala IRCRA es la escala oficial creada por la International Rock Climbing Research Association para estandarizar la dificultad de escalada en todo el mundo.
+        /// en los otros tipos es para estandarizar la dificultad relativa dentro de ese tipo de escalada.
+        /// </summary>
         public int IRCRA { get; set; }
-        public long DifficultyGroupId { get; set; }
+        public long? DifficultyGroupId { get; set; }
         public DifficultyGroup? DifficultyGroup { get; set; }
-        public string? Version { get; set; }
-        public bool IsActive { get; set; } = true;
-        public long? PreviousVersionId { get; set; }
-        public DifficultyScale? PreviousVersion { get; set; }
-        public IEnumerable<DifficultyScale>? NextsVersion { get; set; }
-        public DateOnly? EffectiveDate { get; set; }
-        public DateOnly? ExpirationDate { get; set; }
-        public Dictionary<string, object>? ConversionTable { get; set; }
-        public string? ChangeReason { get; set; }
-        public string? ApprovedByOrganization { get; set; }
+        public string? Description { get; set; }
         public override void InitializeSlug()
         {
-            Slug = $"{Value}-{IRCRA}";
+            Slug = $"{Value}-{IRCRA}-{DifficultyScaleNameId}";
         }
         public override void UpdateTimestamps()
         {

@@ -13,7 +13,6 @@ namespace ClimbEdge.Domain.Entities.DifficultyScales
         public int Level { get; set; }
         public string Name { get; set; }
         public string? Description { get; set; }
-        public bool IsFemale { get; set; } = false;
         public override void InitializeSlug()
         {
             Slug = Name;

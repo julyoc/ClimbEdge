@@ -781,9 +781,9 @@ package "Mountains" {
     entity "MountainExpeditionLog" as MountainExpeditionLog {
         'Registro detallado de una salida de montaña.
         ..inherits BaseEntity..
-        +ExpeditionId: long
+        +ExpeditionId: long?
         ' Referencia a la expedición asociada.
-        +UserId: long
+        +UserId: long?
         ' Usuario que realizó la salida.
         +StartDate: DateTime
         ' Fecha y hora de inicio de la salida.
