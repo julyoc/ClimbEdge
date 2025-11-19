@@ -535,22 +535,7 @@ package "DifficultyScales" {
         +Value: string
         +IRCRA: int
         +DifficultyGroupId: long
-        +Version: string?
-        ' Versión de la escala (ej: "2024.1", "2025.0")
-        +IsActive: bool = true
-        ' Indica si esta versión de la escala está activa
-        +PreviousVersionId: long?
-        ' Referencia a la versión anterior de la escala
-        +EffectiveDate: Date?
-        ' Fecha desde la cual esta versión es efectiva
-        +ExpirationDate: Date?
-        ' Fecha hasta la cual esta versión es válida
-        +ConversionTable: jsonb?
-        ' Tabla de conversión desde versiones anteriores
-        +ChangeReason: string?
-        ' Razón del cambio de versión
-        +ApprovedByOrganization: string?
-        ' Organización que aprobó esta versión (ej: IFSC, UIAA)
+        +Description: string?
     }
     entity "DifficultyGroup" as DifficultyGroup {
         'Grupo de dificultad, por ejemplo, principiante, intermedio, avanzado, elite, etc.
