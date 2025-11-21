@@ -23,8 +23,10 @@ namespace ClimbEdge.Infrastructure.Persistence.Configurations.Boards.Problems
             builder.Property(e => e.Code)
                 .IsRequired()
                 .HasMaxLength(50);
+            
             builder.HasIndex(e => e.Code)
                 .IsUnique();
+            builder.HasIndex(e => e.Name);
         }
     }
 }

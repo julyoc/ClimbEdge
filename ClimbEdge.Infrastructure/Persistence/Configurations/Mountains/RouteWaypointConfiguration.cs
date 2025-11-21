@@ -21,8 +21,6 @@ namespace ClimbEdge.Infrastructure.Persistence.Configurations.Mountains
             builder.Property(rw => rw.Description).HasMaxLength(500);
             builder.Property(e => e.Location)
                    .IsRequired().HasGeoZ();
-            builder.Property(e => e.Elevation)
-                   .IsRequired();
             builder.Property(e => e.Sequence)
                    .IsRequired();
             builder.Property(e => e.EstimatedTimeFromPrevious)
@@ -30,6 +28,9 @@ namespace ClimbEdge.Infrastructure.Persistence.Configurations.Mountains
             builder.Property(rw => rw.Notes).HasMaxLength(1000);
             builder.Property(rw => rw.ImageUrl)
                    .HasColumnType("text[]");
+
+            builder.HasIndex(e => e.Name);
+            builder.HasIndex(e => e.Location);
 
             builder.HasOne(rw => rw.MountainRoute).WithMany(mr => mr.RouteWaypoints)
                    .HasForeignKey(rw => rw.MountainRouteId)

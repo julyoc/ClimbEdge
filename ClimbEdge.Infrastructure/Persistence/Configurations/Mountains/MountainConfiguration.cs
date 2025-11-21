@@ -39,6 +39,7 @@ namespace ClimbEdge.Infrastructure.Persistence.Configurations.Mountains
                    .HasDefaultValue((short)1);
 
             builder.HasIndex(m => m.Name).IsUnique();
+            builder.HasIndex(e => e.Location).IsGeoIndex();
         }
     }
 }

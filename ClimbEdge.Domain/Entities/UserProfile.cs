@@ -3,6 +3,7 @@ using ClimbEdge.Domain.DomainEvents;
 using ClimbEdge.Domain.Entities.Boards;
 using ClimbEdge.Domain.Entities.Boards.Problems;
 using ClimbEdge.Domain.Entities.Mountains;
+using ClimbEdge.Domain.Entities.Mountains.Itinerary;
 using ClimbEdge.Domain.Shared;
 using ClimbEdge.Domain.ValueObjects;
 using System.Collections.Generic;
@@ -136,5 +137,9 @@ namespace ClimbEdge.Domain.Entities
         public IEnumerable<BoardConfig>? ApprovedBoardConfigs { get; set; }
         public IEnumerable<BoardProblem>? CreatedBoardProblems { get; set; }
         public IEnumerable<RouteFile>? RouteFiles { get; set; }
+        public IEnumerable<MountainExpeditionLog>? MountainExpeditionLogs { get; set; }
+        public IEnumerable<MountainExpeditionLog>? MountainExpeditionLogsGuided { get; set; }
+        public IEnumerable<Expedition>? Expeditions { get; set; }
+        public IEnumerable<ExpeditionParticipant>? ExpeditionParticipants { get; set; }
     }
 }

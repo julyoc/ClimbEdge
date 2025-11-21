@@ -26,6 +26,7 @@ namespace ClimbEdge.Infrastructure.Persistence.Configurations.Mountains
 
             builder.HasIndex(e => new { e.MountainRouteId, e.Name })
                    .IsUnique();
+            builder.HasIndex(e => e.TrackData).IsGeoIndex();
 
             builder.HasOne(e => e.MountainRoute)
                    .WithMany(r => r.RouteTracks)

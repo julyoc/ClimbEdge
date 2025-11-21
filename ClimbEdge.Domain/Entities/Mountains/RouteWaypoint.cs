@@ -16,7 +16,6 @@ namespace ClimbEdge.Domain.Entities.Mountains
         public string Name { get; set; }
         public string? Description { get; set; }
         public Point Location { get; set; }
-        public int Elevation { get; set; } // in meters
         public int Sequence { get; set; }
         public long WaypointTypeId { get; set; }
         public WaypointType? WaypointType { get; set; }

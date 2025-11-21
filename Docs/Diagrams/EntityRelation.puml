@@ -734,11 +734,6 @@ package "Mountains" {
         +UploadedBy: long?
         ' Usuario que subió el archivo.
     }
-'
-'
-' Estoy hasta aqui con las entidades db config y repositories
-' (agregar en expedicion los files que faltan)
-'
     entity "WeatherCondition" as WeatherCondition {
         'Condiciones meteorológicas históricas y actuales.
         ..inherits BaseEntity..
@@ -748,7 +743,7 @@ package "Mountains" {
         ' Temperatura en grados Celsius.
         +WindSpeed: decimal?
         ' Velocidad del viento en km/h.
-        +WindDirection: int?
+        +WindDirection: decimal?
         ' Dirección del viento en grados.
         +Humidity: decimal?
         ' Humedad relativa en porcentaje.
@@ -756,12 +751,16 @@ package "Mountains" {
         ' Presión atmosférica en hPa.
         +Visibility: decimal?
         ' Visibilidad en kilómetros.
-        +WeatherCondition: string?
+        +Condition: string?
         ' Descripción: "Clear", "Cloudy", "Rain", "Snow", "Storm", etc.
         +SnowDepth: decimal?
         ' Profundidad de nieve en centímetros.
         +DataSource: string?
         ' Fuente de datos: "Manual", "WeatherAPI", "Station", etc.
+        +Rainfall: decimal?
+        ' Precipitación en milímetros.
+        +Snowfall: decimal?
+        ' Caída de nieve en centímetros.
     }
     entity "MountainExpeditionLog" as MountainExpeditionLog {
         'Registro detallado de una salida de montaña.
@@ -778,19 +777,23 @@ package "Mountains" {
         ' Duración total de la salida en minutos.
         +MaxElevationReached: int?
         ' Máxima elevación alcanzada en metros.
+        +MinElevationReached: int?
+        ' Mínima elevación alcanzada en metros.
         +WeatherConditions: string?
         ' Condiciones climáticas durante la salida.
-        +Notes: string?
+        +Notes: string[]?
         ' Notas adicionales sobre la salida.
+        +Content: string?
+        ' Contenido detallado del registro de la salida.
         +Description: string?
         ' Descripción detallada de la salida.
         +RouteTaken: geography(LINESTRING,4326)?
         ' Ruta específica tomada durante la salida.
         +Photos: jsonb?
         ' Fotos asociadas a la salida (en formato JSON).
-        +ChallengesFaced: string?
+        +ChallengesFaced: string[]?
         ' Desafíos o problemas enfrentados durante la salida.
-        +EquipmentUsed: jsonb?
+        +EquipmentUsed: string[]?
         ' Equipamiento utilizado durante la salida (en formato JSON).
         +WeatherAtSummit: string?
         ' Condiciones climáticas en la cima (si se alcanzó).
@@ -804,8 +807,6 @@ package "Mountains" {
         ' Referencia al guía (si aplica).
         +SafetyIncidents: jsonb?
         ' Incidentes de seguridad reportados (en formato JSON).
-        +EquipmentUsed: jsonb?
-        ' Equipamiento utilizado durante la salida (en formato JSON).
         +MountainRouteId: long?
         ' Ruta específica utilizada durante la salida.
         +ItineraryTrackId: long?
@@ -894,32 +895,41 @@ package "Mountains.Itinerary" {
         ..inherits BaseEntity..
         +MountainId: long
         +MountainRouteId: long?
-        +Name: string
+        +Name: string <<unique>>
         +Description: string?
         +Status: ExpeditionStatus
         +StartDate: DateTime
         +EndDate: DateTime
-        +PlannedDuration: int
+        +PlannedDurationDays: int
         ' Duración planificada en días.
-        +ActualDuration: int?
+        +ActualDurationDays: int?
         ' Duración real en días.
-        +MaxParticipants: int
         +MinParticipants: int
+        +MaxParticipants: int
         +RequiredExperienceLevel: string?
         +Cost: decimal?
         +Currency: string?
-        +RequiresPermit: bool
+        +RequiresPermit: bool = false
         +PermitNumber: string?
-        +InsuranceRequired: bool
-        +EmergencyContactInfo: string?
-        +BaseLocation: string?
+        +InsuranceRequired: bool = false
+        +EmergencyContactInfo: string[]?
+        +BaseCampLocation: geography(POINT,4326)?
         ' Ubicación del campamento base.
+        +BaseCampInfo: jsonb?
         +OrganizedBy: long
         ' Usuario organizador.
-        +OrganizationId: long?
+        +OrganizedByOrganizationId: long?
         ' Organización que programa la expedición (opcional para expediciones individuales).
-        +IsPublic: bool
+        +IsPublic: bool = false
+        +IsDraft: bool = false
         +RegistrationDeadline: DateTime?
+    }
+    entity "ExpeditionLevelScales" as ExpeditionLevelScales {
+        ..'inherits BaseEntity..
+        +ExpeditionId: long
+        +DifficultyScaleId: long
+        +Description: string?
+        'unique(ExpeditionId, DifficultyScaleId)
     }
     enum "ParticipantStatus" as ParticipantStatus {
         +Registered
@@ -931,22 +941,35 @@ package "Mountains.Itinerary" {
         +Completed
         'Completed: Completado.
     }
+'
+'
+' Estoy hasta aqui con las entidades db config y repositories
+' (agregar en expedicion los files que faltan)
+'
     entity "ExpeditionParticipant" as ExpeditionParticipant {
         'Participantes de la expedición.
         ..inherits BaseEntity..
         +ExpeditionId: long
         +UserId: long
         +Role: ParticipantRole
-        +JoinedAt: DateTime
+        +InvitedAt: DateTime
+        +JoinedAt: DateTime?
         +Status: ParticipantStatus
         +StatusChangedAt: DateTime?
-        +ExperienceLevel: string?
         +MedicalClearance: bool
         +EmergencyContact: string?
         +SpecialRequirements: string?
         +PaymentStatus: string?
         ' Estado del pago: "Pending", "Paid", "Refunded".
-        +Notes: string?
+        +Notes: string[]?
+    }
+    entity "ParticipantExperienceLevelScale" as ParticipantExperienceLevelScale {
+        'Niveles de experiencia del usuario.
+        ..inherits BaseEntity..
+        +UserId: long
+        +DifficultyScaleId: long
+        +Description: string?
+        'unique(UserId, DifficultyScaleId)
     }
     entity "ItineraryDay" as ItineraryDay {
         'Día específico del itinerario.
@@ -1075,7 +1098,7 @@ package "Mountains.Itinerary" {
         'Archivos relacionados con el itinerario.
         ..inherits BaseEntity..
         +ExpeditionId: long
-        +FileType: string
+        +FileType: FileType
         ' Tipo: "Itinerary", "Map", "PermitDoc", "Insurance", "MedicalForm", "Agreement".
         +FileName: string
         +FileSize: int
@@ -1142,6 +1165,20 @@ package "Mountains.Itinerary" {
         +DifficultySummary: string?
         ' Resumen de dificultades encontradas
     }
+    entity "ItineraryTrackFile" as ItineraryTrackFile {
+        'Archivos relacionados con el itinerario.
+        ..inherits BaseEntity..
+        +ItineraryTrackId: long
+        +FileType: FileType
+        ' Tipo: "Itinerary", "Map", "PermitDoc", "Insurance", "MedicalForm", "Agreement".
+        +FileName: string
+        +FileSize: int
+        +FileUrl: string
+        +Title: string?
+        +Description: string?
+        +IsPrimary: bool
+        +UploadedBy: long?
+    }
     entity "ItineraryDayTrack" as ItineraryDayTrack {
         'Track GPS completo de un día específico de la expedición.
         ..inherits BaseEntity..
@@ -1179,6 +1216,20 @@ package "Mountains.Itinerary" {
         +IsOfficial: bool
         ' Indica si es el track oficial del día.
     }
+    entity "ItineraryDayTrackFile" as ItineraryDayTrackFile {
+        'Archivos relacionados con el itinerario.
+        ..inherits BaseEntity..
+        +ItineraryDayTrackId: long
+        +FileType: FileType
+        ' Tipo: "Itinerary", "Map", "PermitDoc", "Insurance", "MedicalForm", "Agreement".
+        +FileName: string
+        +FileSize: int
+        +FileUrl: string
+        +Title: string?
+        +Description: string?
+        +IsPrimary: bool
+        +UploadedBy: long?
+    }
     entity "ItineraryDayWaypoint" as ItineraryDayWaypoint {
         'Waypoints específicos registrados durante un día de expedición.
         ..inherits BaseEntity..
@@ -1207,6 +1258,20 @@ package "Mountains.Itinerary" {
         ' Indica si era un waypoint planificado o se agregó durante la expedición.
         +IsEmergency: bool
         ' Indica si es un waypoint de emergencia.
+    }
+        entity "ItineraryDayWaypointFile" as ItineraryDayWaypointFile {
+        'Archivos relacionados con el itinerario.
+        ..inherits BaseEntity..
+        +ItineraryDayWaypointId: long
+        +FileType: FileType
+        ' Tipo: "Itinerary", "Map", "PermitDoc", "Insurance", "MedicalForm", "Agreement".
+        +FileName: string
+        +FileSize: int
+        +FileUrl: string
+        +Title: string?
+        +Description: string?
+        +IsPrimary: bool
+        +UploadedBy: long?
     }
 }
 package "Mountains.Itinerary.Logistics" {
@@ -1333,7 +1398,7 @@ package "Climbing" {
         +ClimbRouteId: long
         +IsSketch: bool
         +FileName: string
-        +FileType: string
+        +FileType: FileType
         +FileSize: int
         +FileUrl: string
         +FileResourceUrl: string[]?
@@ -1348,7 +1413,7 @@ package "Climbing" {
         +ClimbZoneId: long
         +IsSketch: bool
         +FileName: string
-        +FileType: string
+        +FileType: FileType
         +FileSize: int
         +FileUrl: string
         +FileResourceUrl: string[]?
@@ -1581,7 +1646,7 @@ package "Organizations" {
         'Archivos asociados a una organización.
         ..inherits BaseEntity..
         +OrganizationId: long
-        +FileType: string
+        +FileType: FileType
         ' Tipo: "Photo", "Document", "Video", "Insurance", "License", "Manual", "Waiver".
         +FileName: string
         +FileSize: int
@@ -2610,7 +2675,7 @@ package "Help" {
         ..inherits BaseEntity..
         +ArticleId: long
         +FileName: string
-        +FileType: string
+        +FileType: FileType
         +FileSize: int
         +FileUrl: string
         +ThumbnailUrl: string?
@@ -2674,7 +2739,7 @@ package "Help" {
         +TicketId: long
         +TicketMessageId: long?
         +FileName: string
-        +FileType: string
+        +FileType: FileType
         +FileSize: int
         +FileUrl: string
         +UploadedBy: long
@@ -3000,7 +3065,7 @@ package "Comments" {
         ..inherits BaseEntity..
         +CommentId: long
         +FileName: string
-        +FileType: string
+        +FileType: FileType
         +FileSize: int
         +FileUrl: string
         +ThumbnailUrl: string?

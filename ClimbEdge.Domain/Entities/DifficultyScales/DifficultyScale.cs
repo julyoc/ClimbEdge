@@ -1,5 +1,6 @@
 ﻿using ClimbEdge.Domain.DomainEvents;
 using ClimbEdge.Domain.Entities.Boards.Problems;
+using ClimbEdge.Domain.Entities.Mountains.Itinerary;
 using ClimbEdge.Domain.Shared;
 using System;
 using System.Collections.Generic;
@@ -53,5 +54,7 @@ namespace ClimbEdge.Domain.Entities.DifficultyScales
         }
         public IEnumerable<BoardProblemAngle>? BoardProblemAngles { get; set; }
         public IEnumerable<Mountains.MountainRoute>? MountainRoutes { get; set; }
+        public IEnumerable<ExpeditionLevelScales>? ExpeditionLevelScales { get; set; }
+        public IEnumerable<Expedition>? Expeditions { get; set; }
     }
 }

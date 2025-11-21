@@ -56,7 +56,7 @@ namespace ClimbEdge.Infrastructure.Persistence.Configurations
 			return builder;
 		}
         public static PropertyBuilder<TProperty> HasGeoZ<TProperty>(this PropertyBuilder<TProperty> propertyBuilder)
-         => propertyBuilder.HasGeo<TProperty>(useZ: true);
+			=> propertyBuilder.HasGeo<TProperty>(useZ: true);
         public static PropertyBuilder<TProperty> HasGeo<TProperty>(this PropertyBuilder<TProperty> propertyBuilder, bool useZ = false)
         {
             var type = Nullable.GetUnderlyingType(typeof(TProperty)) ?? typeof(TProperty);
@@ -71,5 +71,7 @@ namespace ClimbEdge.Infrastructure.Persistence.Configurations
 			if (useZ) columnType += "Z";
             return propertyBuilder.HasColumnType($"geography({columnType},4326)");
         }
+        public static IndexBuilder IsGeoIndex(this IndexBuilder indexBuilder)
+			=> indexBuilder.HasMethod("GIST");
     }
 }

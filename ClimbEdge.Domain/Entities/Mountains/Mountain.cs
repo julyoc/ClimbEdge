@@ -1,5 +1,6 @@
 ﻿using ClimbEdge.Domain.DomainEvents;
 using ClimbEdge.Domain.Entities.Boards;
+using ClimbEdge.Domain.Entities.Mountains.Itinerary;
 using ClimbEdge.Domain.Enums.Mountains;
 using ClimbEdge.Domain.Shared;
 using NetTopologySuite.Geometries;
@@ -66,5 +67,7 @@ namespace ClimbEdge.Domain.Entities.Mountains
         }
         public IEnumerable<MountainRoute>? Routes { get; set; }
         public IEnumerable<MountainFile>? MountainFiles { get; set; }
-        }
+        public IEnumerable<WeatherCondition>? WeatherConditions { get; set; }
+        public IEnumerable<Expedition>? Expeditions { get; set; }
+    }
 }

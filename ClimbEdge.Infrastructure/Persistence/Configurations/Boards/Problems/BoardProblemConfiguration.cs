@@ -29,6 +29,7 @@ namespace ClimbEdge.Infrastructure.Persistence.Configurations.Boards.Problems
             builder.Property(b => b.GeneratedByAI)
                    .IsRequired();
             builder.HasIndex(b => new { b.BoardConfigId, b.Name }).IsUnique();
+            builder.HasIndex(b => b.Name);
 
             // Relationships
             builder.HasOne(b => b.BoardConfig)

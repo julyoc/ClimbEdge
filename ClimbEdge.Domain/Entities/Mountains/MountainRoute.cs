@@ -1,5 +1,6 @@
 ﻿using ClimbEdge.Domain.DomainEvents;
 using ClimbEdge.Domain.Entities.DifficultyScales;
+using ClimbEdge.Domain.Entities.Mountains.Itinerary;
 using ClimbEdge.Domain.Enums.Mountains;
 using ClimbEdge.Domain.Shared;
 using System;
@@ -77,5 +78,7 @@ namespace ClimbEdge.Domain.Entities.Mountains
         public IEnumerable<RouteWaypoint>? RouteWaypoints { get; set; }
         public IEnumerable<RouteTrack>? RouteTracks { get; set; }
         public IEnumerable<RouteFile>? RouteFiles { get; set; }
-        }
+        public IEnumerable<MountainExpeditionLog>? MountainExpeditionLogs { get; set; }
+        public IEnumerable<Expedition>? Expeditions { get; set; }
+    }
 }

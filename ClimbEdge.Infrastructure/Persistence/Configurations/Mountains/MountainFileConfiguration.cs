@@ -27,6 +27,8 @@ namespace ClimbEdge.Infrastructure.Persistence.Configurations.Mountains
                    .HasMaxLength(2048);
             builder.Property(e => e.Location).HasGeoZ();
 
+            builder.HasIndex(e => e.Location).IsGeoIndex();
+
             builder.HasOne(mf => mf.Mountain)
                    .WithMany(m => m.MountainFiles)
                    .HasForeignKey(mf => mf.MountainId)

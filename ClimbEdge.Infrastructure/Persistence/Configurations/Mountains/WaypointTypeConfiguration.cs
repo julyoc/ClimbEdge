@@ -20,6 +20,8 @@ namespace ClimbEdge.Infrastructure.Persistence.Configurations.Mountains
             builder.Property(m => m.Description)
                    .HasMaxLength(500);
 
+            builder.HasIndex(e => e.Name);
+
             builder.HasIndex(m => m.Name).IsUnique();
         }
     }
