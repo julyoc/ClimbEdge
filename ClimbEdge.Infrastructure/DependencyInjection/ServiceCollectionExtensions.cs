@@ -72,6 +72,13 @@ namespace ClimbEdge.Infrastructure.DependencyInjection
                 services.AddScoped<ICacheService, CacheService>();
             }
 
+            services.AddHttpClient("countryService", client =>
+            {
+                client.BaseAddress = new Uri("https://restcountries.com/v3.1");
+                client.Timeout = TimeSpan.FromSeconds(10);
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
+            });
+
             // Configurar Repositorios
             //services.AddScoped<IUserProfileRepository, UserProfileRepository>();
             services.Scan(scan => scan.FromAssemblyOf<UserProfileRepository>()

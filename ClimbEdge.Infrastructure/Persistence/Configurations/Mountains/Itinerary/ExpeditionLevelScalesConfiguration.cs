@@ -15,7 +15,7 @@ namespace ClimbEdge.Infrastructure.Persistence.Configurations.Mountains.Itinerar
         {
             builder.ConfigureBaseModel();
 
-            builder.HasIndex(e => new { e.ExpeditionId, e.DifficultyScale }).IsUnique();
+            builder.HasIndex(e => new { e.ExpeditionId, e.DifficultyScaleId }).IsUnique();
 
             builder.HasOne(e => e.Expedition).WithMany(e => e.ExpeditionLevelScales).HasForeignKey(e => e.ExpeditionId).OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(e => e.DifficultyScale).WithMany(e => e.ExpeditionLevelScales).HasForeignKey(e => e.DifficultyScaleId).OnDelete(DeleteBehavior.Restrict);

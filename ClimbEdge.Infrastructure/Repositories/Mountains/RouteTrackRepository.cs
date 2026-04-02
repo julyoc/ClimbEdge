@@ -18,6 +18,4 @@ namespace ClimbEdge.Infrastructure.Repositories.Mountains
             return geometryFactory;
         }
     }
-    {
-    }
 }

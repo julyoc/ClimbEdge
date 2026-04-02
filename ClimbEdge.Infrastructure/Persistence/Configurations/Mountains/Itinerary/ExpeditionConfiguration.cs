@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace ClimbEdge.Infrastructure.Persistence.Configurations.Mountains.Itinerary
@@ -27,6 +28,12 @@ namespace ClimbEdge.Infrastructure.Persistence.Configurations.Mountains.Itinerar
             builder.Property(e => e.InsuranceRequired).IsRequired();
             builder.Property(e => e.IsPublic).IsRequired();
             builder.Property(e => e.IsDraft).IsRequired();
+            builder.Property(e => e.BaseCampLocation).HasGeoZ();
+            builder.Property(e => e.BaseCampInfo)
+                   .HasColumnType("jsonb")
+                   .HasConversion(
+                       v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null!),
+                       v => JsonSerializer.Deserialize<Dictionary<string, object>>(v, (JsonSerializerOptions)null!));
 
             builder.HasIndex(e => e.Name).IsUnique();
             builder.HasIndex(e => e.BaseCampLocation).IsGeoIndex();

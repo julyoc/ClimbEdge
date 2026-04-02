@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace ClimbEdge.Infrastructure.Persistence.Configurations.Mountains
@@ -20,7 +21,16 @@ namespace ClimbEdge.Infrastructure.Persistence.Configurations.Mountains
             builder.Property(e => e.Content).HasColumnType("text");
             builder.Property(e => e.Description).HasColumnType("text");
             builder.Property(e => e.RouteTaken).HasGeoZ();
-            builder.Property(e => e.Photos).HasColumnType("jsonb");
+            builder.Property(e => e.Photos)
+                   .HasColumnType("jsonb")
+                   .HasConversion(
+                       v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null!),
+                       v => JsonSerializer.Deserialize<Dictionary<string, object>>(v, (JsonSerializerOptions)null!));
+            builder.Property(e => e.SafetyIncidents)
+                   .HasColumnType("jsonb")
+                   .HasConversion(
+                       v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null!),
+                       v => JsonSerializer.Deserialize<Dictionary<string, object>>(v, (JsonSerializerOptions)null!));
             builder.Property(e => e.IsSuccessfull).IsRequired();
             builder.Property(e => e.TickType).IsRequired();
 

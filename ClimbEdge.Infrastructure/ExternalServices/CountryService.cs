@@ -12,13 +12,11 @@ namespace ClimbEdge.Infrastructure.ExternalServices
     public class CountryService : ICountryService
     {
         // documentation: https://restcountries.com/
-        private const string BaseUrl = "https://restcountries.com/v3.1";
         private readonly HttpClient _httpClient;
         private const string fields = "fields=cca2,cca3,altSpellings,idd,continents,currencies,languages,name,timezones,postalCodes";
-        public CountryService(HttpClient httpClient)
+        public CountryService(IHttpClientFactory factory)
         {
-            _httpClient = httpClient;
-            _httpClient.BaseAddress = new Uri(BaseUrl);
+            _httpClient = factory.CreateClient("countryService");
         }
 
         public async Task<Country> GetCountryInfoAsync(string countryCode)

@@ -40,6 +40,7 @@ namespace ClimbEdge.Infrastructure.Persistence
                     maxRetryCount: 3,
                     maxRetryDelay: TimeSpan.FromSeconds(5),
                     errorCodesToAdd: null);
+                    npgsqlOptions.UseNetTopologySuite();
             });
 
             // Configuraciones adicionales para desarrollo

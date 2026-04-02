@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace ClimbEdge.Infrastructure.Persistence.Configurations.Auditing
@@ -24,8 +25,16 @@ namespace ClimbEdge.Infrastructure.Persistence.Configurations.Auditing
             builder.Property(e => e.SessionId);
             builder.Property(e => e.IpAddress).HasColumnType("inet");
             builder.Property(e => e.UserAgent).HasMaxLength(99);
-            builder.Property(e => e.OldValues).HasColumnType("jsonb");
-            builder.Property(e => e.NewValues).HasColumnType("jsonb");
+            builder.Property(e => e.OldValues)
+                   .HasColumnType("jsonb")
+                   .HasConversion(
+                       v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null!),
+                       v => JsonSerializer.Deserialize<Dictionary<string, object>>(v, (JsonSerializerOptions)null!));
+            builder.Property(e => e.NewValues)
+                   .HasColumnType("jsonb")
+                   .HasConversion(
+                       v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null!),
+                       v => JsonSerializer.Deserialize<Dictionary<string, object>>(v, (JsonSerializerOptions)null!));
             builder.Property(e => e.ChangesSummary);
             builder.Property(e => e.ReasonForChange);
             builder.Property(e => e.AffectedColumns).HasColumnType("varchar(99)[]");
@@ -35,7 +44,11 @@ namespace ClimbEdge.Infrastructure.Persistence.Configurations.Auditing
             builder.Property(e => e.Duration); // miilisegundos
             builder.Property(e => e.ResultStatus);
             builder.Property(e => e.ErrorMessage);
-            builder.Property(e => e.AdditionalContext).HasColumnType("jsonb");
+            builder.Property(e => e.AdditionalContext)
+                   .HasColumnType("jsonb")
+                   .HasConversion(
+                       v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null!),
+                       v => JsonSerializer.Deserialize<Dictionary<string, object>>(v, (JsonSerializerOptions)null!));
 
             // Índices
             builder.HasIndex(e => e.UserId);

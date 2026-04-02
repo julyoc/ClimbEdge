@@ -28,7 +28,7 @@ namespace ClimbEdge.Infrastructure.Persistence.Configurations.Mountains
 
             builder.HasOne(e => e.MountainRoute)
                    .WithMany(e => e.RouteFiles)
-                   .HasForeignKey(e => e.MountainRoute)
+                   .HasForeignKey(e => e.MountainRouteId)
                    .IsRequired()
                    .OnDelete(DeleteBehavior.Cascade);
             builder.HasOne(e => e.UploadedUserProfile)
