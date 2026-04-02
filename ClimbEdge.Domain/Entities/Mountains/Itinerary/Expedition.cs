@@ -76,5 +76,7 @@ namespace ClimbEdge.Domain.Entities.Mountains.Itinerary
         public IEnumerable<ExpeditionLevelScales>? ExpeditionLevelScales { get; set; }
         public IEnumerable<DifficultyScale>? DifficultyScales { get; set; }
         public IEnumerable<ExpeditionParticipant>? ExpeditionParticipants { get; set; }
+        public IEnumerable<UserProfile>? Participants { get; set; }
+        public IEnumerable<ItineraryDay>? ItineraryDays { get; set; }
     }
 }

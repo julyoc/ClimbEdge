@@ -180,6 +180,14 @@ entity "AppRole" as AppRole {
     +NormalizedName: string? <<unique>>
     +ConcurrencyStamp: string?
 }
+entity "UserExperienceLevelScale" as UserExperienceLevelScale {
+    'Niveles de experiencia del usuario.
+    ..inherits BaseEntity..
+    +UserId: long
+    +DifficultyScaleId: long
+    +Description: string?
+    'unique(UserId, DifficultyScaleId)
+}
 enum "FileType" as FileType {
     +Unknown
     '📄 Documentos y archivos generales
@@ -763,7 +771,7 @@ package "Mountains" {
         ' Caída de nieve en centímetros.
     }
     entity "MountainExpeditionLog" as MountainExpeditionLog {
-        'Registro detallado de una salida de montaña.
+        'Registro detallado de una salida de montaña. (bitacora de expedición)
         ..inherits BaseEntity..
         +ExpeditionId: long?
         ' Referencia a la expedición asociada.
@@ -941,11 +949,6 @@ package "Mountains.Itinerary" {
         +Completed
         'Completed: Completado.
     }
-'
-'
-' Estoy hasta aqui con las entidades db config y repositories
-' (agregar en expedicion los files que faltan)
-'
     entity "ExpeditionParticipant" as ExpeditionParticipant {
         'Participantes de la expedición.
         ..inherits BaseEntity..
@@ -959,18 +962,15 @@ package "Mountains.Itinerary" {
         +MedicalClearance: bool
         +EmergencyContact: string?
         +SpecialRequirements: string?
-        +PaymentStatus: string?
+        +PaymentStatus: PaymentStatus?
         ' Estado del pago: "Pending", "Paid", "Refunded".
         +Notes: string[]?
     }
-    entity "ParticipantExperienceLevelScale" as ParticipantExperienceLevelScale {
-        'Niveles de experiencia del usuario.
-        ..inherits BaseEntity..
-        +UserId: long
-        +DifficultyScaleId: long
-        +Description: string?
-        'unique(UserId, DifficultyScaleId)
-    }
+'
+'
+' Estoy hasta aqui con las entidades db config y repositories
+'
+'
     entity "ItineraryDay" as ItineraryDay {
         'Día específico del itinerario.
         ..inherits BaseEntity..
@@ -980,8 +980,8 @@ package "Mountains.Itinerary" {
         +ActivityType: DayActivityType
         +Title: string
         +Description: string?
-        +StartLocation: string?
-        +EndLocation: string?
+        +StartLocation: geography(POINT,4326)?
+        +EndLocation: geography(POINT,4326)?
         +StartElevation: int?
         +EndElevation: int?
         +Distance: decimal?
@@ -990,11 +990,10 @@ package "Mountains.Itinerary" {
         +ElevationLoss: int?
         +EstimatedDuration: int?
         ' Duración estimada en minutos.
-        +DifficultyLevel: int?
-        ' Nivel de dificultad del 1 al 5.
+        +DifficultyRating: int?
+        ' Nivel de dificultad del 1 al 10.
         +WeatherDependency: bool
-        +IsRestDay: bool
-        +Notes: string?
+        +Notes: string[]?
     }
     entity "DayActivity" as DayActivity {
         'Actividades específicas dentro de un día.
@@ -1013,6 +1012,14 @@ package "Mountains.Itinerary" {
         +SafetyNotes: string?
         +AlternativePlan: string?
         ' Plan alternativo en caso de problemas.
+    }
+    entity "DayActivityDifficultyScale" as DayActivityDifficultyScale {
+        'Dificultad asociada a una actividad del día.
+        ..inherits BaseEntity..
+        +DayActivityId: long
+        +DifficultyScaleId: long
+        +Description: string?
+        'unique(DayActivityId, DifficultyScaleId)
     }
     entity "EquipmentCategory" as EquipmentCategory {
         'Categoría de equipamiento, que define las categorías de equipamiento utilizadas en expediciones.

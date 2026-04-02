@@ -56,5 +56,7 @@ namespace ClimbEdge.Domain.Entities.DifficultyScales
         public IEnumerable<Mountains.MountainRoute>? MountainRoutes { get; set; }
         public IEnumerable<ExpeditionLevelScales>? ExpeditionLevelScales { get; set; }
         public IEnumerable<Expedition>? Expeditions { get; set; }
+        public IEnumerable<UserExperienceLevelScale>? ExperienceLevelScales { get; set; }
+        public IEnumerable<UserProfile>? Users { get; set; }
     }
 }

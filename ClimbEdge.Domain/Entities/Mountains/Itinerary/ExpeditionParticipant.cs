@@ -1,5 +1,6 @@
 ﻿using ClimbEdge.Domain.DomainEvents;
 using ClimbEdge.Domain.Enums.Mountains.Itinerary;
+using ClimbEdge.Domain.Enums.Payment;
 using ClimbEdge.Domain.Shared;
 using System;
 using System.Collections.Generic;
@@ -24,11 +25,11 @@ namespace ClimbEdge.Domain.Entities.Mountains.Itinerary
         public bool MedicalClearance { get; set; }
         public string? EmergencyContact { get; set; }
         public string? SpecialRequirements { get; set; }
-        public string? PaymentStatus { get; set; }
+        public PaymentStatus? PaymentStatus { get; set; } = Enums.Payment.PaymentStatus.Pending;
         public string[]? Notes { get; set; }
         public override void InitializeSlug()
         {
-            throw new NotImplementedException();
+            Slug = $"{InvitedAt.Ticks}-{UserId}-{ExpeditionId}";
         }
         public override void UpdateTimestamps()
         {

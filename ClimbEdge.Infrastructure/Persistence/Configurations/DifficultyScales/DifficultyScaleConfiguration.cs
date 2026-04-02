@@ -1,4 +1,5 @@
-﻿using ClimbEdge.Domain.Entities.DifficultyScales;
+﻿using ClimbEdge.Domain.Entities;
+using ClimbEdge.Domain.Entities.DifficultyScales;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
@@ -24,6 +25,9 @@ namespace ClimbEdge.Infrastructure.Persistence.Configurations.DifficultyScales
             builder.HasOne(e => e.DifficultyScaleName).WithMany(e => e.DifficultyScales)
                    .HasForeignKey(e => e.DifficultyScaleNameId).IsRequired()
                    .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasMany(e => e.Users).WithMany(e => e.DifficultyScales)
+                   .UsingEntity<UserExperienceLevelScale>();
 
             builder.HasData(
             #region YDS

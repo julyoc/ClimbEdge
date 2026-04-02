@@ -36,6 +36,7 @@ namespace ClimbEdge.Infrastructure.Persistence.Configurations.Mountains.Itinerar
             builder.HasOne(e => e.OrganizedUser).WithMany(e => e.Expeditions).HasForeignKey(e => e.OrganizedBy).IsRequired().OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(e => e.OrganizedByOrganization).WithMany(e => e.Expeditions).HasForeignKey(e => e.OrganizedByOrganizationId).OnDelete(DeleteBehavior.Restrict);
             builder.HasMany(e => e.DifficultyScales).WithMany(e => e.Expeditions).UsingEntity<ExpeditionLevelScales>();
+            builder.HasMany(e => e.Participants).WithMany(e => e.ExpeditionsJoined).UsingEntity<ExpeditionParticipant>();
         }
     }
 }

@@ -2,6 +2,7 @@ using ClimbEdge.Common.Constants;
 using ClimbEdge.Domain.DomainEvents;
 using ClimbEdge.Domain.Entities.Boards;
 using ClimbEdge.Domain.Entities.Boards.Problems;
+using ClimbEdge.Domain.Entities.DifficultyScales;
 using ClimbEdge.Domain.Entities.Mountains;
 using ClimbEdge.Domain.Entities.Mountains.Itinerary;
 using ClimbEdge.Domain.Shared;
@@ -141,5 +142,8 @@ namespace ClimbEdge.Domain.Entities
         public IEnumerable<MountainExpeditionLog>? MountainExpeditionLogsGuided { get; set; }
         public IEnumerable<Expedition>? Expeditions { get; set; }
         public IEnumerable<ExpeditionParticipant>? ExpeditionParticipants { get; set; }
+        public IEnumerable<Expedition>? ExpeditionsJoined { get; set; }
+        public IEnumerable<UserExperienceLevelScale>? ExperienceLevelScales { get; set; }
+        public IEnumerable<DifficultyScale>? DifficultyScales { get; set; }
     }
 }
