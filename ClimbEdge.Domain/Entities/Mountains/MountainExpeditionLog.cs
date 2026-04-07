@@ -53,7 +53,7 @@ namespace ClimbEdge.Domain.Entities.Mountains
         public ItineraryTrack? ItineraryTrack { get; set; }
         public override void InitializeSlug()
         {
-            throw new NotImplementedException();
+            Slug = $"{Name}-{ExpeditionId}-{StartDate:yyyyMMddHHmm}";
         }
         public override void UpdateTimestamps()
         {

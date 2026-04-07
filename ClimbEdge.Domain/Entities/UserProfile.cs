@@ -49,7 +49,7 @@ namespace ClimbEdge.Domain.Entities
         /// <summary>
         /// Dirección del usuario
         /// </summary>
-        public AddressData Address { get; set; }
+        public AddressData Address { get; set; } = new AddressData(null, null, null, null, null, Constants.DefaultCountry);
         /// <summary>
         /// Zona horaria del usuario
         /// </summary>

@@ -40,6 +40,16 @@ namespace ClimbEdge.Domain.Enums.Mountains.Itinerary
         /// <summary>
         /// Cima ya alcanzada previamente, ruta repetida
         /// </summary>
-        Repeat
+        Repeat,
+
+        /// <summary>
+        /// Decisión crítica registrada (ir/no ir, cambio de ruta, retirada)
+        /// </summary>
+        Decision,
+
+        /// <summary>
+        /// Informe post-expedición (reflexión, lecciones aprendidas)
+        /// </summary>
+        Debrief
     }
 }

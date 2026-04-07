@@ -265,6 +265,7 @@ namespace ClimbEdge.Infrastructure.DependencyInjection
                         AppUserId = adminUser.Id,
                         FirstName = "Admin",
                         LastName = "System",
+                        Address = new ClimbEdge.Domain.ValueObjects.AddressData(null, null, null, null, null, Constants.DefaultCountry),
                     };
                     await userProfileRepository.AddAsync(adminProfile);
                     await userProfileRepository.SaveChangesAsync();

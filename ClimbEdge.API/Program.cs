@@ -42,6 +42,7 @@ builder.Services.AddApiVersioning(options =>
 });
 builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 
+// Configure CORS to allow requests from the frontend application
 builder.Services.AddCors(o =>
 {
     o.AddPolicy("AllowFrontend",
