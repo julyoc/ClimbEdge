@@ -1,0 +1,65 @@
+@host = http://localhost:5160
+@authToken = <your-jwt-token-here>
+@commentUid = 00000000-0000-0000-0000-000000000000
+@parentCommentId = 1
+
+### 1. Obtener comentarios de una entidad
+GET {{host}}/api/comment?entityType=Expedition&entityId=1
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 2. Obtener respuestas a un comentario
+GET {{host}}/api/comment/{{parentCommentId}}/replies
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 3. Crear un comentario
+POST {{host}}/api/comment
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "authorId": 1,
+  "entityType": "Expedition",
+  "entityId": 1,
+  "parentCommentId": null,
+  "content": "Excelente expedición, muy bien organizada!"
+}
+
+###
+
+### 4. Crear una respuesta a un comentario
+POST {{host}}/api/comment
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "authorId": 2,
+  "entityType": "Expedition",
+  "entityId": 1,
+  "parentCommentId": 1,
+  "content": "Totalmente de acuerdo!"
+}
+
+###
+
+### 5. Actualizar un comentario
+PUT {{host}}/api/comment/{{commentUid}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "content": "Comentario editado: Excelente expedición, muy bien organizada!"
+}
+
+###
+
+### 6. Eliminar un comentario
+DELETE {{host}}/api/comment/{{commentUid}}
+Authorization: Bearer {{authToken}}
+
+###

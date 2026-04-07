@@ -1,0 +1,68 @@
+@host = http://localhost:5160
+@authToken = <your-jwt-token-here>
+@userId = 1
+@notificationUid1 = 00000000-0000-0000-0000-000000000001
+@notificationUid2 = 00000000-0000-0000-0000-000000000002
+
+### 1. Obtener notificaciones del usuario
+GET {{host}}/api/notification?userId={{userId}}&page=1&pageSize=20
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 2. Obtener solo notificaciones no leídas
+GET {{host}}/api/notification?userId={{userId}}&unreadOnly=true&page=1&pageSize=20
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 3. Marcar notificaciones específicas como leídas
+PUT {{host}}/api/notification/read?userId={{userId}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "notificationUids": [
+    "{{notificationUid1}}",
+    "{{notificationUid2}}"
+  ],
+  "markAll": false
+}
+
+###
+
+### 4. Marcar todas las notificaciones como leídas
+PUT {{host}}/api/notification/read?userId={{userId}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "markAll": true
+}
+
+###
+
+### 5. Obtener preferencias de notificación del usuario
+GET {{host}}/api/notification/preferences?userId={{userId}}
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 6. Actualizar preferencia de notificación
+PUT {{host}}/api/notification/preferences
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "category": "Expedition",
+  "emailEnabled": true,
+  "pushEnabled": true,
+  "inAppEnabled": true,
+  "smsEnabled": false
+}
+
+###

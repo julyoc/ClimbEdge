@@ -1,0 +1,115 @@
+@host = http://localhost:5160
+@authToken = <your-jwt-token-here>
+@sessionUid = 00000000-0000-0000-0000-000000000000
+@sessionId = 1
+@userId = 1
+
+### 1. Obtener sesiones del usuario
+GET {{host}}/api/session?userId={{userId}}&page=1&pageSize=20
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 2. Obtener solo sesiones activas del usuario
+GET {{host}}/api/session?userId={{userId}}&activeOnly=true&page=1&pageSize=10
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 3. Obtener una sesión por UID
+GET {{host}}/api/session/{{sessionUid}}
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 4. Iniciar sesión de entrenamiento
+POST {{host}}/api/session/start
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "boardId": null,
+  "climbZoneId": 1,
+  "mountainRouteId": null,
+  "notes": "Sesión de escalada en roca, enfocada en técnica"
+}
+
+###
+
+### 5. Iniciar sesión en board
+POST {{host}}/api/session/start
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "boardId": 1,
+  "climbZoneId": null,
+  "mountainRouteId": null,
+  "notes": "Sesión de boulder en board"
+}
+
+###
+
+### 6. Finalizar sesión
+PUT {{host}}/api/session/{{sessionUid}}/end?notes=Muy+buena+sesión
+Authorization: Bearer {{authToken}}
+
+###
+
+### 7. Registrar progreso en la sesión
+POST {{host}}/api/session/progress
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "userSessionId": 1,
+  "climbRouteId": 5,
+  "boardProblemId": null,
+  "boardAngleId": null,
+  "footRuleId": null,
+  "mountainRouteId": null,
+  "climbTickType": 1,
+  "mountaineerTickType": null,
+  "isCompleted": true,
+  "duration": 120,
+  "tryAt": "2026-04-07T10:30:00Z",
+  "maxElevationReached": null,
+  "weatherConditions": null
+}
+
+###
+
+### 8. Registrar intento en board problem
+POST {{host}}/api/session/progress
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "userSessionId": 1,
+  "climbRouteId": null,
+  "boardProblemId": 3,
+  "boardAngleId": 2,
+  "footRuleId": null,
+  "mountainRouteId": null,
+  "climbTickType": 0,
+  "mountaineerTickType": null,
+  "isCompleted": false,
+  "duration": 45,
+  "tryAt": "2026-04-07T11:00:00Z",
+  "maxElevationReached": null,
+  "weatherConditions": null
+}
+
+###
+
+### 9. Obtener progreso de una sesión
+GET {{host}}/api/session/{{sessionId}}/progress
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###

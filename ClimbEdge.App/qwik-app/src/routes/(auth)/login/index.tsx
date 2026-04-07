@@ -8,10 +8,6 @@ import { AuthComponent, AuthAnonimus } from '~/components/auth-component';
 export default component$(() => {
   const navigate = useNavigate();
   const { setUser, setLoading, isLoading } = useAuth();
-  const service = createAuthService({
-    baseUrl: import.meta.env.VITE_API_URL,
-    apiKey: import.meta.env.VITE_API_KEY
-  });
 
   const formData = useSignal<LoginRequestDTO>({
     email: '',
@@ -38,6 +34,10 @@ export default component$(() => {
     success.value = '';
 
     try {
+      const service = createAuthService({
+        baseUrl: import.meta.env.VITE_API_URL,
+        apiKey: import.meta.env.VITE_API_KEY
+      });
       const response = await service.login(formData.value);
 
       if (response.success && response.data) {

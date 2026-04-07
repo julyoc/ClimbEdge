@@ -1,0 +1,78 @@
+@host = http://localhost:5160
+@authToken = <your-jwt-token-here>
+@routeUid = 00000000-0000-0000-0000-000000000000
+
+### 1. Obtener todas las vías de escalada
+GET {{host}}/api/climbRoute
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 2. Obtener vías con filtros
+GET {{host}}/api/climbRoute?climbZoneId=1&difficultyScaleNameId=1&page=1&pageSize=20
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 3. Obtener una vía por UID
+GET {{host}}/api/climbRoute/{{routeUid}}
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 4. Crear una vía de escalada
+POST {{host}}/api/climbRoute
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "La Huella del Oso",
+  "description": "Vía de escalada deportiva con fuerte crux en el segundo tercio",
+  "difficultyScaleId": 1,
+  "difficultyScaleNameId": 1,
+  "climbTagId": null,
+  "pitchCount": 1,
+  "firstAscentDate": "2023-06-15T00:00:00Z",
+  "climbZoneId": 1
+}
+
+###
+
+### 5. Actualizar una vía
+PUT {{host}}/api/climbRoute/{{routeUid}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "La Huella del Oso - Variante",
+  "description": "Descripción actualizada",
+  "difficultyScaleId": 2,
+  "climbTagId": null,
+  "pitchCount": 2,
+  "climbZoneId": 1
+}
+
+###
+
+### 6. Eliminar una vía
+DELETE {{host}}/api/climbRoute/{{routeUid}}
+Authorization: Bearer {{authToken}}
+
+###
+
+### 7. Obtener escalas de dificultad
+GET {{host}}/api/climbRoute/difficulty-scales
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 8. Obtener escalas de dificultad por nombre de escala
+GET {{host}}/api/climbRoute/difficulty-scales?difficultyScaleNameId=1
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###

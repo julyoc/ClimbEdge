@@ -1,0 +1,54 @@
+@host = http://localhost:5160
+@authToken = <your-jwt-token-here>
+@zoneUid = 00000000-0000-0000-0000-000000000000
+
+### 1. Obtener todas las zonas de escalada
+GET {{host}}/api/climbZone
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 2. Obtener una zona por UID
+GET {{host}}/api/climbZone/{{zoneUid}}
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 3. Crear una zona de escalada
+POST {{host}}/api/climbZone
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Rocódromo Central",
+  "description": "Rocódromo indoor con paredes de hasta 15m",
+  "isPublic": true,
+  "isIndoor": true,
+  "imageUrl": null,
+  "organizationId": 1
+}
+
+###
+
+### 4. Actualizar una zona
+PUT {{host}}/api/climbZone/{{zoneUid}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Rocódromo Central - Renovado",
+  "description": "Descripción actualizada tras renovación",
+  "isPublic": true,
+  "imageUrl": "https://example.com/zona.jpg",
+  "organizationId": 1
+}
+
+###
+
+### 5. Eliminar una zona
+DELETE {{host}}/api/climbZone/{{zoneUid}}
+Authorization: Bearer {{authToken}}
+
+###

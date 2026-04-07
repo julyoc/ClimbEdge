@@ -1,16 +1,23 @@
-import { $, useTask$, useVisibleTask$ } from '@builder.io/qwik';
+import { $, useVisibleTask$ } from '@builder.io/qwik';
 import { useAuth } from '~/contexts/auth.context';
 import { createAuthService } from 'climbedge-shared/services/AuthService';
-
-const service = createAuthService({
-  baseUrl: import.meta.env.VITE_API_URL,
-  apiKey: import.meta.env.VITE_API_KEY
-});
 
 export const useAuthCheck = () => {
   const { setUser, setLoading, clearAuth } = useAuth();
 
   const checkAuth = $(async () => {
+    const baseUrl = import.meta.env.VITE_API_URL;
+    if (!baseUrl) {
+      console.log('⚠️ VITE_API_URL not set, skipping auth check');
+      setLoading(false);
+      return;
+    }
+
+    const service = createAuthService({
+      baseUrl,
+      apiKey: import.meta.env.VITE_API_KEY,
+    });
+
     console.log('🔍 Checking auth...');
     setLoading(true);
     
@@ -33,13 +40,7 @@ export const useAuthCheck = () => {
     }
   });
 
-  // Verificar autenticación al cargar (servidor)
-  useTask$(async () => {
-    console.log('🚀 useTask$ running...');
-    await checkAuth();
-  });
-
-  // También verificar en el cliente
+  // Verificar autenticación solo en el cliente (los tokens/cookies son del navegador)
   useVisibleTask$(async () => {
     console.log('👀 useVisibleTask$ running...');
     await checkAuth();

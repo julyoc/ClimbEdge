@@ -1,0 +1,170 @@
+@host = http://localhost:5160
+@authToken = <your-jwt-token-here>
+@orgUid = 00000000-0000-0000-0000-000000000000
+@orgId = 1
+@eventUid = 00000000-0000-0000-0000-000000000001
+
+### 1. Obtener todas las organizaciones
+GET {{host}}/api/organization
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 2. Obtener organizaciones con filtros
+GET {{host}}/api/organization?publicOnly=true&country=AR&page=1&pageSize=10
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 3. Obtener una organización por UID
+GET {{host}}/api/organization/{{orgUid}}
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 4. Crear una organización
+POST {{host}}/api/organization
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "club-andino-mendoza",
+  "displayName": "Club Andino Mendoza",
+  "description": "Club de montañismo y escalada de la provincia de Mendoza",
+  "type": 0,
+  "email": "contacto@clubandino.org.ar",
+  "phone": "+542614321234",
+  "website": "https://clubandino.org.ar",
+  "address": "Rivadavia 123",
+  "city": "Mendoza",
+  "state": "Mendoza",
+  "country": "AR",
+  "postalCode": "5500",
+  "timeZone": "America/Argentina/Mendoza",
+  "logoUrl": null,
+  "foundedDate": "1951-03-15T00:00:00Z"
+}
+
+###
+
+### 5. Actualizar una organización
+PUT {{host}}/api/organization/{{orgUid}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "displayName": "Club Andino Mendoza - Oficial",
+  "description": "Descripción actualizada",
+  "email": "info@clubandino.org.ar",
+  "phone": "+542614321235",
+  "website": "https://clubandino.org.ar",
+  "address": "Rivadavia 456",
+  "city": "Mendoza",
+  "state": "Mendoza",
+  "postalCode": "5500",
+  "timeZone": "America/Argentina/Mendoza",
+  "logoUrl": "https://example.com/logo.png",
+  "bannerUrl": null,
+  "isPublic": true
+}
+
+###
+
+### 6. Obtener miembros de la organización
+GET {{host}}/api/organization/{{orgId}}/members
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 7. Agregar miembro a la organización
+POST {{host}}/api/organization/member
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "organizationId": 1,
+  "userId": 2,
+  "membershipType": 0
+}
+
+###
+
+### 8. Eliminar miembro de la organización
+DELETE {{host}}/api/organization/member
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "organizationId": 1,
+  "userId": 2
+}
+
+###
+
+### 9. Obtener eventos de la organización
+GET {{host}}/api/organization/{{orgId}}/events
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 10. Crear evento de organización
+POST {{host}}/api/organization/event
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "organizationId": 1,
+  "title": "Curso de Escalada en Roca - Nivel Básico",
+  "description": "Curso introductorio de escalada deportiva",
+  "eventType": "Course",
+  "startDate": "2026-05-10T09:00:00Z",
+  "endDate": "2026-05-10T17:00:00Z",
+  "location": "Rocódromo Central",
+  "facilityId": null,
+  "maxParticipants": 12,
+  "registrationDeadline": "2026-05-05T23:59:59Z",
+  "cost": 3500.00,
+  "currency": "ARS",
+  "requiresRegistration": true,
+  "isPublic": true,
+  "skillLevelRequired": "Beginner",
+  "instructor": "Juan Pérez",
+  "contactEmail": "cursos@clubandino.org.ar"
+}
+
+###
+
+### 11. Actualizar evento de organización
+PUT {{host}}/api/organization/event/{{eventUid}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "title": "Curso de Escalada en Roca - Nivel Básico (Actualizado)",
+  "description": "Descripción actualizada del curso",
+  "startDate": "2026-05-12T09:00:00Z",
+  "endDate": "2026-05-12T17:00:00Z",
+  "maxParticipants": 15,
+  "cost": 4000.00,
+  "isPublic": true
+}
+
+###
+
+### 12. Registrar participante en un evento
+POST {{host}}/api/organization/event/register
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "eventId": 1,
+  "userId": 3,
+  "notes": "Primera vez en un curso de escalada"
+}
+
+###

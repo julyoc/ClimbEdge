@@ -1,0 +1,325 @@
+@host = http://localhost:5160
+@authToken = <your-jwt-token-here>
+@expeditionUid = 00000000-0000-0000-0000-000000000000
+@expeditionId = 1
+
+### 1. Obtener todas las expediciones
+GET {{host}}/api/expedition
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 2. Obtener expediciones con filtros
+GET {{host}}/api/expedition?mountainId=1&publicOnly=true&page=1&pageSize=10
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 3. Obtener una expedición por UID
+GET {{host}}/api/expedition/{{expeditionUid}}
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 4. Crear una expedición
+POST {{host}}/api/expedition
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "mountainId": 1,
+  "mountainRouteId": null,
+  "name": "Expedición Aconcagua 2026",
+  "description": "Expedición grupal a la cumbre del Aconcagua por ruta normal",
+  "startDate": "2026-11-01",
+  "endDate": "2026-11-21",
+  "plannedDurationDays": 21,
+  "minParticipants": 4,
+  "maxParticipants": 8,
+  "requiredExperienceLevel": "Advanced",
+  "cost": 2500.00,
+  "currency": "USD",
+  "requiresPermit": true,
+  "insuranceRequired": true,
+  "organizedBy": 1,
+  "organizedByOrganizationId": null,
+  "isPublic": true,
+  "registrationDeadline": "2026-09-01T00:00:00Z"
+}
+
+###
+
+### 5. Actualizar una expedición
+PUT {{host}}/api/expedition/{{expeditionUid}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Expedición Aconcagua 2026 - Actualizada",
+  "description": "Descripción actualizada",
+  "startDate": "2026-11-05",
+  "endDate": "2026-11-25",
+  "cost": 2800.00,
+  "isPublic": true,
+  "registrationDeadline": "2026-09-15T00:00:00Z"
+}
+
+###
+
+### 6. Activar una expedición
+POST {{host}}/api/expedition/activate
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "expeditionUid": "{{expeditionUid}}"
+}
+
+###
+
+### 7. Cerrar una expedición
+POST {{host}}/api/expedition/close
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "expeditionUid": "{{expeditionUid}}",
+  "closingNotes": "Expedición completada exitosamente"
+}
+
+###
+
+### 8. Obtener resumen de rendimiento de la expedición
+GET {{host}}/api/expedition/{{expeditionUid}}/performance
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 9. Obtener participantes de la expedición
+GET {{host}}/api/expedition/{{expeditionId}}/participants
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 10. Agregar participante a la expedición
+POST {{host}}/api/expedition/participant
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "expeditionId": 1,
+  "userId": 2,
+  "role": 0,
+  "emergencyContact": "+549111234567",
+  "specialRequirements": "Dieta vegetariana"
+}
+
+###
+
+### 11. Obtener equipamiento de la expedición
+GET {{host}}/api/expedition/{{expeditionId}}/equipment
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 12. Agregar equipamiento a la expedición
+POST {{host}}/api/expedition/equipment
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "expeditionId": 1,
+  "equipmentId": 5,
+  "quantity": 2,
+  "isMandatory": true,
+  "isProvided": false,
+  "responsibleParticipant": null,
+  "notes": "Cada participante debe traer el suyo"
+}
+
+###
+
+### 13. Eliminar equipamiento de la expedición
+DELETE {{host}}/api/expedition/equipment/1
+Authorization: Bearer {{authToken}}
+
+###
+
+### 14. Obtener presupuesto de la expedición
+GET {{host}}/api/expedition/{{expeditionId}}/budget
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 15. Crear item de presupuesto
+POST {{host}}/api/expedition/budget
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "expeditionId": 1,
+  "category": "Transport",
+  "description": "Vuelos internacionales",
+  "plannedAmount": 1200.00,
+  "currency": "USD",
+  "isShared": true
+}
+
+###
+
+### 16. Obtener itinerario de la expedición
+GET {{host}}/api/expedition/{{expeditionId}}/itinerary
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 17. Crear día de itinerario
+POST {{host}}/api/expedition/itinerary/day
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "expeditionId": 1,
+  "dayNumber": 1,
+  "date": "2026-11-01",
+  "title": "Llegada a Mendoza",
+  "description": "Vuelo y traslado al hotel base",
+  "plannedStartAltitude": 700,
+  "plannedEndAltitude": 700,
+  "plannedDistance": 0,
+  "plannedDurationHours": 4
+}
+
+###
+
+### 18. Obtener tracks GPS de la expedición
+GET {{host}}/api/expedition/{{expeditionId}}/tracks
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 19. Crear track GPS
+POST {{host}}/api/expedition/itinerary/track
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "expeditionId": 1,
+  "name": "Ascenso Camp 1 - Camp 2",
+  "description": "Segmento de ascenso entre los campamentos",
+  "trackType": 0,
+  "startDayNumber": 5,
+  "endDayNumber": 5,
+  "startDate": "2026-11-05T08:00:00Z",
+  "plannedDistance": 4.5,
+  "plannedDuration": 360,
+  "recordedBy": 1,
+  "gpsDevice": "Garmin inReach Mini 2"
+}
+
+###
+
+### 20. Completar un track
+PUT {{host}}/api/expedition/itinerary/track/complete
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "trackId": 1,
+  "endDate": "2026-11-05T14:00:00Z",
+  "actualDistance": 4.7,
+  "actualDuration": 370,
+  "minElevation": 4300,
+  "maxElevation": 5550,
+  "cumulativeElevationGain": 1250,
+  "cumulativeElevationLoss": 0,
+  "completionPercentage": 100,
+  "weatherSummary": "Soleado, viento moderado",
+  "difficultySummary": "Moderado",
+  "notes": "Sin incidencias"
+}
+
+###
+
+### 21. Obtener logs de la expedición
+GET {{host}}/api/expedition/{{expeditionId}}/logs
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 22. Registrar log de expedición
+POST {{host}}/api/expedition/log
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "expeditionId": 1,
+  "authorId": 1,
+  "dayNumber": 3,
+  "date": "2026-11-03T19:00:00Z",
+  "title": "Día 3 en Plaza de Mulas",
+  "content": "Aclimatación en el campamento base. Todo el equipo en buen estado.",
+  "weatherConditions": "Despejado, viento leve",
+  "altitude": 4300
+}
+
+###
+
+### 23. Obtener historial de cimas
+GET {{host}}/api/expedition/{{expeditionId}}/summit-history
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 24. Registrar intento de cima
+POST {{host}}/api/expedition/summit
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "expeditionId": 1,
+  "participantId": 1,
+  "attemptDate": "2026-11-18T07:00:00Z",
+  "summitReached": true,
+  "summitTime": "2026-11-18T13:30:00Z",
+  "maxAltitudeReached": 6962,
+  "weatherConditions": "Parcialmente nublado",
+  "notes": "Cumbre alcanzada!"
+}
+
+###
+
+### 25. Obtener incidentes de la expedición
+GET {{host}}/api/expedition/{{expeditionId}}/incidents
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 26. Registrar incidente
+POST {{host}}/api/expedition/incident
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "expeditionId": 1,
+  "reportedBy": 1,
+  "incidentDate": "2026-11-10T14:00:00Z",
+  "severity": 1,
+  "type": "Medical",
+  "description": "Participante con síntomas de mal de altura leve",
+  "actionTaken": "Reposo y medicación"
+}
+
+###

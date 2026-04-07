@@ -1,0 +1,332 @@
+@host = http://localhost:5160
+@authToken = <your-jwt-token-here>
+@userId = 1
+@planUid = 00000000-0000-0000-0000-000000000001
+@planId = 1
+@periodId = 1
+@weekId = 1
+@sessionId = 1
+@goalUid = 00000000-0000-0000-0000-000000000002
+
+### ── PLANES DE ENTRENAMIENTO ─────────────────────────────────────────────────
+
+### 1. Obtener planes de entrenamiento del usuario
+GET {{host}}/api/training/plans?userId={{userId}}&page=1&pageSize=20
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 2. Obtener solo planes activos
+GET {{host}}/api/training/plans?userId={{userId}}&activeOnly=true
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 3. Obtener un plan por UID
+GET {{host}}/api/training/plans/{{planUid}}
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 4. Crear plan de entrenamiento
+POST {{host}}/api/training/plans
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "name": "Plan Aconcagua 2026",
+  "description": "Plan de preparación de 6 meses para expedición al Aconcagua",
+  "notes": "Enfoque en resistencia aeróbica y fuerza",
+  "startDate": "2026-05-01T00:00:00Z",
+  "endDate": "2026-10-31T00:00:00Z",
+  "longTermGoal": ["Llegar a la cumbre del Aconcagua", "Mejorar VO2Max"],
+  "shortTermGoal": ["Aumentar horas semanales de zona 1", "Completar 3 salidas por mes"],
+  "baselinePhysiologicalDataId": null,
+  "createdByUserId": 1
+}
+
+###
+
+### 5. Actualizar plan de entrenamiento
+PUT {{host}}/api/training/plans/{{planUid}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Plan Aconcagua 2026 - Rev.2",
+  "description": "Descripción actualizada",
+  "notes": "Notas actualizadas",
+  "endDate": "2026-11-15T00:00:00Z",
+  "isActive": true,
+  "longTermGoal": ["Llegar a la cumbre del Aconcagua"],
+  "shortTermGoal": ["Completar 4 salidas por mes"]
+}
+
+###
+
+### 6. Eliminar plan de entrenamiento
+DELETE {{host}}/api/training/plans/{{planUid}}
+Authorization: Bearer {{authToken}}
+
+###
+
+### 7. Obtener progreso del plan
+GET {{host}}/api/training/plans/{{planId}}/progress
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 8. Registrar progreso de entrenamiento
+POST {{host}}/api/training/progress
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "trainingPlanId": 1,
+  "measurementDate": "2026-04-07T09:00:00Z",
+  "metricType": "Physiological",
+  "metricName": "VO2Max",
+  "value": 52.5,
+  "unit": "ml/kg/min",
+  "notes": "Medición en laboratorio",
+  "measuredBy": "Dra. García"
+}
+
+###
+
+### ── PERIODOS ──────────────────────────────────────────────────────────────────
+
+### 9. Obtener periodos del plan
+GET {{host}}/api/training/plans/{{planId}}/periods
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 10. Crear periodo de entrenamiento
+POST {{host}}/api/training/periods
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "trainingPlanId": 1,
+  "periodType": 0,
+  "name": "Basificación",
+  "description": "Bloque de construcción de base aeróbica",
+  "startDate": "2026-05-01T00:00:00Z",
+  "endDate": "2026-06-30T00:00:00Z",
+  "weekNumber": 1,
+  "volumePercentage": 60,
+  "notes": "Énfasis en zona 1 y fuerza general"
+}
+
+###
+
+### ── SEMANAS ───────────────────────────────────────────────────────────────────
+
+### 11. Obtener semanas del periodo
+GET {{host}}/api/training/periods/{{periodId}}/weeks
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 12. Crear semana de entrenamiento
+POST {{host}}/api/training/weeks
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "trainingPeriodId": 1,
+  "weekNumber": 1,
+  "startDate": "2026-05-04T00:00:00Z",
+  "endDate": "2026-05-10T00:00:00Z",
+  "trainingObjective": "Activación aeróbica",
+  "climbingObjective": "Técnica en roca",
+  "nutritionObjective": "Dieta equilibrada con hidratación adecuada",
+  "plannedHours": 8.5
+}
+
+###
+
+### 13. Completar semana de entrenamiento
+PUT {{host}}/api/training/weeks/complete
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "trainingWeekUid": "{{planUid}}",
+  "completedHours": 7.5,
+  "zone1Hours": 5.0,
+  "zone2Hours": 1.5,
+  "zone3Hours": 0.5,
+  "strengthHours": 0.5,
+  "alpineClimbingHours": 0.0,
+  "schoolClimbingHours": 2.0,
+  "elevationGained": 1200,
+  "weeklyEvaluation": "Buena semana, ligero cansancio acumulado"
+}
+
+###
+
+### 14. Obtener volumen de entrenamiento de la semana
+GET {{host}}/api/training/weeks/{{weekId}}/volume
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### ── SESIONES DE ENTRENAMIENTO ─────────────────────────────────────────────────
+
+### 15. Obtener sesiones de entrenamiento de la semana
+GET {{host}}/api/training/weeks/{{weekId}}/sessions
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 16. Crear sesión de entrenamiento planificada
+POST {{host}}/api/training/sessions
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "trainingWeekId": 1,
+  "date": "2026-05-06T07:00:00Z",
+  "activityType": 1,
+  "plannedDuration": 90,
+  "trainingZone": 1,
+  "location": "Cerro de La Gloria",
+  "notes": "Carrera de montaña suave"
+}
+
+###
+
+### 17. Registrar (log) sesión de entrenamiento
+PUT {{host}}/api/training/sessions/log
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "trainingWeekId": 1,
+  "date": "2026-05-06T07:00:00Z",
+  "activityType": 1,
+  "plannedDuration": 90,
+  "actualDuration": 85,
+  "trainingZone": 1,
+  "elevationGained": 450,
+  "weightCarried": 0,
+  "distance": 12.3,
+  "heartRateAvg": 138,
+  "heartRateMax": 162,
+  "rating": 4,
+  "notes": "Buena sesión, buen ritmo",
+  "location": "Cerro de La Gloria",
+  "userSessionId": null
+}
+
+###
+
+### 18. Completar sesión de entrenamiento
+PUT {{host}}/api/training/sessions/complete
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "trainingSessionUid": "{{goalUid}}",
+  "actualDuration": 90,
+  "trainingZone": 1,
+  "elevationGained": 500,
+  "weightCarried": 5.0,
+  "distance": 10.0,
+  "heartRateAvg": 135,
+  "heartRateMax": 158,
+  "rating": 5,
+  "notes": "Sesión excelente",
+  "userSessionId": null
+}
+
+###
+
+### 19. Obtener ejercicios de una sesión
+GET {{host}}/api/training/sessions/{{sessionId}}/exercises
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 20. Registrar ejercicio en sesión
+POST {{host}}/api/training/sessions/exercise
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "trainingSessionId": 1,
+  "trainingExerciseId": 5,
+  "sequence": 1,
+  "sets": 4,
+  "reps": 10,
+  "weight": 60.0,
+  "duration": null,
+  "distance": null,
+  "restTime": 90,
+  "notes": "Sentadillas con barra"
+}
+
+###
+
+### ── EJERCICIOS Y PLANTILLAS ───────────────────────────────────────────────────
+
+### 21. Obtener catálogo de ejercicios
+GET {{host}}/api/training/exercises
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 22. Obtener plantillas de entrenamiento
+GET {{host}}/api/training/templates
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### ── OBJETIVOS ─────────────────────────────────────────────────────────────────
+
+### 23. Obtener objetivos activos del usuario
+GET {{host}}/api/training/{{userId}}/goals
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 24. Establecer objetivo de entrenamiento
+POST {{host}}/api/training/goals
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "trainingPlanId": 1,
+  "goalType": "Endurance",
+  "title": "Correr 50km semanales",
+  "description": "Aumentar el volumen de carrera progresivamente",
+  "targetDate": "2026-08-01T00:00:00Z",
+  "targetValue": 50.0,
+  "targetUnit": "km/semana",
+  "priority": 1
+}
+
+###
+
+### 25. Marcar objetivo como alcanzado
+PUT {{host}}/api/training/goals/{{goalUid}}/achieve
+Authorization: Bearer {{authToken}}
+
+###

@@ -1,0 +1,81 @@
+@host = http://localhost:5160
+@authToken = <your-jwt-token-here>
+@userId = 1
+@subscriptionUid = 00000000-0000-0000-0000-000000000000
+@paymentMethodUid = 00000000-0000-0000-0000-000000000001
+
+### 1. Obtener planes disponibles (activos)
+GET {{host}}/api/payment/plans?activeOnly=true
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 2. Obtener todos los planes (incluyendo inactivos)
+GET {{host}}/api/payment/plans?activeOnly=false
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 3. Obtener suscripción del usuario
+GET {{host}}/api/payment/subscription?userId={{userId}}
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 4. Crear suscripción
+POST {{host}}/api/payment/subscription
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "planId": 2,
+  "autoRenew": true
+}
+
+###
+
+### 5. Cancelar suscripción
+PUT {{host}}/api/payment/subscription/cancel
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "subscriptionUid": "{{subscriptionUid}}",
+  "cancellationReason": "Ya no lo necesito por ahora"
+}
+
+###
+
+### 6. Obtener métodos de pago del usuario
+GET {{host}}/api/payment/methods?userId={{userId}}
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 7. Agregar método de pago
+POST {{host}}/api/payment/methods
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "type": "CreditCard",
+  "provider": "Visa",
+  "token": "tok_test_123456",
+  "lastFourDigits": "4242",
+  "expiryDate": "2028-12-31T00:00:00Z",
+  "isDefault": true
+}
+
+###
+
+### 8. Eliminar método de pago
+DELETE {{host}}/api/payment/methods/{{paymentMethodUid}}
+Authorization: Bearer {{authToken}}
+
+###

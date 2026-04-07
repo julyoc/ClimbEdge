@@ -1,6 +1,13 @@
 @ClimbEdge.API_HostAddress = http://localhost:5160
 
-GET {{ClimbEdge.API_HostAddress}}/api?api-version=0.1
+### 1. Endpoint raíz (sin autenticación)
+GET {{ClimbEdge.API_HostAddress}}/api
+Accept: application/json
+
+###
+
+### 2. Información de la API (sin autenticación)
+GET {{ClimbEdge.API_HostAddress}}/api/info
 Accept: application/json
 
 ###

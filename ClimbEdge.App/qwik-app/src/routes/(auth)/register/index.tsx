@@ -8,10 +8,6 @@ import { createAuthService } from 'climbedge-shared/services/AuthService';
 export default component$(() => {
   const navigate = useNavigate();
   const { setUser, setLoading, isLoading } = useAuth();
-  const service = createAuthService({
-          baseUrl: import.meta.env.VITE_API_URL,
-          apiKey: import.meta.env.VITE_API_KEY
-      });
 
   const formData = useSignal<RegisterRequestDTO>({
     email: '',
@@ -62,6 +58,10 @@ export default component$(() => {
     success.value = '';
 
     try {
+        const service = createAuthService({
+          baseUrl: import.meta.env.VITE_API_URL,
+          apiKey: import.meta.env.VITE_API_KEY
+      });
       const response = await service.register(formData.value);
 
       if (response.success && response.data) {

@@ -1,0 +1,115 @@
+@host = http://localhost:5160
+@authToken = <your-jwt-token-here>
+@mountainUid = 00000000-0000-0000-0000-000000000000
+@mountainId = 1
+@routeUid = 00000000-0000-0000-0000-000000000001
+
+### 1. Obtener todas las montañas
+GET {{host}}/api/mountain
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 2. Obtener una montaña por UID
+GET {{host}}/api/mountain/{{mountainUid}}
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 3. Crear una montaña
+POST {{host}}/api/mountain
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Aconcagua",
+  "description": "La montaña más alta del hemisferio occidental",
+  "type": 0,
+  "elevation": 6962,
+  "country": "AR",
+  "region": "Cuyo",
+  "state": "Mendoza",
+  "firstAscentDate": "1897-01-14",
+  "firstAscentBy": "Matthias Zurbriggen",
+  "difficultyRating": 7,
+  "imageUrls": ["https://example.com/aconcagua1.jpg"]
+}
+
+###
+
+### 4. Actualizar una montaña
+PUT {{host}}/api/mountain/{{mountainUid}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "description": "La montaña más alta de América, ubicada en la provincia de Mendoza",
+  "region": "Cuyo - Andina",
+  "state": "Mendoza",
+  "isActive": true,
+  "difficultyRating": 7,
+  "imageUrls": ["https://example.com/aconcagua_nuevo.jpg"]
+}
+
+###
+
+### 5. Obtener rutas de una montaña
+GET {{host}}/api/mountain/{{mountainId}}/routes
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 6. Obtener una ruta de montaña por UID
+GET {{host}}/api/mountain/route/{{routeUid}}
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 7. Crear una ruta de montaña
+POST {{host}}/api/mountain/route
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "mountainId": 1,
+  "name": "Ruta Normal",
+  "description": "La ruta más frecuentada para ascender al Aconcagua",
+  "type": 0,
+  "difficultyScaleId": 3,
+  "distance": 38.5,
+  "elevationGain": 3000,
+  "elevationLoss": 3000,
+  "estimatedDuration": 14400,
+  "bestSeason": 1,
+  "requiresPermit": true,
+  "maxParticipants": 10,
+  "isGuided": false,
+  "dangerLevel": 6,
+  "firstAscentDate": "1897-01-14",
+  "firstAscentBy": "Matthias Zurbriggen"
+}
+
+###
+
+### 8. Actualizar una ruta de montaña
+PUT {{host}}/api/mountain/route/{{routeUid}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "description": "Ruta actualizada - La más frecuentada para el Aconcagua",
+  "distance": 40.0,
+  "elevationGain": 3100,
+  "estimatedDuration": 15000,
+  "bestSeason": 1,
+  "requiresPermit": true,
+  "maxParticipants": 12,
+  "isGuided": false,
+  "dangerLevel": 6
+}
+
+###

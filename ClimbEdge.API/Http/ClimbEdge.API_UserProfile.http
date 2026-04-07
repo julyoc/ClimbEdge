@@ -1,0 +1,57 @@
+@host = http://localhost:5160
+@authToken = <your-jwt-token-here>
+@userId = 1
+
+### 1. Obtener perfil del usuario
+GET {{host}}/api/userProfile/{{userId}}
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 2. Crear perfil de usuario
+POST {{host}}/api/userProfile
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "userId": "1",
+  "firstName": "Juan",
+  "lastName": "Pérez",
+  "dateOfBirth": "1990-05-20T00:00:00Z",
+  "bio": "Escalador y montañista apasionado. 10 años de experiencia en escalada deportiva.",
+  "profilePictureUrl": null,
+  "website": "https://juanperez.com",
+  "location": "Mendoza, Argentina",
+  "country": "AR",
+  "timeZone": "America/Argentina/Mendoza",
+  "preferredLanguage": "es",
+  "isPublic": true,
+  "emailNotifications": true,
+  "pushNotifications": true
+}
+
+###
+
+### 3. Actualizar perfil de usuario
+PUT {{host}}/api/userProfile/{{userId}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "firstName": "Juan",
+  "lastName": "Pérez González",
+  "dateOfBirth": "1990-05-20T00:00:00Z",
+  "bio": "Scalador y montañista. Especializado en escalada deportiva y alpinismo.",
+  "profilePictureUrl": "https://example.com/foto.jpg",
+  "website": "https://juanperez.com",
+  "location": "Mendoza, Argentina",
+  "country": "AR",
+  "timeZone": "America/Argentina/Mendoza",
+  "preferredLanguage": "es",
+  "isPublic": true,
+  "emailNotifications": true,
+  "pushNotifications": false
+}
+
+###

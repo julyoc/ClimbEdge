@@ -10,10 +10,6 @@ export default component$(() => {
     const notificationCount = useSignal(3); // Simulated notification count
     const isSyncing = useSignal(false);
     const loc = useLocation();
-    const service = createAuthService({
-        baseUrl: import.meta.env.VITE_API_URL,
-        apiKey: import.meta.env.VITE_API_KEY
-    });
 
     const toggleUserMenu = $(() => {
         isUserMenuOpen.value = !isUserMenuOpen.value;
@@ -78,7 +74,10 @@ export default component$(() => {
 
     const handleLogout = $(async () => {
         try {
-
+            const service = createAuthService({
+                baseUrl: import.meta.env.VITE_API_URL,
+                apiKey: import.meta.env.VITE_API_KEY
+            });
             await service.logout();
             clearAuth();
             closeMenus();

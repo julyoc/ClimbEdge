@@ -1,0 +1,109 @@
+@host = http://localhost:5160
+@authToken = <your-jwt-token-here>
+@boardUid = 00000000-0000-0000-0000-000000000000
+@boardId = 1
+@boardConfigId = 1
+@userId = 1
+
+### 1. Obtener todos los boards
+GET {{host}}/api/board
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 2. Obtener boards con filtros
+GET {{host}}/api/board?organizationId=1&page=1&pageSize=10
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 3. Obtener un board por UID
+GET {{host}}/api/board/{{boardUid}}
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 4. Crear un board
+POST {{host}}/api/board
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Board de entrenamiento principal",
+  "description": "Board para entrenamientos de boulder",
+  "visibility": 0,
+  "boardConfigId": 1,
+  "organizationId": null
+}
+
+###
+
+### 5. Actualizar un board
+PUT {{host}}/api/board/{{boardUid}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Board actualizado",
+  "description": "Descripción actualizada",
+  "visibility": 1,
+  "organizationId": null
+}
+
+###
+
+### 6. Eliminar un board
+DELETE {{host}}/api/board/{{boardUid}}
+Authorization: Bearer {{authToken}}
+
+###
+
+### 7. Obtener miembros del board
+GET {{host}}/api/board/{{boardId}}/members
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 8. Agregar miembro al board
+POST {{host}}/api/board/member
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "boardId": 1,
+  "userId": 2,
+  "role": 0
+}
+
+###
+
+### 9. Eliminar miembro del board
+DELETE {{host}}/api/board/member?boardId=1&userId=2
+Authorization: Bearer {{authToken}}
+
+###
+
+### 10. Obtener resumen de sesiones del board por usuario
+GET {{host}}/api/board/{{boardId}}/session-summary/{{userId}}
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 11. Obtener problemas de un board (por boardConfigId)
+GET {{host}}/api/board/{{boardConfigId}}/problems?includeArchived=false&page=1&pageSize=20
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 12. Obtener un problema por UID
+GET {{host}}/api/board/problem/{{boardUid}}
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###

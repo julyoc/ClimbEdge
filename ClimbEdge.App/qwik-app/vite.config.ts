@@ -110,7 +110,7 @@ export default defineConfig(({ command, mode }): UserConfig => {
         "Cache-Control": "public, max-age=600",
       },
     },
-    envDir: command === "serve" ? "../" : process.cwd(),
+    envDir: command === "serve" ? "../../" : process.cwd(),
     envPrefix: "VITE_",
   };
 });
