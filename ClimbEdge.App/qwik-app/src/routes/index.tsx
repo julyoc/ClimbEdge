@@ -1,19 +1,16 @@
-import { component$, useContextProvider } from "@builder.io/qwik";
+import { component$ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
 import { Link } from "@builder.io/qwik-city";
 import { ChangeThemeButton } from "~/components/change-theme-button";
-import { ThemeContext, useThemeStore } from "~/stores/theme";
-import { AuthComponent, AuthAnonimus, Auth } from "~/components/auth-component";
+import { useAuth } from "~/contexts/auth.context";
 
 export default component$(() => {
-  const themeStore = useThemeStore();
-
-  useContextProvider(ThemeContext, themeStore);
+  const { isAuthenticated } = useAuth();
 
   return (
-    <AuthComponent>
+    <>
       {/* Contenido para usuarios anónimos/no autenticados */}
-      <AuthAnonimus>
+      {!isAuthenticated.value && (
         <div class="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
       {/* Navigation */}
       <nav class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
@@ -250,9 +247,9 @@ export default component$(() => {
         </div>
         </footer>
       </div>
-      </AuthAnonimus>
+      )}
       {/* Contenido para usuarios autenticados */}
-      <Auth>
+      {isAuthenticated.value && (
         <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-900 dark:to-blue-900 transition-colors duration-300">
           <div class="container mx-auto px-4 py-16">
             <div class="text-center max-w-2xl mx-auto">
@@ -279,8 +276,8 @@ export default component$(() => {
             </div>
           </div>
         </div>
-      </Auth>
-    </AuthComponent>
+      )}
+    </>
   );
 });
 

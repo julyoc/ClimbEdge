@@ -3,6 +3,7 @@ using ClimbEdge.Common.Utils;
 using ClimbEdge.Domain.Entities.Climbing;
 using ClimbEdge.Domain.Repositories.Climbing;
 using MediatR;
+using NetTopologySuite.IO;
 
 namespace ClimbEdge.Application.Commands.ClimbZoneCommand
 {
@@ -23,10 +24,17 @@ namespace ClimbEdge.Application.Commands.ClimbZoneCommand
                 ?? throw new InvalidOperationException("Climb zone not found.");
 
             Mapper.MapUpdate(request.entity, zone);
+
+            if (!string.IsNullOrWhiteSpace(request.entity.LocationWkt))
+            {
+                var reader = new WKTReader();
+                zone.Location = reader.Read(request.entity.LocationWkt) as NetTopologySuite.Geometries.Point;
+            }
+
             zone.UpdateTimestamps();
             await _climbZoneRepository.UpdateAsync(zone);
             await _climbZoneRepository.SaveChangesAsync();
-            return Mapper.Map<ClimbZone, GetClimbZoneDTO>(zone);
+            return ClimbZoneMapper.ToDTO(zone);
         }
     }
 }

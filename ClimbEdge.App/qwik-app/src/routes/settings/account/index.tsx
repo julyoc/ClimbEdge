@@ -1,6 +1,5 @@
 import { component$, useSignal, $ } from '@builder.io/qwik';
 import { useAuth } from '~/contexts/auth.context';
-import { AuthComponent, Auth } from '~/components/auth-component';
 
 export default component$(() => {
     const { user } = useAuth();
@@ -53,8 +52,6 @@ export default component$(() => {
     };
 
     return (
-        <AuthComponent>
-            <Auth>
                 <div class="p-6">
                     <div class="border-b border-gray-200 pb-4 mb-6">
                         <h2 class="text-2xl font-bold text-gray-900">Gestión de Cuenta</h2>
@@ -439,7 +436,5 @@ export default component$(() => {
                         </div>
                     )}
                 </div>
-            </Auth>
-        </AuthComponent>
     );
 });

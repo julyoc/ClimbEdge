@@ -1,13 +1,10 @@
 import { component$ } from '@builder.io/qwik';
 import { useAuth } from '~/contexts/auth.context';
-import { AuthComponent, Auth } from '~/components/auth-component';
 
 export default component$(() => {
     const { user } = useAuth();
 
     return (
-        <AuthComponent>
-            <Auth>
                 <div class="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
                     <div class="max-w-2xl mx-auto">
                         <div class="bg-white shadow rounded-lg">
@@ -131,8 +128,6 @@ export default component$(() => {
                         </div>
                     </div>
                 </div>
-            </Auth>
-        </AuthComponent>
     );
 });
 

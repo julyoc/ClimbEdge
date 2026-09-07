@@ -76,3 +76,80 @@ Authorization: Bearer {{authToken}}
 Accept: application/json
 
 ###
+
+# ─── Descripciones de Vía ─────────────────────────────────────────────────────
+
+@climbRouteId = 1
+
+### 9. Obtener descripciones de una vía
+GET {{host}}/api/climbRoute/{{climbRouteId}}/descriptions
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 10. Crear descripción para una vía
+POST {{host}}/api/climbRoute/description
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "climbRouteId": 1,
+  "title": "Aproximación",
+  "body": "Desde el pueblo se toma la senda sur durante 45 minutos hasta la pared. Señalizada con cairns.",
+  "section": "Approach",
+  "languageCode": "es",
+  "authorId": 1
+}
+
+###
+
+# ─── Tags de Escalada ─────────────────────────────────────────────────────────
+
+### 11. Obtener todos los tags de escalada
+GET {{host}}/api/climbRoute/tags
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 12. Crear tag de escalada
+POST {{host}}/api/climbRoute/tag
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Fisura",
+  "description": "Vía con protagonismo de fisuras para la progresión",
+  "color": "#FF6B35"
+}
+
+###
+
+# ─── Rock Features ────────────────────────────────────────────────────────────
+
+### 13. Obtener características de roca de una vía
+GET {{host}}/api/climbRoute/{{climbRouteId}}/rock-features
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 14. Crear características de roca para una vía
+POST {{host}}/api/climbRoute/rock-features
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "climbRouteId": 1,
+  "rockType": "Granito",
+  "texture": "Rugoso",
+  "holdTypes": ["Regleta", "Presa", "Pinza"],
+  "wallAngle": "Vertical",
+  "qualityRating": 4,
+  "notes": "Roca de excelente calidad, bien consolidada. Algunos sectores con líquenes.",
+  "isSportRouting": true,
+  "isTraditionalRouting": false
+}
+
+###

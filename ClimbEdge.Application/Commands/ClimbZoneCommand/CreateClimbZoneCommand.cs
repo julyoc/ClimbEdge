@@ -3,6 +3,7 @@ using ClimbEdge.Common.Utils;
 using ClimbEdge.Domain.Entities.Climbing;
 using ClimbEdge.Domain.Repositories.Climbing;
 using MediatR;
+using NetTopologySuite.IO;
 
 namespace ClimbEdge.Application.Commands.ClimbZoneCommand
 {
@@ -20,10 +21,30 @@ namespace ClimbEdge.Application.Commands.ClimbZoneCommand
         public async Task<GetClimbZoneDTO> Handle(CreateClimbZoneCommand request, CancellationToken cancellationToken)
         {
             var zone = Mapper.Map<CreateClimbZoneDTO, ClimbZone>(request.entity);
+
+            if (!string.IsNullOrWhiteSpace(request.entity.LocationWkt))
+            {
+                var reader = new WKTReader();
+                zone.Location = reader.Read(request.entity.LocationWkt) as NetTopologySuite.Geometries.Point;
+            }
+
             zone.InitializeSlug();
             await _climbZoneRepository.AddAsync(zone);
             await _climbZoneRepository.SaveChangesAsync();
-            return Mapper.Map<ClimbZone, GetClimbZoneDTO>(zone);
+            return ClimbZoneMapper.ToDTO(zone);
+        }
+    }
+
+    internal static class ClimbZoneMapper
+    {
+        public static GetClimbZoneDTO ToDTO(ClimbZone zone)
+        {
+            var dto = Mapper.Map<ClimbZone, GetClimbZoneDTO>(zone);
+            if (zone.Location != null)
+            {
+                dto = dto with { Latitude = zone.Location.Y, Longitude = zone.Location.X };
+            }
+            return dto;
         }
     }
 }

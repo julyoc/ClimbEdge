@@ -448,5 +448,182 @@ namespace ClimbEdge.API.Controllers
                 return StatusCode(500, new { Message = "Error interno del servidor" });
             }
         }
+
+        [HttpGet("{expeditionId:long}/debrief")]
+        public async Task<ActionResult<GetExpeditionDebriefDTO>> GetDebrief(long expeditionId)
+        {
+            try
+            {
+                var result = await _mediator.Send(new GetExpeditionDebriefQuery(expeditionId));
+                if (result == null) return NotFound();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting debrief for expedition {ExpeditionId}", expeditionId);
+                return StatusCode(500, new { Message = "Error interno del servidor" });
+            }
+        }
+
+        // ── SafetyPlan ─────────────────────────────────────────────────────────
+
+        [HttpGet("{expeditionId:long}/safety-plan")]
+        public async Task<ActionResult<GetSafetyPlanDTO>> GetSafetyPlan(long expeditionId)
+        {
+            try
+            {
+                var result = await _mediator.Send(new GetSafetyPlanQuery(expeditionId));
+                if (result == null) return NotFound();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting safety plan for expedition {ExpeditionId}", expeditionId);
+                return StatusCode(500, new { Message = "Error interno del servidor" });
+            }
+        }
+
+        [HttpPost("safety-plan")]
+        public async Task<ActionResult<GetSafetyPlanDTO>> CreateSafetyPlan([FromBody] CreateSafetyPlanDTO entity)
+        {
+            try
+            {
+                var result = await _mediator.Send(new CreateSafetyPlanCommand(entity));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating safety plan");
+                return StatusCode(500, new { Message = "Error interno del servidor" });
+            }
+        }
+
+        [HttpPut("{expeditionId:long}/safety-plan")]
+        public async Task<ActionResult<GetSafetyPlanDTO>> UpdateSafetyPlan(long expeditionId, [FromBody] UpdateSafetyPlanDTO entity)
+        {
+            try
+            {
+                var result = await _mediator.Send(new UpdateSafetyPlanCommand(expeditionId, entity));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating safety plan for expedition {ExpeditionId}", expeditionId);
+                return StatusCode(500, new { Message = "Error interno del servidor" });
+            }
+        }
+
+        // ── ItineraryDayTrack ──────────────────────────────────────────────────
+
+        [HttpGet("itinerary/day/{itineraryDayId:long}/tracks")]
+        public async Task<ActionResult<IEnumerable<GetItineraryDayTrackDTO>>> GetDayTracks(long itineraryDayId)
+        {
+            try
+            {
+                var result = await _mediator.Send(new GetItineraryDayTracksQuery(itineraryDayId));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting day tracks for itinerary day {ItineraryDayId}", itineraryDayId);
+                return StatusCode(500, new { Message = "Error interno del servidor" });
+            }
+        }
+
+        [HttpPost("itinerary/day/track")]
+        public async Task<ActionResult<GetItineraryDayTrackDTO>> CreateDayTrack([FromBody] CreateItineraryDayTrackDTO entity)
+        {
+            try
+            {
+                var result = await _mediator.Send(new CreateItineraryDayTrackCommand(entity));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating itinerary day track");
+                return StatusCode(500, new { Message = "Error interno del servidor" });
+            }
+        }
+
+        // ── ItineraryDayWaypoint ───────────────────────────────────────────────
+
+        [HttpGet("itinerary/day/{itineraryDayId:long}/waypoints")]
+        public async Task<ActionResult<IEnumerable<GetItineraryDayWaypointDTO>>> GetDayWaypoints(long itineraryDayId)
+        {
+            try
+            {
+                var result = await _mediator.Send(new GetItineraryDayWaypointsQuery(itineraryDayId));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting waypoints for itinerary day {ItineraryDayId}", itineraryDayId);
+                return StatusCode(500, new { Message = "Error interno del servidor" });
+            }
+        }
+
+        [HttpPost("itinerary/day/waypoint")]
+        public async Task<ActionResult<GetItineraryDayWaypointDTO>> CreateDayWaypoint([FromBody] CreateItineraryDayWaypointDTO entity)
+        {
+            try
+            {
+                var result = await _mediator.Send(new CreateItineraryDayWaypointCommand(entity));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating itinerary day waypoint");
+                return StatusCode(500, new { Message = "Error interno del servidor" });
+            }
+        }
+
+        // ── Equipment catalog ──────────────────────────────────────────────────
+
+        [HttpGet("equipment/catalog")]
+        public async Task<ActionResult<IEnumerable<GetEquipmentDTO>>> GetEquipmentCatalog([FromQuery] long? categoryId = null)
+        {
+            try
+            {
+                var result = await _mediator.Send(new GetEquipmentCatalogQuery(categoryId));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting equipment catalog");
+                return StatusCode(500, new { Message = "Error interno del servidor" });
+            }
+        }
+
+        [HttpPost("equipment/catalog")]
+        public async Task<ActionResult<GetEquipmentDTO>> CreateEquipmentCatalogItem([FromBody] CreateEquipmentDTO entity)
+        {
+            try
+            {
+                var result = await _mediator.Send(new CreateEquipmentCommand(entity));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating equipment catalog item");
+                return StatusCode(500, new { Message = "Error interno del servidor" });
+            }
+        }
+
+        // ── DELETE ─────────────────────────────────────────────────────────────
+
+        [HttpDelete("{uid:guid}")]
+        public async Task<ActionResult> Delete(Guid uid)
+        {
+            try
+            {
+                await _mediator.Send(new DeleteExpeditionCommand(uid));
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting expedition {Uid}", uid);
+                return StatusCode(500, new { Message = "Error interno del servidor" });
+            }
+        }
     }
 }

@@ -1,6 +1,5 @@
 import { component$, useSignal } from '@builder.io/qwik';
 import { Form, globalAction$, zod$, z } from '@builder.io/qwik-city';
-import { AuthComponent, Auth } from '~/components/auth-component';
 
 const regionalSchema = z.object({
     country: z.string().min(1, 'El país es requerido'),
@@ -96,8 +95,6 @@ export default component$(() => {
     ];
 
     return (
-        <AuthComponent>
-            <Auth>
                 <div class="p-6">
                     <div class="border-b border-gray-200 pb-4 mb-6">
                         <h2 class="text-2xl font-bold text-gray-900">Configuración Regional</h2>
@@ -412,7 +409,5 @@ export default component$(() => {
                         </div>
                     </Form>
                 </div>
-            </Auth>
-        </AuthComponent>
     );
 });

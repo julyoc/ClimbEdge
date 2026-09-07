@@ -1,7 +1,6 @@
 import { component$, useSignal, $ } from '@builder.io/qwik';
 import { useNavigate, useLocation } from '@builder.io/qwik-city';
 import { ResetPasswordRequestDTO } from 'climbedge-shared/types/AppUserDTO';
-import { AuthComponent, AuthAnonimus } from '~/components/auth-component';
 import { createAuthService } from 'climbedge-shared/services/AuthService';
 
 export default component$(() => {
@@ -114,9 +113,7 @@ export default component$(() => {
   }
 
   return (
-    <AuthComponent>
-      <AuthAnonimus>
-        <div class="min-h-screen bg-slate-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="min-h-screen bg-slate-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
           <div class="max-w-md w-full space-y-8">
             <div>
               <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
@@ -215,7 +212,5 @@ export default component$(() => {
             </form>
           </div>
         </div>
-      </AuthAnonimus>
-    </AuthComponent>
   );
 });

@@ -428,4 +428,174 @@ namespace ClimbEdge.Application.DTOs
         public bool WeatherDependency { get; set; }
         public bool IsRestDay { get; set; }
     }
+
+    // ── SafetyPlan ─────────────────────────────────────────────────────────────
+
+    public record class CreateSafetyPlanDTO
+    {
+        public long ExpeditionId { get; set; }
+        public string EmergencyContactName { get; set; } = string.Empty;
+        public string EmergencyContactPhone { get; set; } = string.Empty;
+        public string EmergencyContactRelation { get; set; } = string.Empty;
+        public string? LocalRescueService { get; set; }
+        public string? NearestHospital { get; set; }
+        public string? EvacuationPlan { get; set; }
+        public string? CommunicationPlan { get; set; }
+        public string? RiskAssessment { get; set; }
+        public string? ContingencyPlans { get; set; }
+        public string? MedicalSupplies { get; set; }
+    }
+
+    public record class UpdateSafetyPlanDTO
+    {
+        public string? EmergencyContactName { get; set; }
+        public string? EmergencyContactPhone { get; set; }
+        public string? EmergencyContactRelation { get; set; }
+        public string? LocalRescueService { get; set; }
+        public string? NearestHospital { get; set; }
+        public string? EvacuationPlan { get; set; }
+        public string? CommunicationPlan { get; set; }
+        public string? RiskAssessment { get; set; }
+        public string? ContingencyPlans { get; set; }
+        public string? MedicalSupplies { get; set; }
+    }
+
+    public record class GetSafetyPlanDTO : BaseDTO
+    {
+        public long ExpeditionId { get; set; }
+        public string EmergencyContactName { get; set; } = string.Empty;
+        public string EmergencyContactPhone { get; set; } = string.Empty;
+        public string EmergencyContactRelation { get; set; } = string.Empty;
+        public string? LocalRescueService { get; set; }
+        public string? NearestHospital { get; set; }
+        public string? EvacuationPlan { get; set; }
+        public string? CommunicationPlan { get; set; }
+        public string? RiskAssessment { get; set; }
+        public string? ContingencyPlans { get; set; }
+        public string? MedicalSupplies { get; set; }
+        public DateTime LastUpdated { get; set; }
+    }
+
+    // ── ItineraryDayTrack ──────────────────────────────────────────────────────
+
+    public record class CreateItineraryDayTrackDTO
+    {
+        public long ItineraryDayId { get; set; }
+        public long? ItineraryTrackId { get; set; }
+        public long? ParticipantId { get; set; }
+        public string? Name { get; set; }
+        /// <summary>WKT string (LINESTRING Z) of the GPS track data.</summary>
+        public string TrackDataWkt { get; set; } = string.Empty;
+        /// <summary>WKT string (LINESTRING Z) of the planned route. Optional.</summary>
+        public string? PlannedRouteWkt { get; set; }
+        public decimal TotalDistance { get; set; }
+        public int MovingTime { get; set; }
+        public int TotalTime { get; set; }
+        public int MinElevation { get; set; }
+        public int MaxElevation { get; set; }
+        public int ElevationGain { get; set; }
+        public int ElevationLoss { get; set; }
+        public DateTime? StartTime { get; set; }
+        public DateTime? EndTime { get; set; }
+        public string? RecordedBy { get; set; }
+        public string? GpsDevice { get; set; }
+        public decimal? Accuracy { get; set; }
+        public string? WeatherConditions { get; set; }
+        public string? Notes { get; set; }
+        public bool IsOfficial { get; set; } = false;
+    }
+
+    public record class GetItineraryDayTrackDTO : BaseDTO
+    {
+        public long ItineraryDayId { get; set; }
+        public long? ItineraryTrackId { get; set; }
+        public long? ParticipantId { get; set; }
+        public string? Name { get; set; }
+        public decimal TotalDistance { get; set; }
+        public int MovingTime { get; set; }
+        public int TotalTime { get; set; }
+        public int MinElevation { get; set; }
+        public int MaxElevation { get; set; }
+        public int ElevationGain { get; set; }
+        public int ElevationLoss { get; set; }
+        public DateTime? StartTime { get; set; }
+        public DateTime? EndTime { get; set; }
+        public string? RecordedBy { get; set; }
+        public string? GpsDevice { get; set; }
+        public string? WeatherConditions { get; set; }
+        public string? Notes { get; set; }
+        public bool IsOfficial { get; set; }
+    }
+
+    // ── ItineraryDayWaypoint ───────────────────────────────────────────────────
+
+    public record class CreateItineraryDayWaypointDTO
+    {
+        public long ItineraryDayId { get; set; }
+        public long? ItineraryDayTrackId { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string? Description { get; set; }
+        /// <summary>WKT string (POINT Z) of the waypoint location.</summary>
+        public string LocationWkt { get; set; } = string.Empty;
+        public int Elevation { get; set; }
+        public DateTime Timestamp { get; set; }
+        public long WaypointTypeId { get; set; }
+        public int? Duration { get; set; }
+        public string? Photo { get; set; }
+        public string? Notes { get; set; }
+        public long? RecordedBy { get; set; }
+        public string? WeatherConditions { get; set; }
+        public decimal? Temperature { get; set; }
+        public bool IsPlanned { get; set; } = false;
+        public bool IsEmergency { get; set; } = false;
+    }
+
+    public record class GetItineraryDayWaypointDTO : BaseDTO
+    {
+        public long ItineraryDayId { get; set; }
+        public long? ItineraryDayTrackId { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string? Description { get; set; }
+        public int Elevation { get; set; }
+        public DateTime Timestamp { get; set; }
+        public long WaypointTypeId { get; set; }
+        public int? Duration { get; set; }
+        public string? Photo { get; set; }
+        public string? Notes { get; set; }
+        public long? RecordedBy { get; set; }
+        public string? WeatherConditions { get; set; }
+        public decimal? Temperature { get; set; }
+        public bool IsPlanned { get; set; }
+        public bool IsEmergency { get; set; }
+    }
+
+    // ── Equipment catalog ──────────────────────────────────────────────────────
+
+    public record class CreateEquipmentDTO
+    {
+        public string Name { get; set; } = string.Empty;
+        public long EquipmentCategoryId { get; set; }
+        public string? Description { get; set; }
+        public bool IsPersonal { get; set; } = true;
+        public bool IsMandatory { get; set; } = false;
+        public decimal? Weight { get; set; }
+        public string? Brand { get; set; }
+        public string? Model { get; set; }
+        public string? Specifications { get; set; }
+        public string? ImageUrl { get; set; }
+    }
+
+    public record class GetEquipmentDTO : BaseDTO
+    {
+        public string Name { get; set; } = string.Empty;
+        public long EquipmentCategoryId { get; set; }
+        public string? Description { get; set; }
+        public bool IsPersonal { get; set; }
+        public bool IsMandatory { get; set; }
+        public decimal? Weight { get; set; }
+        public string? Brand { get; set; }
+        public string? Model { get; set; }
+        public string? Specifications { get; set; }
+        public string? ImageUrl { get; set; }
+    }
 }

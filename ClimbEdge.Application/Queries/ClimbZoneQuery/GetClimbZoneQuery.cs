@@ -1,6 +1,5 @@
+using ClimbEdge.Application.Commands.ClimbZoneCommand;
 using ClimbEdge.Application.DTOs;
-using ClimbEdge.Common.Utils;
-using ClimbEdge.Domain.Entities.Climbing;
 using ClimbEdge.Domain.Repositories.Climbing;
 using MediatR;
 
@@ -22,7 +21,7 @@ namespace ClimbEdge.Application.Queries.ClimbZoneQuery
         {
             var zone = await _climbZoneRepository.GetAsync(request.ZoneUid);
             if (zone is null) return null;
-            return Mapper.Map<ClimbZone, GetClimbZoneDTO>(zone);
+            return ClimbZoneMapper.ToDTO(zone);
         }
     }
 }

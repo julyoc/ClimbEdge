@@ -1,12 +1,12 @@
 import { component$, useSignal, $ } from '@builder.io/qwik';
-import { useNavigate } from '@builder.io/qwik-city';
+import { useNavigate, useLocation } from '@builder.io/qwik-city';
 import { LoginRequestDTO } from 'climbedge-shared/types/AppUserDTO';
 import { createAuthService } from 'climbedge-shared/services/AuthService';
 import { useAuth } from '~/contexts/auth.context';
-import { AuthComponent, AuthAnonimus } from '~/components/auth-component';
 
 export default component$(() => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { setUser, setLoading, isLoading } = useAuth();
 
   const formData = useSignal<LoginRequestDTO>({
@@ -44,10 +44,8 @@ export default component$(() => {
         setUser(response.data.user);
         success.value = 'Inicio de sesión exitoso';
 
-        // Redirigir después de un breve delay para mostrar el mensaje
-        setTimeout(() => {
-          navigate('/');
-        }, 1000);
+        const redirectTo = location.url.searchParams.get('redirect') || '/';
+        navigate(redirectTo);
       } else {
         error.value = response.error || 'Error en el inicio de sesión';
       }
@@ -69,9 +67,7 @@ export default component$(() => {
   });
 
   return (
-    <AuthComponent>
-      <AuthAnonimus>
-        <div class="min-h-screen bg-slate-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="min-h-screen bg-slate-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
           <div class="max-w-md w-full space-y-8">
             <div>
               <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
@@ -160,7 +156,5 @@ export default component$(() => {
             </form>
           </div>
         </div>
-      </AuthAnonimus>
-    </AuthComponent>
   );
 });

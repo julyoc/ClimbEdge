@@ -1,7 +1,6 @@
 import { component$, useSignal, $ } from '@builder.io/qwik';
 import { ChangePasswordRequestDTO } from 'climbedge-shared/types/AppUserDTO';
 import { createAuthService } from 'climbedge-shared/services/AuthService';
-import { AuthComponent, Auth } from '~/components/auth-component';
 
 export default component$(() => {
 
@@ -84,8 +83,6 @@ export default component$(() => {
     });
 
     return (
-        <AuthComponent>
-        <Auth>
         <div class="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
             <div class="max-w-md mx-auto">
                 <div>
@@ -188,7 +185,5 @@ export default component$(() => {
                 </form>
             </div>
         </div>
-        </Auth>
-    </AuthComponent>
     );
 });

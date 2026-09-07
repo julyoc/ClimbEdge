@@ -323,3 +323,157 @@ Content-Type: application/json
 }
 
 ###
+
+### 27. Eliminar una expedición
+DELETE {{host}}/api/expedition/{{expeditionUid}}
+Authorization: Bearer {{authToken}}
+
+###
+
+# ─── Debrief ──────────────────────────────────────────────────────────────────
+
+### 28. Obtener debrief de la expedición
+GET {{host}}/api/expedition/{{expeditionId}}/debrief
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+# ─── Plan de Seguridad ────────────────────────────────────────────────────────
+
+### 29. Obtener plan de seguridad
+GET {{host}}/api/expedition/{{expeditionId}}/safety-plan
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 30. Crear plan de seguridad
+POST {{host}}/api/expedition/safety-plan
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "expeditionId": 1,
+  "emergencyContactName": "María Castro",
+  "emergencyContactPhone": "+5491155556666",
+  "emergencyContactRelation": "Familiar",
+  "localRescueService": "Patrulla Andina Mendoza",
+  "nearestHospital": "Hospital Central de Mendoza",
+  "evacuationPlan": "Descenso en mula hasta Puente del Inca, helicóptero si es necesario",
+  "communicationPlan": "Radio VHF cada 12h, satélite inReach diario",
+  "riskAssessment": "Riesgo elevado por altitud y clima en cima",
+  "contingencyPlans": "Retorno anticipado ante mal tiempo sostenido por +48h",
+  "medicalSupplies": "Botiquín avanzado, dexametasona, gamow bag"
+}
+
+###
+
+### 31. Actualizar plan de seguridad
+PUT {{host}}/api/expedition/{{expeditionId}}/safety-plan
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "evacuationPlan": "Descenso asistido por guías hasta base, helicóptero en emergencia",
+  "medicalSupplies": "Botiquín avanzado, dexametasona, gamow bag, DEA portátil"
+}
+
+###
+
+# ─── Tracks de Días de Itinerario ────────────────────────────────────────────
+
+@itineraryDayId = 1
+
+### 32. Obtener tracks GPS de un día
+GET {{host}}/api/expedition/itinerary/day/{{itineraryDayId}}/tracks
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 33. Crear track GPS para un día de itinerario
+POST {{host}}/api/expedition/itinerary/day/track
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "itineraryDayId": 1,
+  "name": "Ascenso Camp Base a Camp 1",
+  "trackDataWkt": "LINESTRING(-70.0109 -32.6532 4300, -70.0118 -32.6548 4700, -70.0125 -32.6563 5050)",
+  "plannedRouteWkt": null,
+  "startAltitude": 4300,
+  "endAltitude": 5050,
+  "totalDistance": 4.2,
+  "elevationGain": 750,
+  "elevationLoss": 0,
+  "startTime": "2026-11-05T07:00:00Z",
+  "endTime": "2026-11-05T13:00:00Z",
+  "recordedBy": 1,
+  "gpsDevice": "Garmin inReach Mini 2",
+  "weatherDuring": "Soleado, viento moderado por encima de 4800m"
+}
+
+###
+
+# ─── Waypoints de Días de Itinerario ─────────────────────────────────────────
+
+### 34. Obtener waypoints de un día
+GET {{host}}/api/expedition/itinerary/day/{{itineraryDayId}}/waypoints
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 35. Crear waypoint para un día de itinerario
+POST {{host}}/api/expedition/itinerary/day/waypoint
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "itineraryDayId": 1,
+  "name": "Camp 1 - Nido de Cóndores",
+  "description": "Campamento a 5.550 msnm, primer pernocte de altura",
+  "locationWkt": "POINT(-70.0125 -32.6563 5550)",
+  "timestamp": "2026-11-05T13:00:00Z",
+  "altitude": 5550,
+  "notes": "Buenas condiciones. Todos llegan sin síntomas.",
+  "imageUrl": "https://example.com/camp1.jpg"
+}
+
+###
+
+# ─── Catálogo de Equipamiento ─────────────────────────────────────────────────
+
+### 36. Obtener catálogo de equipamiento
+GET {{host}}/api/expedition/equipment/catalog
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 37. Obtener catálogo por categoría
+GET {{host}}/api/expedition/equipment/catalog?categoryId=2
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 38. Agregar ítem al catálogo de equipamiento
+POST {{host}}/api/expedition/equipment/catalog
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Gamow Bag",
+  "description": "Cámara hiperbárica portátil para tratamiento de mal de altura severo",
+  "brand": "Chinook Medical",
+  "model": "Gamow Bag 2.0",
+  "weight": 3.5,
+  "categoryId": 3,
+  "isMandatory": false,
+  "notes": "Recomendada para expediciones por encima de 5000m",
+  "imageUrl": "https://example.com/gamow-bag.jpg"
+}
+
+###

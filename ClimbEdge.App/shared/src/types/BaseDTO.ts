@@ -4,6 +4,7 @@ export interface Metadata {
 }
 
 export abstract class BaseDTO {
+  id!: number;
   uid!: string; // Guid → string en TS
   slug: string = "";
   metaData?: Metadata;

@@ -18,7 +18,6 @@ namespace ClimbEdge.Infrastructure.Persistence.Configurations.Mountains
             builder.Property(m => m.Name)
                    .IsRequired();
             builder.Property(m => m.Description)
-                   .IsRequired()
                    .HasMaxLength(500);
             builder.Property(m => m.Type)
                    .IsRequired();

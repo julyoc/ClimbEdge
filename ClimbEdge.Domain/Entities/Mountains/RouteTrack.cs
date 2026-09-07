@@ -26,7 +26,7 @@ namespace ClimbEdge.Domain.Entities.Mountains
         public float? Accuracy { get; set; }
         public override void InitializeSlug()
         {
-            throw new NotImplementedException();
+            Slug = $"routetrack-{MountainRouteId}-{CreatedAt.Ticks}";
         }
     }
 }

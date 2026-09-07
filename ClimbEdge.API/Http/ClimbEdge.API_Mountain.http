@@ -113,3 +113,115 @@ Content-Type: application/json
 }
 
 ###
+
+### 9. Eliminar una montaña
+DELETE {{host}}/api/mountain/{{mountainUid}}
+Authorization: Bearer {{authToken}}
+
+###
+
+### 10. Eliminar una ruta de montaña
+DELETE {{host}}/api/mountain/route/{{routeUid}}
+Authorization: Bearer {{authToken}}
+
+###
+
+# ─── Route Tracks ──────────────────────────────────────────────────────────────
+
+@mountainRouteId = 1
+
+### 11. Obtener tracks GPS de una ruta
+GET {{host}}/api/mountain/route/{{mountainRouteId}}/tracks
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 12. Crear track GPS de ruta
+POST {{host}}/api/mountain/route/track
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "mountainRouteId": 1,
+  "name": "Track ascenso ruta normal",
+  "trackDataWkt": "LINESTRING(-70.0109 -32.6532 3200, -70.0115 -32.6540 3400, -70.0120 -32.6551 3600)",
+  "totalDistance": 3.8,
+  "minElevation": 3200,
+  "maxElevation": 6962,
+  "recordedBy": 1,
+  "recordedAt": "2026-01-15T10:00:00Z",
+  "gpsDevice": "Garmin inReach Mini 2",
+  "accuracy": 5.0
+}
+
+###
+
+# ─── Route Waypoints ───────────────────────────────────────────────────────────
+
+### 13. Obtener waypoints de una ruta
+GET {{host}}/api/mountain/route/{{mountainRouteId}}/waypoints
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 14. Crear waypoint de ruta
+POST {{host}}/api/mountain/route/waypoint
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "mountainRouteId": 1,
+  "name": "Plaza de Mulas",
+  "description": "Campamento base principal",
+  "locationWkt": "POINT(-70.0115 -32.6540 4300)",
+  "sequence": 1,
+  "waypointTypeId": 1,
+  "estimatedTimeFromPrevious": 480,
+  "notes": "Punto de aclimatación obligatorio",
+  "imageUrl": "https://example.com/plaza-mulas.jpg"
+}
+
+###
+
+# ─── Weather Conditions ────────────────────────────────────────────────────────
+
+@mountainIdWx = 1
+
+### 15. Obtener condiciones meteorológicas de una montaña
+GET {{host}}/api/mountain/{{mountainIdWx}}/weather
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 16. Obtener condiciones meteorológicas con filtro de fechas
+GET {{host}}/api/mountain/{{mountainIdWx}}/weather?from=2026-01-01&to=2026-12-31
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+###
+
+### 17. Registrar condición meteorológica
+POST {{host}}/api/mountain/weather
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "mountainId": 1,
+  "recordedAt": "2026-04-07T09:00:00Z",
+  "temperature": -5.0,
+  "windSpeed": 40.0,
+  "windDirection": 270,
+  "humidity": 45.0,
+  "pressure": 580.0,
+  "visibility": 15.0,
+  "condition": "Parcialmente nublado",
+  "snowDepth": 120.0,
+  "dataSource": "Estación meteorológica base",
+  "rainFall": 0.0,
+  "snowFall": 0.0
+}
+
+###

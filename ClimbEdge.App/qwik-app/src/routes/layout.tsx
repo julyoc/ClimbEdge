@@ -53,7 +53,7 @@ export default component$(() => {
 
             <FooterComponent />
             {/* Debug Auth Component */}
-            { isAuthenticated.value && <DebugAuth />}
+            { import.meta.env.DEV && isAuthenticated.value && <DebugAuth />}
         </div>
     );
 });

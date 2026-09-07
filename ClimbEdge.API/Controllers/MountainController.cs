@@ -144,5 +144,136 @@ namespace ClimbEdge.API.Controllers
                 return StatusCode(500, new { Message = "Error interno del servidor" });
             }
         }
+
+        // ── DELETE ─────────────────────────────────────────────────────────────
+
+        [HttpDelete("{uid:guid}")]
+        public async Task<ActionResult> Delete(Guid uid)
+        {
+            try
+            {
+                await _mediator.Send(new DeleteMountainCommand(uid));
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting mountain {Uid}", uid);
+                return StatusCode(500, new { Message = "Error interno del servidor" });
+            }
+        }
+
+        [HttpDelete("route/{uid:guid}")]
+        public async Task<ActionResult> DeleteRoute(Guid uid)
+        {
+            try
+            {
+                await _mediator.Send(new DeleteMountainRouteCommand(uid));
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting mountain route {Uid}", uid);
+                return StatusCode(500, new { Message = "Error interno del servidor" });
+            }
+        }
+
+        // ── RouteTrack ─────────────────────────────────────────────────────────
+
+        [HttpGet("route/{mountainRouteId:long}/tracks")]
+        public async Task<ActionResult<IEnumerable<GetRouteTrackDTO>>> GetTracks(long mountainRouteId)
+        {
+            try
+            {
+                var result = await _mediator.Send(new GetRouteTracksQuery(mountainRouteId));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting tracks for route {MountainRouteId}", mountainRouteId);
+                return StatusCode(500, new { Message = "Error interno del servidor" });
+            }
+        }
+
+        [HttpPost("route/track")]
+        public async Task<ActionResult<GetRouteTrackDTO>> CreateTrack([FromBody] CreateRouteTrackDTO entity)
+        {
+            try
+            {
+                var result = await _mediator.Send(new CreateRouteTrackCommand(entity));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating route track");
+                return StatusCode(500, new { Message = "Error interno del servidor" });
+            }
+        }
+
+        // ── RouteWaypoint ──────────────────────────────────────────────────────
+
+        [HttpGet("route/{mountainRouteId:long}/waypoints")]
+        public async Task<ActionResult<IEnumerable<GetRouteWaypointDTO>>> GetWaypoints(long mountainRouteId)
+        {
+            try
+            {
+                var result = await _mediator.Send(new GetRouteWaypointsQuery(mountainRouteId));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting waypoints for route {MountainRouteId}", mountainRouteId);
+                return StatusCode(500, new { Message = "Error interno del servidor" });
+            }
+        }
+
+        [HttpPost("route/waypoint")]
+        public async Task<ActionResult<GetRouteWaypointDTO>> CreateWaypoint([FromBody] CreateRouteWaypointDTO entity)
+        {
+            try
+            {
+                var result = await _mediator.Send(new CreateRouteWaypointCommand(entity));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating route waypoint");
+                return StatusCode(500, new { Message = "Error interno del servidor" });
+            }
+        }
+
+        // ── WeatherCondition ───────────────────────────────────────────────────
+
+        [HttpGet("{mountainId:long}/weather")]
+        public async Task<ActionResult<IEnumerable<GetWeatherConditionDTO>>> GetWeather(
+            long mountainId,
+            [FromQuery] DateTime? from = null,
+            [FromQuery] DateTime? to = null)
+        {
+            try
+            {
+                var result = await _mediator.Send(new GetWeatherConditionsQuery(mountainId, from, to));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting weather for mountain {MountainId}", mountainId);
+                return StatusCode(500, new { Message = "Error interno del servidor" });
+            }
+        }
+
+        [HttpPost("weather")]
+        public async Task<ActionResult<GetWeatherConditionDTO>> CreateWeather([FromBody] CreateWeatherConditionDTO entity)
+        {
+            try
+            {
+                var result = await _mediator.Send(new CreateWeatherConditionCommand(entity));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating weather condition");
+                return StatusCode(500, new { Message = "Error interno del servidor" });
+            }
+        }
     }
 }

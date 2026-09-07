@@ -119,5 +119,101 @@ namespace ClimbEdge.API.Controllers
                 return StatusCode(500, new { Message = "Error interno del servidor" });
             }
         }
+
+        // ── ClimbRouteDescription ──────────────────────────────────────────────
+
+        [HttpGet("{climbRouteId:long}/descriptions")]
+        public async Task<ActionResult<IEnumerable<GetClimbRouteDescriptionDTO>>> GetDescriptions(long climbRouteId)
+        {
+            try
+            {
+                var result = await _mediator.Send(new GetClimbRouteDescriptionsQuery(climbRouteId));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting descriptions for climb route {ClimbRouteId}", climbRouteId);
+                return StatusCode(500, new { Message = "Error interno del servidor" });
+            }
+        }
+
+        [HttpPost("description")]
+        public async Task<ActionResult<GetClimbRouteDescriptionDTO>> CreateDescription([FromBody] CreateClimbRouteDescriptionDTO entity)
+        {
+            try
+            {
+                var result = await _mediator.Send(new CreateClimbRouteDescriptionCommand(entity));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating climb route description");
+                return StatusCode(500, new { Message = "Error interno del servidor" });
+            }
+        }
+
+        // ── ClimbTag ───────────────────────────────────────────────────────────
+
+        [HttpGet("tags")]
+        public async Task<ActionResult<IEnumerable<GetClimbTagDTO>>> GetTags()
+        {
+            try
+            {
+                var result = await _mediator.Send(new GetClimbTagsQuery());
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting climb tags");
+                return StatusCode(500, new { Message = "Error interno del servidor" });
+            }
+        }
+
+        [HttpPost("tag")]
+        public async Task<ActionResult<GetClimbTagDTO>> CreateTag([FromBody] CreateClimbTagDTO entity)
+        {
+            try
+            {
+                var result = await _mediator.Send(new CreateClimbTagCommand(entity));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating climb tag");
+                return StatusCode(500, new { Message = "Error interno del servidor" });
+            }
+        }
+
+        // ── RockFeatures ───────────────────────────────────────────────────────
+
+        [HttpGet("{climbRouteId:long}/rock-features")]
+        public async Task<ActionResult<IEnumerable<GetRockFeaturesDTO>>> GetRockFeatures(long climbRouteId)
+        {
+            try
+            {
+                var result = await _mediator.Send(new GetRockFeaturesQuery(climbRouteId));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting rock features for climb route {ClimbRouteId}", climbRouteId);
+                return StatusCode(500, new { Message = "Error interno del servidor" });
+            }
+        }
+
+        [HttpPost("rock-features")]
+        public async Task<ActionResult<GetRockFeaturesDTO>> CreateRockFeatures([FromBody] CreateRockFeaturesDTO entity)
+        {
+            try
+            {
+                var result = await _mediator.Send(new CreateRockFeaturesCommand(entity));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating rock features");
+                return StatusCode(500, new { Message = "Error interno del servidor" });
+            }
+        }
     }
 }
